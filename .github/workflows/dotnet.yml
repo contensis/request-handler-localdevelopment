@@ -30,7 +30,7 @@ jobs:
       run: |
         dotnet publish -p:PublishProfile=Folder_linux-x64
         echo "::debug::Github path"
-        echo "::debug::$GITHUB_PATH"
+        echo "::debug::$GITHUB_WORKSPACE"
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
       with:
