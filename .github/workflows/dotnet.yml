@@ -29,22 +29,22 @@ jobs:
     - name: Publish win-x64
       run: |
         dotnet publish -p:PublishProfile=Folder_win-x64        
+    - name: Publish linux-x64
+      run: |
+        dotnet publish -p:PublishProfile=Folder_linux-x64        
+    - name: Publish osx-x64
+      run: |
+        dotnet publish -p:PublishProfile=Folder_osx-x64
     - name: Upload win-x64 artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Distributable for win-x64
         path: ${{ github.workspace }}/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Debug/net6.0/win-x64/publish/
-    - name: Publish linux-x64
-      run: |
-        dotnet publish -p:PublishProfile=Folder_linux-x64        
     - name: Upload linux-x64 artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Distributable for linux-x64
-        path: ${{ github.workspace }}/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Debug/net6.0/linux-x64/publish/
-    - name: Publish osx-x64
-      run: |
-        dotnet publish -p:PublishProfile=Folder_osx-x64        
+        path: ${{ github.workspace }}/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Debug/net6.0/linux-x64/publish/        
     - name: Upload osx-x64 artifacts
       uses: actions/upload-artifact@v3
       with:
