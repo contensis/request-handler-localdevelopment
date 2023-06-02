@@ -27,10 +27,12 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Publish
-      run: dotnet publish -p:PublishProfile=Folder_linux-x64
+      run: |
+        dotnet publish -p:PublishProfile=Folder_linux-x64
+        echo "::debug::$GITHUB_PATH"
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Distributable for linux-x64
-        path: ${{github.workspace}}/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Release/net6.0/linux-x64/publish/
+        path: src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Release/net6.0/linux-x64/publish
             
