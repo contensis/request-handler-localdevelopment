@@ -35,5 +35,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: Distributable for linux-x64
-        path: /home/runner/work/request-handler-localdevelopment/request-handler-localdevelopment/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Debug/net6.0/linux-x64/publish/
+        path: ${{ github.workspace }}/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Debug/net6.0/linux-x64/publish/
             
