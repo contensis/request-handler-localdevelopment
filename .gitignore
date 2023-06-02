@@ -1,0 +1,47 @@
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+*.pyc
+nupkg/
+
+# Visual Studio Code
+.vscode
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates 
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# Visual Studio 2015
+.vs/
+
+#Tools
+protos/Google.Protobuf.Tools.3.6.1/
+protos/Grpc.Tools.1.15.0/
+
+# Rider
+.idea/
+helm-charts/helm
+bamboo/version-info.txt
+helm-charts/rabbitmq-ha/charts/rabbitmq-ha-1.27.0.tgz
+helm-charts/rabbitmq-ha/charts/nginx-ingress-1.6.0.tgz
+helm-charts/rabbit-values.yaml
+Pipfile.lock

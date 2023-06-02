@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Zengenti.Contensis.RequestHandler.Application</RootNamespace>
+        <AssemblyName>Zengenti.Contensis.RequestHandler.Application</AssemblyName>
+        <IsPackable>false</IsPackable>
+        <PackageId>Zengenti.Contensis.RequestHandler.Application</PackageId>
+        <Company>Zengenti Ltd</Company>
+        <OutputType>Library</OutputType>        
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Zengenti.Contensis.RequestHandler.Domain\Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="ErrorMessages\404.html" />
+      <EmbeddedResource Include="ErrorMessages\404_iis.html" />
+      <EmbeddedResource Include="ErrorMessages\500.html" />
+      <EmbeddedResource Include="ErrorMessages\503.html" />
+    </ItemGroup>    
+    <ItemGroup>
+        <InternalsVisibleTo Include="Zengenti.Contensis.RequestHandler.Unit.Specs" />
+        <InternalsVisibleTo Include="Zengenti.Contensis.RequestHandler.Acceptance.Specs" />
+    </ItemGroup>    
+    <ItemGroup>
+      <PackageReference Include="Grpc.Core" Version="2.41.1" />
+    </ItemGroup>
+</Project>
+

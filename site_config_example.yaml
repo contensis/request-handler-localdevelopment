@@ -1,0 +1,9 @@
+alias: client-cms
+projectId: mainProject
+accessToken: onkT45LYpCWOW3QR7pSi9bcJoACfTqKulg3rhQ4a3xwM4Ak9
+clientId: 1c384a04-aab7-42c6-a9ea-h15781d12489
+sharedSecret: 4785r32ad97e4467bbab19ed943b5a73-ea9fe4f1c1eb4d21bd19d1fcea78adcb-0bf921959f3e4c68a9637f220b85b57b
+
+blocks:
+  - id: test-block-one   
+    baseUri: https://v20-master-test-block-one-mainproject-clientcms-block-cl1.blocks.contensis.com/
