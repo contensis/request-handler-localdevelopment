@@ -39,27 +39,30 @@ public class RouteService : IRouteService
     {
         return await GetRouteForRequest(new Uri(request.GetEncodedUrl()), headers);
     }
-    
+
     public async Task<RouteInfo> GetRouteForRequest(Uri originUri, Headers headers)
     {
         var originPath = originUri.AbsolutePath;
         var nodeLookupTimer = new Stopwatch();
-        
+
         nodeLookupTimer.Start();
-        var node = ShouldPerformNodeLookup(originPath)
-            ? await _nodeService.GetByPath(originPath)
-            : null;
+        Node? node = null;
+        if (ShouldPerformNodeLookup(originPath))
+        {
+            node = await _nodeService.GetByPath(originPath);
+        }
+
         nodeLookupTimer.Stop();
 
         try
         {
             RouteInfo? routeInfo;
-            
+
             if (node == null)
             {
                 routeInfo = await GetRouteInfoForNonNodePath(originUri, headers, originPath);
                 routeInfo?.Metrics.Add("nodeLookup", nodeLookupTimer.ElapsedMilliseconds);
-            
+
                 return routeInfo;
             }
 
@@ -68,10 +71,11 @@ public class RouteService : IRouteService
 
             var isPartialMatchPath = node.Path.EqualsCaseInsensitive(originPath) == false;
             var nodeProxyId = node.ProxyRef?.Id;
-            if(isPartialMatchPath && node.ProxyRef?.PartialMatch == false)
+            if (isPartialMatchPath && node.ProxyRef?.PartialMatch == false)
             {
                 nodeProxyId = null;
             }
+
             // We have a node so need to understand what to invoke (block or proxy)
             routeInfo = await _publishingService.GetRouteInfoForRequest(
                 _requestContext.ProjectUuid,
@@ -85,17 +89,17 @@ public class RouteService : IRouteService
                     : node.RendererRef?.Uuid.ToString(),
                 nodeProxyId,
                 node.Language);
-            
+
             routeInfoRequestTimer.Stop();
-            
+
             if (routeInfo != null)
             {
                 // Ensure the node cache keys are included in the final response
                 _cacheKeyService.AddRange(node.CacheKeys);
-                
+
                 routeInfo.Metrics.Add("nodeLookup", nodeLookupTimer.ElapsedMilliseconds);
                 routeInfo.Metrics.Add("getRouteInfoFetch", routeInfoRequestTimer.ElapsedMilliseconds);
-                
+
                 return routeInfo;
             }
         }
@@ -116,11 +120,13 @@ public class RouteService : IRouteService
             _logger.LogError(e, "Failed to GetRouteInfoForRequest with error {Message}", e.Message);
             throw;
         }
+
         var nodePath = "";
         if (node != null)
         {
             nodePath = node.Path;
         }
+
         var emptyRouteInfo = new RouteInfo(null, headers, nodePath, false);
         return emptyRouteInfo;
     }
@@ -144,7 +150,7 @@ public class RouteService : IRouteService
             originUri,
             headers,
             blockVersionInfo);
-        
+
         if (staticBlockVersionInfoFetchMs.HasValue)
         {
             returnInfo?.Metrics.Add("staticBlockVersionLookup", staticBlockVersionInfoFetchMs.Value);
@@ -159,9 +165,12 @@ public class RouteService : IRouteService
         // We can negate anything that is a rewritten static path
         var pathIsRewritten = StaticPath.Parse(path)?.IsRewritten;
 
-        return path.ToLowerInvariant() != "/favicon.ico"
-               && !path.StartsWithCaseInsensitive("/api/")
-               && !path.StartsWithCaseInsensitive("/contensis-preview-toolbar/")
-               && !pathIsRewritten.GetValueOrDefault();
+        bool doLookup = path.ToLowerInvariant() != "/favicon.ico"
+                        && !path.StartsWithCaseInsensitive("/api/")
+                        && !path.StartsWithCaseInsensitive("/contensis-preview-toolbar/")
+                        && !path.StartsWithCaseInsensitive("/REST/UI/FormsModule/TestAccessibility/")
+                        && !path.StartsWithCaseInsensitive("/REST/Contensis/content/GetFormSettings")
+                        && !pathIsRewritten.GetValueOrDefault();
+        return doLookup;
     }
 }

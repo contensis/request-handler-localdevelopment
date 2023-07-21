@@ -10,8 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Zengenti.Contensis.Delivery" Version="15.3.0" />
-      <PackageReference Include="Zengenti.Core" Version="5.1.18" />
+      <PackageReference Include="Zengenti.Contensis.Delivery" Version="15.4.2" />
+      <PackageReference Include="Zengenti.Core" Version="6.0.2" />
     </ItemGroup>
 
     <ItemGroup>
