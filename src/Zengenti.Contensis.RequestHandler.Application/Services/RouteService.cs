@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using Zengenti.Contensis.RequestHandler.Application.Resolving;
+using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
@@ -45,13 +46,15 @@ public class RouteService : IRouteService
         var originPath = originUri.AbsolutePath;
         var nodeLookupTimer = new Stopwatch();
 
+        CheckAndSetProjectHeaders(headers);
+
         nodeLookupTimer.Start();
         Node? node = null;
         if (ShouldPerformNodeLookup(originPath))
         {
             node = await _nodeService.GetByPath(originPath);
         }
-
+        
         nodeLookupTimer.Stop();
 
         try
@@ -66,6 +69,8 @@ public class RouteService : IRouteService
                 return routeInfo;
             }
 
+            CheckAndSetNodeHeaders(headers, node);
+            
             var routeInfoRequestTimer = new Stopwatch();
             routeInfoRequestTimer.Start();
 
@@ -100,6 +105,11 @@ public class RouteService : IRouteService
                 routeInfo.Metrics.Add("nodeLookup", nodeLookupTimer.ElapsedMilliseconds);
                 routeInfo.Metrics.Add("getRouteInfoFetch", routeInfoRequestTimer.ElapsedMilliseconds);
 
+                if (routeInfo.BlockVersionInfo != null)
+                {
+                    CheckAndSetBlockHeaders(headers, routeInfo.BlockVersionInfo);
+                }
+                
                 return routeInfo;
             }
         }
@@ -130,7 +140,7 @@ public class RouteService : IRouteService
         var emptyRouteInfo = new RouteInfo(null, headers, nodePath, false);
         return emptyRouteInfo;
     }
-
+    
     private async Task<RouteInfo?> GetRouteInfoForNonNodePath(Uri originUri, Headers headers, string originPath)
     {
         long? staticBlockVersionInfoFetchMs = null;
@@ -173,4 +183,49 @@ public class RouteService : IRouteService
                         && !pathIsRewritten.GetValueOrDefault();
         return doLookup;
     }
+    
+    private void CheckAndSetProjectHeaders(Headers headers)
+    {
+        if (headers.HasKey(Constants.Headers.RequiresAlias))
+        {
+            CallContext.Current[Constants.Headers.RequiresAlias] = _requestContext.Alias;
+        }
+
+        if (headers.HasKey(Constants.Headers.RequiresProjectApiId))
+        {
+            CallContext.Current[Constants.Headers.RequiresProjectApiId] = _requestContext.ProjectId;
+        }
+    }
+    
+    private void CheckAndSetNodeHeaders(Headers headers, Node node)
+    {
+        if (headers.HasKey(Constants.Headers.RequiresNodeId) && node.Id != null)
+        {
+            CallContext.Current[Constants.Headers.RequiresNodeId] = node.Id.ToString();
+        }
+        
+        if (headers.HasKey(Constants.Headers.RequiresEntryId) && node.EntryId != null)
+        {
+            CallContext.Current[Constants.Headers.RequiresEntryId] = node.EntryId.ToString();
+        }
+        
+        if (headers.HasKey(Constants.Headers.RequiresEntryLanguage))
+        {
+            CallContext.Current[Constants.Headers.RequiresEntryLanguage] = node.Language;
+        }
+    }
+    
+    private void CheckAndSetBlockHeaders(Headers headers, BlockVersionInfo blockVersionInfo)
+    {
+        if (headers.HasKey(Constants.Headers.RequiresBlockId))
+        {
+            CallContext.Current[Constants.Headers.RequiresBlockId] = blockVersionInfo.BlockId;
+        }
+        
+        if (headers.HasKey(Constants.Headers.RequiresVersionNo) && blockVersionInfo.VersionNo != null)
+        {
+            CallContext.Current[Constants.Headers.RequiresVersionNo] = blockVersionInfo.VersionNo.ToString();
+        }
+    }
+
 }

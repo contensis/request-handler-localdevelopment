@@ -41,6 +41,23 @@ public class CallContextService
 
         CallContext.Current.Clear();
 
+        SetCallContextValueFromRequest(Constants.Headers.Alias, "");
+        SetCallContextValueFromRequest(Constants.Headers.ProjectId, "");
+        SetCallContextValueFromRequest(Constants.Headers.ProjectUuid, Guid.Empty.ToString());
+
+        // Default all requests to published version statuses
+        SetCallContextValueFromRequest(Constants.Headers.BlockConfig, "");
+        SetCallContextValueFromRequest(Constants.Headers.ProxyConfig, "");
+        SetCallContextValueFromRequest(Constants.Headers.RendererConfig, "");
+        SetCallContextValueFromRequest(Constants.Headers.BlockConfigDefault, "");
+        SetCallContextValueFromRequest(Constants.Headers.ProxyConfigDefault, "");
+        SetCallContextValueFromRequest(Constants.Headers.RendererConfigDefault, "");
+        SetCallContextValueFromRequest(Constants.Headers.ServerType, ServerType.Live.ToString());
+        SetCallContextValueFromRequest(Constants.Headers.NodeVersionStatus, "published");
+
+        // TODO: remove when we deprecate old nodes delivery api
+        SetCallContextValueFromRequest(Constants.Headers.UseNewNodeService, "false");
+        
         void SetCallContextValueFromRequest(string key, string alternative)
         {
             bool hasKey = false;
@@ -77,22 +94,6 @@ public class CallContextService
                 CallContext.Current[key] = alternative;
             }
         }
-       
-        SetCallContextValueFromRequest(Constants.Headers.Alias, "");
-        SetCallContextValueFromRequest(Constants.Headers.ProjectId, "");
-        SetCallContextValueFromRequest(Constants.Headers.ProjectUuid, Guid.Empty.ToString());
-
-        // Default all requests to published version statuses
-        SetCallContextValueFromRequest(Constants.Headers.BlockConfig, "");
-        SetCallContextValueFromRequest(Constants.Headers.ProxyConfig, "");
-        SetCallContextValueFromRequest(Constants.Headers.RendererConfig, "");
-        SetCallContextValueFromRequest(Constants.Headers.BlockConfigDefault, "");
-        SetCallContextValueFromRequest(Constants.Headers.ProxyConfigDefault, "");
-        SetCallContextValueFromRequest(Constants.Headers.RendererConfigDefault, "");
-        SetCallContextValueFromRequest(Constants.Headers.ServerType, ServerType.Live.ToString());
-        SetCallContextValueFromRequest(Constants.Headers.NodeVersionStatus, "published");
-        // TODO: remove when we deprecate old nodes delivery api
-        SetCallContextValueFromRequest(Constants.Headers.UseNewNodeService, "false");
     }
 
     public bool IsVersionConfigKey(string key)

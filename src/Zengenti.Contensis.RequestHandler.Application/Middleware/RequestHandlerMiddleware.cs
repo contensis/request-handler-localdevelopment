@@ -366,7 +366,7 @@ public class RequestHandlerMiddleware
         }
 
         redirectResponse.Headers["location"] = new List<string>() { updatedUri };
-        
+
         if (blockConfigCookie.Length > 0)
         {
             context.Response.Cookies.Append(Constants.Headers.BlockConfig, blockConfigCookie);
@@ -626,6 +626,7 @@ public class RequestHandlerMiddleware
 
         // Set surrogate key response
         EnsureSurrogateKey(context, Constants.Headers.SurrogateKey, _cacheKeyService.GetSurrogateKey());
+        EnsureRequiresHeaders(context);
 
         context.Response.Headers.Remove(Constants.Headers.TransferEncoding);
 
@@ -658,6 +659,18 @@ public class RequestHandlerMiddleware
             else
             {
                 context.Response.Headers[surrogateKeyHeader] = surrogateKey;
+            }
+        }
+    }
+
+    private void EnsureRequiresHeaders(HttpContext context)
+    {
+        foreach (var requiresHeader in Constants.Headers.RequiresHeaders)
+        {
+            if (CallContext.Current.Values.ContainsKey(requiresHeader))
+            {
+                context.Response.Headers[requiresHeader] =
+                    CallContext.Current[requiresHeader];
             }
         }
     }

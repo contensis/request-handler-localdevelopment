@@ -263,7 +263,8 @@ public class EndpointRequestService : IEndpointRequestService
             {
                 requestMessage.Headers.TryAddWithoutValidation(key, value);
             }
-            else if (!DisallowedRequestHeaderMappings.ContainsCaseInsensitive(key))
+
+            if (!DisallowedRequestHeaderMappings.ContainsCaseInsensitive(key))
             {
                 requestMessage.Headers.TryAddWithoutValidation(key, value);
             }

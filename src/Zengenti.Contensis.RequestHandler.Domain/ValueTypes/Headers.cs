@@ -61,6 +61,11 @@ public sealed class Headers
         set => SetValue(name, new[] { value }!);
     }
 
+    public bool HasKey(string key)
+    {
+        return _values.ContainsKey(key);
+    }
+    
     public void Add(string key, IEnumerable<string> value)
     {
         SetValue(key, value);
