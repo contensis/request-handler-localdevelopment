@@ -176,10 +176,10 @@ public class RouteService : IRouteService
         var pathIsRewritten = StaticPath.Parse(path)?.IsRewritten;
 
         bool doLookup = path.ToLowerInvariant() != "/favicon.ico"
-                        && !path.StartsWithCaseInsensitive("/api/")
+                        && !path.StartsWithCaseInsensitive(Constants.Paths.ApiPrefixes[0])
+                        && !path.StartsWithCaseInsensitive(Constants.Paths.ApiPrefixes[1])
+                        && !path.StartsWithCaseInsensitive(Constants.Paths.ApiPrefixes[2])
                         && !path.StartsWithCaseInsensitive("/contensis-preview-toolbar/")
-                        && !path.StartsWithCaseInsensitive("/REST/UI/FormsModule/TestAccessibility/")
-                        && !path.StartsWithCaseInsensitive("/REST/Contensis/content/GetFormSettings")
                         && !pathIsRewritten.GetValueOrDefault();
         return doLookup;
     }

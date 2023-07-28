@@ -11,7 +11,7 @@
 
     <ItemGroup>
       <PackageReference Include="Zengenti.Contensis.Delivery" Version="15.4.2" />
-      <PackageReference Include="Zengenti.Core" Version="6.0.2" />
+      <PackageReference Include="Zengenti.Core" Version="6.1.0" />
     </ItemGroup>
 
     <ItemGroup>

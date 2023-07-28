@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using Zengenti.Contensis.RequestHandler.Application.Resolving;
+using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
@@ -63,6 +64,7 @@ public class RouteInfoFactory : IRouteInfoFactory
         {
             nodePath = node.Path;
         }
+
         return new RouteInfo(
             uri,
             headers,
@@ -83,9 +85,10 @@ public class RouteInfoFactory : IRouteInfoFactory
         var queryString = BuildQueryString(originUri);
 
         // Handle API requests
-        if (path.StartsWithCaseInsensitive("/api") &&
-            !path.StartsWithCaseInsensitive("/api/publishing/request-handler")
-            && !path.StartsWithCaseInsensitive("/api/preview-toolbar/blocks"))
+        bool isApiRequest = Constants.Paths.ApiPrefixes.Any(prefix => path.StartsWithCaseInsensitive(prefix))
+                            && !path.StartsWithCaseInsensitive("/api/publishing/request-handler")
+                            && !path.StartsWithCaseInsensitive("/api/preview-toolbar/blocks");
+        if (isApiRequest)
         {
             var apiHost = $"api-{_requestContext.Alias}.cloud.contensis.com";
             var apiUrl = $"https://{apiHost}";
@@ -113,11 +116,11 @@ public class RouteInfoFactory : IRouteInfoFactory
         }
 
         return new RouteInfo(
-                null,
-                headers,
-                "",
-                false,
-                null);
+            null,
+            headers,
+            "",
+            false,
+            null);
     }
 
     public RouteInfo CreateForIisFallback(Uri originUri, Headers headers)
