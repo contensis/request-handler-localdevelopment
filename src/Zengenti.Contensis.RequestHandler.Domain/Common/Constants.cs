@@ -10,6 +10,7 @@ public static class Constants
         public const string TraceEnabled = "x-trace-enabled";
         public const string SurrogateKey = "surrogate-key";
         public const string DebugSurrogateKey = "debug-surrogate-key";
+        public const string Debug = "debug";
         public const string ContentType = "Content-Type";
         public const string TransferEncoding = "transfer-encoding";
         public const string BlockConfig = "x-block-config";

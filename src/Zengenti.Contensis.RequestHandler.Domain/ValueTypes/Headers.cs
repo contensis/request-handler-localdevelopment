@@ -50,7 +50,9 @@ public sealed class Headers
     public string? SiteType => GetFirstValueIfExists(Constants.Headers.ServerType);
     
     public string? EntryVersionStatus => GetFirstValueIfExists(Constants.Headers.EntryVersionStatus);
-
+    
+    public bool Debug => GetFirstValueIfExists(Constants.Headers.Debug) == "true";
+    
     public static implicit operator Headers(Dictionary<string, IEnumerable<string>> dictionary) => new(dictionary);
 
     public static implicit operator Dictionary<string, IEnumerable<string>>(Headers headers) =>

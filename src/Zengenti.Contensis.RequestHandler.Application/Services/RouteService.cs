@@ -186,12 +186,12 @@ public class RouteService : IRouteService
     
     private void CheckAndSetProjectHeaders(Headers headers)
     {
-        if (headers.HasKey(Constants.Headers.RequiresAlias))
+        if (headers.Debug || headers.HasKey(Constants.Headers.RequiresAlias))
         {
             CallContext.Current[Constants.Headers.RequiresAlias] = _requestContext.Alias;
         }
 
-        if (headers.HasKey(Constants.Headers.RequiresProjectApiId))
+        if (headers.Debug || headers.HasKey(Constants.Headers.RequiresProjectApiId))
         {
             CallContext.Current[Constants.Headers.RequiresProjectApiId] = _requestContext.ProjectId;
         }
@@ -199,17 +199,17 @@ public class RouteService : IRouteService
     
     private void CheckAndSetNodeHeaders(Headers headers, Node node)
     {
-        if (headers.HasKey(Constants.Headers.RequiresNodeId) && node.Id != null)
+        if ((headers.Debug || headers.HasKey(Constants.Headers.RequiresNodeId)) && node.Id != null)
         {
             CallContext.Current[Constants.Headers.RequiresNodeId] = node.Id.ToString();
         }
         
-        if (headers.HasKey(Constants.Headers.RequiresEntryId) && node.EntryId != null)
+        if ((headers.Debug || headers.HasKey(Constants.Headers.RequiresEntryId)) && node.EntryId != null)
         {
             CallContext.Current[Constants.Headers.RequiresEntryId] = node.EntryId.ToString();
         }
         
-        if (headers.HasKey(Constants.Headers.RequiresEntryLanguage))
+        if (headers.Debug || headers.HasKey(Constants.Headers.RequiresEntryLanguage))
         {
             CallContext.Current[Constants.Headers.RequiresEntryLanguage] = node.Language;
         }
@@ -217,12 +217,12 @@ public class RouteService : IRouteService
     
     private void CheckAndSetBlockHeaders(Headers headers, BlockVersionInfo blockVersionInfo)
     {
-        if (headers.HasKey(Constants.Headers.RequiresBlockId))
+        if (headers.Debug || headers.HasKey(Constants.Headers.RequiresBlockId))
         {
             CallContext.Current[Constants.Headers.RequiresBlockId] = blockVersionInfo.BlockId;
         }
         
-        if (headers.HasKey(Constants.Headers.RequiresVersionNo) && blockVersionInfo.VersionNo != null)
+        if ((headers.Debug || headers.HasKey(Constants.Headers.RequiresVersionNo)) && blockVersionInfo.VersionNo != null)
         {
             CallContext.Current[Constants.Headers.RequiresVersionNo] = blockVersionInfo.VersionNo.ToString();
         }

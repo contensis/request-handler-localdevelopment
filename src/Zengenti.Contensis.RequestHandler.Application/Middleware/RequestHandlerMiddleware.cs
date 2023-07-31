@@ -630,7 +630,8 @@ public class RequestHandlerMiddleware
 
         context.Response.Headers.Remove(Constants.Headers.TransferEncoding);
 
-        if (context.Request.Headers["debug"] == "true" || context.Request.Headers["echo-headers"] == "true")
+        if (context.Request.Headers[Constants.Headers.Debug] == "true" ||
+            context.Request.Headers["echo-headers"] == "true")
         {
             // Set debug surrogate key response
             EnsureSurrogateKey(context, Constants.Headers.DebugSurrogateKey, _cacheKeyService.GetDebugSurrogateKey());
@@ -669,8 +670,15 @@ public class RequestHandlerMiddleware
         {
             if (CallContext.Current.Values.ContainsKey(requiresHeader))
             {
-                context.Response.Headers[requiresHeader] =
-                    CallContext.Current[requiresHeader];
+                if (requiresHeader == Constants.Headers.RequiresAlias)
+                {
+                    context.Response.Headers[Constants.Headers.Alias] = CallContext.Current[requiresHeader];
+                }
+                else
+                {
+                    context.Response.Headers[requiresHeader] =
+                        CallContext.Current[requiresHeader];
+                }
             }
         }
     }
