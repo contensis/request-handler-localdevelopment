@@ -640,7 +640,10 @@ public class RequestHandlerMiddleware
             {
                 try
                 {
-                    context.Response.Headers.TryAdd(requestHeader.Key, requestHeader.Value);
+                    if (!Constants.Headers.RequiresHeaders.ContainsCaseInsensitive(requestHeader.Key))
+                    {
+                        context.Response.Headers.TryAdd(requestHeader.Key, requestHeader.Value);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -670,15 +673,10 @@ public class RequestHandlerMiddleware
         {
             if (CallContext.Current.Values.ContainsKey(requiresHeader))
             {
-                if (requiresHeader == Constants.Headers.RequiresAlias)
-                {
-                    context.Response.Headers[Constants.Headers.Alias] = CallContext.Current[requiresHeader];
-                }
-                else
-                {
-                    context.Response.Headers[requiresHeader] =
-                        CallContext.Current[requiresHeader];
-                }
+                var requiredHeader =
+                    requiresHeader.Replace("-requires", "", StringComparison.InvariantCultureIgnoreCase);
+
+                context.Response.Headers[requiredHeader] = CallContext.Current[requiresHeader];
             }
         }
     }
