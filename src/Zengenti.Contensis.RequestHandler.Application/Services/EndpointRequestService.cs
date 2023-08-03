@@ -279,12 +279,6 @@ public class EndpointRequestService : IEndpointRequestService
             }
         }
 
-        // requestMessage.Headers.TryAddWithoutValidation("branch",
-        //     routeInfo.BlockVersionInfo?.Branch);
-
-        // requestMessage.Headers.TryAddWithoutValidation("version",
-        //     routeInfo.BlockVersionInfo?.VersionNo.ToString());
-
         if (routeInfo.IsIisFallback && headers.ContainsKey(Constants.Headers.IisHostName))
         {
             // Override host header with IIS fallback host

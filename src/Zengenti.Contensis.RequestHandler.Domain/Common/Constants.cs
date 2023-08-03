@@ -68,7 +68,10 @@ public static class Constants
         public const string StaticPathUniquePrefix = "_";
 
         public static readonly string[] ApiPrefixes = new[]
-            { "/api/", "/REST/UI/FormsModule/TestAccessibility/", "/REST/Contensis/content/GetFormSettings" };
+            { "/api/" };
+        
+        public static readonly string[] PassThroughPrefixes = new[]
+            { "/REST/UI/FormsModule/TestAccessibility/", "/REST/Contensis/content/GetFormSettings" };
     }
 
     public static class CacheKeys

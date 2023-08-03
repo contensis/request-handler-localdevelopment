@@ -54,7 +54,7 @@ public class RouteService : IRouteService
         {
             node = await _nodeService.GetByPath(originPath);
         }
-        
+
         nodeLookupTimer.Stop();
 
         try
@@ -70,7 +70,7 @@ public class RouteService : IRouteService
             }
 
             CheckAndSetNodeHeaders(headers, node);
-            
+
             var routeInfoRequestTimer = new Stopwatch();
             routeInfoRequestTimer.Start();
 
@@ -109,7 +109,7 @@ public class RouteService : IRouteService
                 {
                     CheckAndSetBlockHeaders(headers, routeInfo.BlockVersionInfo);
                 }
-                
+
                 return routeInfo;
             }
         }
@@ -140,7 +140,7 @@ public class RouteService : IRouteService
         var emptyRouteInfo = new RouteInfo(null, headers, nodePath, false);
         return emptyRouteInfo;
     }
-    
+
     private async Task<RouteInfo?> GetRouteInfoForNonNodePath(Uri originUri, Headers headers, string originPath)
     {
         long? staticBlockVersionInfoFetchMs = null;
@@ -176,14 +176,14 @@ public class RouteService : IRouteService
         var pathIsRewritten = StaticPath.Parse(path)?.IsRewritten;
 
         bool doLookup = path.ToLowerInvariant() != "/favicon.ico"
-                        && !path.StartsWithCaseInsensitive(Constants.Paths.ApiPrefixes[0])
-                        && !path.StartsWithCaseInsensitive(Constants.Paths.ApiPrefixes[1])
-                        && !path.StartsWithCaseInsensitive(Constants.Paths.ApiPrefixes[2])
                         && !path.StartsWithCaseInsensitive("/contensis-preview-toolbar/")
-                        && !pathIsRewritten.GetValueOrDefault();
+                        && !pathIsRewritten.GetValueOrDefault()
+                        && !Constants.Paths.ApiPrefixes.Any(path.StartsWithCaseInsensitive)
+                        && !Constants.Paths.PassThroughPrefixes.Any(path.StartsWithCaseInsensitive);
+
         return doLookup;
     }
-    
+
     private void CheckAndSetProjectHeaders(Headers headers)
     {
         if (headers.Debug || headers.HasKey(Constants.Headers.RequiresAlias))
@@ -196,36 +196,36 @@ public class RouteService : IRouteService
             CallContext.Current[Constants.Headers.RequiresProjectApiId] = _requestContext.ProjectId;
         }
     }
-    
+
     private void CheckAndSetNodeHeaders(Headers headers, Node node)
     {
         if ((headers.Debug || headers.HasKey(Constants.Headers.RequiresNodeId)) && node.Id != null)
         {
             CallContext.Current[Constants.Headers.RequiresNodeId] = node.Id.ToString();
         }
-        
+
         if ((headers.Debug || headers.HasKey(Constants.Headers.RequiresEntryId)) && node.EntryId != null)
         {
             CallContext.Current[Constants.Headers.RequiresEntryId] = node.EntryId.ToString();
         }
-        
+
         if (headers.Debug || headers.HasKey(Constants.Headers.RequiresEntryLanguage))
         {
             CallContext.Current[Constants.Headers.RequiresEntryLanguage] = node.Language;
         }
     }
-    
+
     private void CheckAndSetBlockHeaders(Headers headers, BlockVersionInfo blockVersionInfo)
     {
         if (headers.Debug || headers.HasKey(Constants.Headers.RequiresBlockId))
         {
             CallContext.Current[Constants.Headers.RequiresBlockId] = blockVersionInfo.BlockId;
         }
-        
-        if ((headers.Debug || headers.HasKey(Constants.Headers.RequiresVersionNo)) && blockVersionInfo.VersionNo != null)
+
+        if ((headers.Debug || headers.HasKey(Constants.Headers.RequiresVersionNo)) &&
+            blockVersionInfo.VersionNo != null)
         {
             CallContext.Current[Constants.Headers.RequiresVersionNo] = blockVersionInfo.VersionNo.ToString();
         }
     }
-
 }
