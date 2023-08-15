@@ -382,7 +382,7 @@ public class RequestHandlerMiddleware
             context.Response.Cookies.Append(Constants.Headers.ProxyConfig, proxyConfigCookie);
         }
 
-        // may want to set this to 0 later.
+        // TODO: may want to set this to 0 later.
         // redirectResponse.Headers["Surrogate-Control"] = new List<string>() { "max-age=30" };
         return redirectResponse;
     }
