@@ -43,7 +43,10 @@ public class RouteService : IRouteService
 
     public async Task<RouteInfo> GetRouteForRequest(Uri originUri, Headers headers)
     {
-        var originPath = originUri.AbsolutePath;
+        var originPath = originUri.AbsolutePath.Length > 1
+            ? originUri.AbsolutePath.TrimEnd('/')
+            : originUri.AbsolutePath;
+
         var nodeLookupTimer = new Stopwatch();
 
         CheckAndSetProjectHeaders(headers);
