@@ -41,8 +41,9 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
                 routeInfo.Headers.SiteType.EqualsCaseInsensitive("test"))
             {
                 var entryVersionStatus = routeInfo.Headers.EntryVersionStatus ?? "published";
-                SetPreviewToolbar(ref content, _requestContext.Alias,
-                    _requestContext.ProjectId, entryVersionStatus, routeInfo.Uri.Query, await _globalApi.IsContensisSingleSignOn());
+                var isContensisSingleSignOn = await _globalApi.IsContensisSingleSignOn();
+                SetPreviewToolbar(ref content, _requestContext.Alias, _requestContext.ProjectId, entryVersionStatus,
+                    routeInfo.Uri.Query, isContensisSingleSignOn);
             }
 
             return ParsePagelets

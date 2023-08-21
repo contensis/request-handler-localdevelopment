@@ -266,9 +266,7 @@ public class RequestHandlerMiddleware
             }
         }
 
-        var isContensisSingleSignOn = await _globalApi.IsContensisSingleSignOn();
-        response = GenerateFriendlyErrorResponse(context, routeInfo, initialRouteInfo, response,
-            isContensisSingleSignOn);
+        response = await GenerateFriendlyErrorResponse(context, routeInfo, initialRouteInfo, response);
 
         FixIisStatusCode(routeInfo, response);
 
@@ -408,9 +406,9 @@ public class RequestHandlerMiddleware
         }
     }
 
-    private static EndpointResponse GenerateFriendlyErrorResponse(HttpContext context, RouteInfo routeInfo,
+    private async Task<EndpointResponse> GenerateFriendlyErrorResponse(HttpContext context, RouteInfo routeInfo,
         RouteInfo? initialRouteInfo,
-        EndpointResponse response, bool isContensisSingleSignOn)
+        EndpointResponse response)
     {
         if (routeInfo.Headers.SiteType.EqualsCaseInsensitive("live"))
         {
@@ -429,8 +427,8 @@ public class RequestHandlerMiddleware
                 var responseHtml =
                     ErrorResources.GetIisFallbackMessage(response.StatusCode, routeInfo,
                         initialRouteInfo.NodePath ?? "");
-                return GetFriendlyErrorResponse(context, routeInfo.Uri.Query, response, responseHtml,
-                    isContensisSingleSignOn);
+                
+                return await GetFriendlyErrorResponse(context, routeInfo.Uri.Query, response, responseHtml);
             }
         }
 
@@ -469,8 +467,7 @@ public class RequestHandlerMiddleware
             }
 
 
-            return GetFriendlyErrorResponse(context, routeInfo.Uri.Query, response, responseHtml,
-                isContensisSingleSignOn);
+            return await GetFriendlyErrorResponse(context, routeInfo.Uri.Query, response, responseHtml);
         }
         else
         {
@@ -478,15 +475,15 @@ public class RequestHandlerMiddleware
         }
     }
 
-    private static EndpointResponse GetFriendlyErrorResponse(HttpContext context,
-        string query,
-        EndpointResponse response, string responseHtml, bool isContensisSingleSignOn)
+    private async Task<EndpointResponse> GetFriendlyErrorResponse(HttpContext context, string query,
+        EndpointResponse response, string responseHtml)
     {
         if (context.Request.Headers.TryGetValue(Constants.Headers.ProjectId,
                 out var projectApiId) && context.Request.Headers.TryGetValue(Constants.Headers.Alias,
                 out var alias) && context.Request.Headers.TryGetValue(Constants.Headers.EntryVersionStatus,
                 out var entryVersionStatus))
         {
+            var isContensisSingleSignOn = await _globalApi.IsContensisSingleSignOn();
             HtmlResponseResolver.SetPreviewToolbar(ref responseHtml, alias[0]!, projectApiId[0]!,
                 entryVersionStatus[0]!, query, isContensisSingleSignOn);
         }
