@@ -125,13 +125,11 @@ public class RouteService : IRouteService
             else
             {
                 _logger.LogError(e, "Failed to GetRouteInfoForRequest with error {Message}", e.Message);
-                throw;
             }
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Failed to GetRouteInfoForRequest with error {Message}", e.Message);
-            throw;
         }
 
         var nodePath = "";
