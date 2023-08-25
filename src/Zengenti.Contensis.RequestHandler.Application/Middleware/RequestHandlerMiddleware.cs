@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Web;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using Zengenti.Contensis.RequestHandler.Application.Resolving;
 using Zengenti.Contensis.RequestHandler.Application.Services;
@@ -90,7 +91,7 @@ public class RequestHandlerMiddleware
                        nodeConfig = CallContext.Current[Constants.Headers.NodeVersionStatus] ?? ""
                    }))
             {
-                _logger.LogError(e, "Unhandled error caught in middleware with message {Message}", e.Message);
+                _logger.LogError(e, "Unhandled error caught in middleware with exception message {Message} and request url {Url}", e.Message, context.Request.GetDisplayUrl());
             }
 
             throw;
