@@ -118,18 +118,20 @@ public class RouteService : IRouteService
         }
         catch (RpcException e)
         {
+            var logLevel = LogLevel.Error;
+            
             if (e.StatusCode == StatusCode.NotFound)
             {
-                _logger.LogWarning(e, "Failed to GetRouteInfoForRequest with error {Message}", e.Message);
+                logLevel = LogLevel.Warning;
             }
             else
             {
-                _logger.LogError(e, "Failed to GetRouteInfoForRequest with error {Message}", e.Message);
+                _logger.Log(logLevel, e, "Failed to GetRouteForRequest with RpcException.Message {Message} for url {Uri}", e.Message, originUri);
             }
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to GetRouteInfoForRequest with error {Message}", e.Message);
+            _logger.LogError(e, "Failed to GetRouteForRequest with Exception.Message {Message} for url {Uri}", e.Message, originUri);
         }
 
         var nodePath = "";

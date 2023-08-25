@@ -157,8 +157,8 @@ public class EndpointRequestService : IEndpointRequestService
                        routeInfo = JsonSerializer.Serialize(routeInfo)
                    }))
             {
-                _logger.LogError(e,
-                    $"Failed to invoke endpoint {routeInfo.Uri} with http method {httpMethod.Method} .");
+                _logger.LogError(e, "Failed to invoke endpoint {Uri} with http method {Method}", routeInfo.Uri,
+                    httpMethod.Method);
             }
 
             throw;

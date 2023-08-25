@@ -51,9 +51,9 @@ public class CorePublishingService : ICorePublishingService
         }
 
         blockVersionInfo.EnsureDefaultStaticPaths();
-        
+
         _cache.SetBlockVersionInfo(blockVersionInfo);
-        
+
         return blockVersionInfo;
     }
 
@@ -91,25 +91,25 @@ public class CorePublishingService : ICorePublishingService
             }
 
             var routeInfo = BuildRouteInfoForRequest(clientResult, originUri, headers, projectId, node);
-            
+
             return routeInfo;
         }
         catch (RpcException e)
         {
+            var logLevel = LogLevel.Error;
             if (e.StatusCode == StatusCode.NotFound)
             {
-                _logger.LogWarning(e, "GetEndpointForRequest failed with message {Message}", e.Message);
-            }
-            else
-            {
-                _logger.LogError(e, "GetEndpointForRequest failed with message {Message}", e.Message);
+                logLevel = LogLevel.Warning;
             }
 
+            _logger.Log(logLevel, e, "GetEndpointForRequest failed with RpcException.Message {Message} for Uri {Uri}",
+                e.Message, originUri);
             throw;
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "GetEndpointForRequest failed with message {Message}", e.Message);
+            _logger.LogError(e, "GetEndpointForRequest failed with RpcException.Message {Message} for Uri {Uri}",
+                e.Message, originUri);
             throw;
         }
     }
@@ -119,12 +119,13 @@ public class CorePublishingService : ICorePublishingService
         return GetRouteInfoForRequest(projectId, false, originUri, headers, rendererId: rendererId);
     }
 
-    public RouteInfo BuildRouteInfoForRequest(EndpointRequestInfo endpointRequestInfo, Uri originUri, Headers headers,Guid projectUuid, Node? node)
+    public RouteInfo BuildRouteInfoForRequest(EndpointRequestInfo endpointRequestInfo, Uri originUri, Headers headers,
+        Guid projectUuid, Node? node)
     {
         var uri = new Uri(endpointRequestInfo.Uri);
         RouteInfo routeInfo;
         headers = headers.Merge(new Headers(endpointRequestInfo.Headers));
-       
+
         if (endpointRequestInfo.BlockVersionId.HasValue)
         {
             var blockVersionInfo = new BlockVersionInfo(
@@ -148,7 +149,7 @@ public class CorePublishingService : ICorePublishingService
             );
 
             blockVersionInfo.EnsureDefaultStaticPaths();
-                
+
             // Cache the blockVersionInfo to allow quick lookups for paths re-written within static files (e.g. js, css).
             _cache.SetBlockVersionInfo(blockVersionInfo);
         }
@@ -163,7 +164,7 @@ public class CorePublishingService : ICorePublishingService
         }
 
         _cacheKeyService.AddRange(endpointRequestInfo.CacheKeys);
-            
+
         return routeInfo;
     }
 }
