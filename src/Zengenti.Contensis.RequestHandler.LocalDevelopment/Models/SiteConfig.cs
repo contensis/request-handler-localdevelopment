@@ -1,4 +1,5 @@
-﻿using YamlDotNet.Serialization;
+﻿using System.Text.Json;
+using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Extensions;
@@ -91,6 +92,35 @@ public class SiteConfig
         }
 
         return null;
+    }
+
+    public static SiteConfig LoadFromJson(string alias, string projectId, string accessToken, string clientId,
+        string sharedSecret, string blocksAsJson, string? renderersAsJson = null)
+    {
+        var siteConfig = new SiteConfig()
+        {
+            Alias = alias,
+            ProjectId = projectId,
+            AccessToken = accessToken,
+            ClientId = clientId,
+            SharedSecret = sharedSecret
+        };
+
+        var jsonSerializerOptions = new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        
+        siteConfig.Blocks = JsonSerializer.Deserialize<List<Block>>(blocksAsJson, jsonSerializerOptions)!;
+        
+        if (!string.IsNullOrWhiteSpace(renderersAsJson))
+        {
+            siteConfig.Renderers = JsonSerializer.Deserialize<List<Renderer>>(renderersAsJson, jsonSerializerOptions)!;
+        }
+
+        ResolveReferences(siteConfig);
+
+        return siteConfig;
     }
 
     private static void ResolveReferences(SiteConfig siteConfig)

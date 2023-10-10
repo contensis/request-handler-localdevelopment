@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
 
 public class Endpoint
@@ -10,6 +12,8 @@ public class Endpoint
 
     public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
 
+    
+    [JsonIgnore]
     public Block Block { get; set; } = null!;
 
     public Uri Uri => new Uri(Block.BaseUri!, Path);

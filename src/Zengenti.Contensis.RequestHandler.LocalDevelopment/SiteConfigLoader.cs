@@ -4,7 +4,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment;
 
 public class SiteConfigLoader : IDisposable
 {
-    private readonly FileSystemWatcher _fileSystemWatcher;
+    private readonly FileSystemWatcher? _fileSystemWatcher;
 
     public SiteConfig SiteConfig { get; private set; }
 
@@ -17,12 +17,19 @@ public class SiteConfigLoader : IDisposable
 
         SiteConfig = SiteConfig.LoadFromFile(configFilePath)!;
 
-        var directory = Path.GetDirectoryName(configFilePath);
+        var directory = Path.GetDirectoryName(configFilePath)!;
         var filename = Path.GetFileName(configFilePath);
 
         _fileSystemWatcher = new FileSystemWatcher(directory, filename);
         _fileSystemWatcher.Changed += FileSystemWatcher_Changed;
         _fileSystemWatcher.EnableRaisingEvents = true;
+    }
+
+    public SiteConfigLoader(string alias, string projectId, string accessToken, string clientId, string sharedSecret,
+        string blocksAsJson, string? renderersAsJason = null)
+    {
+        SiteConfig = SiteConfig.LoadFromJson(alias, projectId, accessToken, clientId, sharedSecret, blocksAsJson,
+            renderersAsJason);
     }
 
     private void FileSystemWatcher_Changed(object sender, FileSystemEventArgs e)
@@ -38,7 +45,7 @@ public class SiteConfigLoader : IDisposable
     {
         if (!_disposedValue)
         {
-            if (disposing)
+            if (disposing && _fileSystemWatcher != null)
             {
                 _fileSystemWatcher.Dispose();
             }

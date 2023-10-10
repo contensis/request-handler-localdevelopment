@@ -49,7 +49,18 @@ public class Startup
 
 
         // Local HTTP/config development mode...
-        var siteConfigLoader = new SiteConfigLoader(ProgramOptions.Current.ConfigFile!);
+        SiteConfigLoader siteConfigLoader;
+        if (ProgramOptions.Current.ConfigFile != null)
+        {
+            siteConfigLoader = new SiteConfigLoader(ProgramOptions.Current.ConfigFile);
+        }
+        else
+        {
+            siteConfigLoader = new SiteConfigLoader(ProgramOptions.Current.Alias!, ProgramOptions.Current.ProjectId!,
+                ProgramOptions.Current.AccessToken!, ProgramOptions.Current.ClientId!,
+                ProgramOptions.Current.ClientSecret!, ProgramOptions.Current.BlocksAsJson!,
+                ProgramOptions.Current.RenderersAsJson);
+        }
 
         services.AddSingleton(siteConfigLoader);
         services.AddTransient<IRequestContext, LocalDevelopmentRequestContext>();

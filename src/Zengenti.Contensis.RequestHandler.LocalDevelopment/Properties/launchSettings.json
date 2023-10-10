@@ -1,9 +1,18 @@
 ﻿{
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "LocalDevelopment_DEV": {
+    "LocalDevelopment_YAML": {
       "commandName": "Project",
       "commandLineArgs": "--port=5100 --configFile=C:\\Dev\\request-handler\\site_config_develop.yaml",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5100",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "LocalDevelopment_JSON": {
+      "commandName": "Project",
+      "commandLineArgs": "--port=5100 --alias=develop --project-id=blocksTesting --client-id=6b386a04-aab7-42c6-a9ea-d05751d12489 --client-secret=3976d32ad97e4467bbab19ed943b5a73-ea9fe4f1c1eb4d21bd19d1fcea78adcb-0bf921959f3e4c68a9637f220b85b48a --blocks-json=\"[{\\\"id\\\":\\\"blogs\\\",\\\"baseUri\\\":\\\"http:\\/\\/website.com\\\",\\\"staticPaths\\\":[\\\"image-gallery\\\"],\\\"endpoints\\\":[{\\\"id\\\":\\\"microblogRecord\\\",\\\"path\\\":\\\"\\/\\\"},{\\\"id\\\":\\\"record\\\",\\\"path\\\":\\\"\\/website\\/Record-single-pagelet.html\\\"},{\\\"id\\\":\\\"layout\\\",\\\"path\\\":\\\"\\/website\\/Layout.html\\\"},{\\\"id\\\":\\\"pagelet1\\\",\\\"path\\\":\\\"\\/website\\/pagelet1.html\\\"},{\\\"id\\\":\\\"pagelet2\\\",\\\"path\\\":\\\"\\/website\\/pagelet2.html\\\"},{\\\"id\\\":\\\"pagelet3\\\",\\\"path\\\":\\\"\\/website\\/pagelet3.html\\\"}]}]\" --renderers-json=\"[{\\\"id\\\":\\\"microblogRecord\\\",\\\"assignedContentTypes\\\":[\\\"microblog\\\"],\\\"rules\\\":[{\\\"return\\\":{\\\"blockId\\\":\\\"blogs\\\",\\\"endpointId\\\":\\\"microblogRecord\\\"}}]},{\\\"id\\\":\\\"blogRecord\\\",\\\"assignedContentTypes\\\":[\\\"blog\\\"],\\\"rules\\\":[{\\\"return\\\":{\\\"blockId\\\":\\\"blogs\\\",\\\"endpointId\\\":\\\"record\\\"}}]},{\\\"id\\\":\\\"layout\\\",\\\"rules\\\":[{\\\"return\\\":{\\\"blockId\\\":\\\"blogs\\\",\\\"endpointId\\\":\\\"layout\\\"}}]},{\\\"id\\\":\\\"pagelet1\\\",\\\"rules\\\":[{\\\"return\\\":{\\\"blockId\\\":\\\"blogs\\\",\\\"endpointId\\\":\\\"pagelet1\\\"}}]},{\\\"id\\\":\\\"pagelet2\\\",\\\"rules\\\":[{\\\"return\\\":{\\\"blockId\\\":\\\"blogs\\\",\\\"endpointId\\\":\\\"pagelet2\\\"}}]},{\\\"id\\\":\\\"pagelet3\\\",\\\"rules\\\":[{\\\"return\\\":{\\\"blockId\\\":\\\"blogs\\\",\\\"endpointId\\\":\\\"pagelet3\\\",\\\"version\\\":\\\"live\\\"}}]}]\"",
       "launchBrowser": true,
       "applicationUrl": "http://localhost:5100",
       "environmentVariables": {
