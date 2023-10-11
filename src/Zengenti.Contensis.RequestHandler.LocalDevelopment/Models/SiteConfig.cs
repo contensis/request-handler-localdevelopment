@@ -15,10 +15,14 @@ public class SiteConfig
 
     public string ProjectId { get; set; } = null!;
 
-    public string AccessToken { get; set; } = null!;
-    public string ClientId { get; set; } = null!;
+    public string? AccessToken { get; set; }
+    public string? ClientId { get; set; }
 
-    public string SharedSecret { get; set; } = null!;
+    public string? SharedSecret { get; set; }
+
+    public string? Username { get; set; }
+
+    public string? Password { get; set; }
 
     public List<Node> Nodes { get; set; } = new();
 
@@ -94,8 +98,9 @@ public class SiteConfig
         return null;
     }
 
-    public static SiteConfig LoadFromJson(string alias, string projectId, string accessToken, string clientId,
-        string sharedSecret, string blocksAsJson, string? renderersAsJson = null)
+    public static SiteConfig LoadFromJson(string alias, string projectId, string blocksAsJson,
+        string? renderersAsJson = null, string? accessToken = null, string? clientId = null,
+        string? sharedSecret = null, string? username = null, string? password = null)
     {
         var siteConfig = new SiteConfig()
         {
@@ -103,16 +108,18 @@ public class SiteConfig
             ProjectId = projectId,
             AccessToken = accessToken,
             ClientId = clientId,
-            SharedSecret = sharedSecret
+            SharedSecret = sharedSecret,
+            Username = username,
+            Password = password
         };
 
         var jsonSerializerOptions = new JsonSerializerOptions()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
-        
+
         siteConfig.Blocks = JsonSerializer.Deserialize<List<Block>>(blocksAsJson, jsonSerializerOptions)!;
-        
+
         if (!string.IsNullOrWhiteSpace(renderersAsJson))
         {
             siteConfig.Renderers = JsonSerializer.Deserialize<List<Renderer>>(renderersAsJson, jsonSerializerOptions)!;

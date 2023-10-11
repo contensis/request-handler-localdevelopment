@@ -25,20 +25,23 @@ public sealed class Headers
 
     public Headers(IHeaderDictionary headerDictionary)
     {
-        _values = headerDictionary.ToDictionary(h => 
+        _values = headerDictionary.ToDictionary(h =>
             h.Key, h => h.Value.AsEnumerable());
     }
 
-    public Headers(Dictionary<string, string> headers)
+    public Headers(Dictionary<string, string>? headers)
     {
-        _values = headers.ToDictionary(x => x.Key,
-            x => new[] { x.Value }.Select(header => header));
+        _values =
+            _values = headers is null
+                ? new Dictionary<string, IEnumerable<string>>()
+                : headers.ToDictionary(x => x.Key,
+                    x => new[] { x.Value }.Select(header => header));
     }
-    
+
     public Headers(HttpResponseHeaders? headers)
     {
-        _values = headers is null 
-            ? new Dictionary<string, IEnumerable<string>>() 
+        _values = headers is null
+            ? new Dictionary<string, IEnumerable<string>>()
             : headers.ToDictionary(h => h.Key, h => h.Value);
     }
 
@@ -48,11 +51,11 @@ public sealed class Headers
     public string? LoadBalancerVip => GetFirstValueIfExists(Constants.Headers.LoadBalancerVip);
 
     public string? SiteType => GetFirstValueIfExists(Constants.Headers.ServerType);
-    
+
     public string? EntryVersionStatus => GetFirstValueIfExists(Constants.Headers.EntryVersionStatus);
-    
+
     public bool Debug => GetFirstValueIfExists(Constants.Headers.Debug) == "true";
-    
+
     public static implicit operator Headers(Dictionary<string, IEnumerable<string>> dictionary) => new(dictionary);
 
     public static implicit operator Dictionary<string, IEnumerable<string>>(Headers headers) =>
@@ -67,7 +70,7 @@ public sealed class Headers
     {
         return _values.ContainsKey(key);
     }
-    
+
     public void Add(string key, IEnumerable<string> value)
     {
         SetValue(key, value);
@@ -96,6 +99,7 @@ public sealed class Headers
                 var storedKey = _values.Keys.SingleOrDefault(k => k.EqualsCaseInsensitive(key));
                 key = storedKey ?? key;
             }
+
             _values[key] = value;
         }
     }
@@ -115,7 +119,7 @@ public sealed class Headers
         {
             return _values[key].FirstOrDefault();
         }
-        
+
         return null;
     }
 }

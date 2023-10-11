@@ -3,18 +3,19 @@ using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Renderers;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
+using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 
 public class LocalDevPublishingService : ILocalDevPublishingService
 {
     private readonly IPublishingApi _publishingApi;
-    private readonly SiteConfigLoader _siteConfigLoader;
+    private readonly ISiteConfigLoader _siteConfigLoader;
     private readonly IRequestContext _requestContext;
     private readonly ICorePublishingService _corePublishingService;
     private readonly IRouteInfoFactory _routeInfoFactory;
 
-    public LocalDevPublishingService(SiteConfigLoader siteConfigLoader, IRequestContext requestContext,
+    public LocalDevPublishingService(ISiteConfigLoader siteConfigLoader, IRequestContext requestContext,
         IPublishingApi publishingApi, ICorePublishingService corePublishingService,
         IRouteInfoFactory routeInfoFactory)
     {

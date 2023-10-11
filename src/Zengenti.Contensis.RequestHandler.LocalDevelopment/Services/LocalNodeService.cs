@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using Zengenti.Contensis.Delivery;
+﻿using Zengenti.Contensis.Delivery;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
+using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 using Zengenti.Rest.RestClient;
 using Node = Zengenti.Contensis.RequestHandler.Domain.Entities.Node;
 
@@ -10,48 +10,39 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 
 public class LocalNodeService : INodeService
 {
-    private readonly SiteConfigLoader _siteConfigLoader;
-    private ContensisClient? _deliveryClient;
+    private readonly ISiteConfigLoader _siteConfigLoader;
+    private SiteConfig _siteConfig;
     private readonly RestClient _internalRestClient;
-    private SiteConfig? _siteConfig;
-    private ILogger<LocalNodeService> _logger;
+    private readonly ILogger<LocalNodeService> _logger;
 
-    public LocalNodeService(SiteConfigLoader siteConfigLoader, ILogger<LocalNodeService> logger)
-    {
-        _logger = logger;
-        _siteConfigLoader = siteConfigLoader ?? throw new ArgumentNullException(nameof(siteConfigLoader));
-        var securityTokenParams =
-            new SecurityTokenParams(SiteConfig!.Alias, SiteConfig.ClientId, SiteConfig.SharedSecret);
-
-        _internalRestClient =
-            new RestClientFactory($"https://cms-{securityTokenParams.Alias}.cloud.contensis.com/")
-                .SecuredRestClient(new InternalSecurityTokenProvider(securityTokenParams));
-    }
-
-    private ContensisClient DeliveryClient
+    private SiteConfig SiteConfig
     {
         get
         {
-            if (_deliveryClient == null)
-            {
-                _deliveryClient = CreateDeliveryClient();
-            }
-
-            return _deliveryClient;
-        }
-    }
-
-    private SiteConfig? SiteConfig
-    {
-        get
-        {
-            if (_siteConfig != _siteConfigLoader.SiteConfig)
+            if (!_siteConfig.Equals(_siteConfigLoader.SiteConfig))
             {
                 _siteConfig = _siteConfigLoader.SiteConfig;
             }
 
             return _siteConfig;
         }
+    }
+
+    public LocalNodeService(ISiteConfigLoader siteConfigLoader,
+        ISecurityTokenProviderFactory securityTokenProviderFactory, ILogger<LocalNodeService> logger)
+    {
+        _logger = logger;
+        _siteConfigLoader = siteConfigLoader;
+        _siteConfig = _siteConfigLoader.SiteConfig!;
+
+        var securityTokenParams =
+            new SecurityTokenParams(_siteConfig!.Alias, _siteConfig.ClientId, _siteConfig.SharedSecret,
+                _siteConfig.Username, _siteConfig.Password);
+
+        var securityTokenProvider = securityTokenProviderFactory.GetSecurityTokenProvider(securityTokenParams);
+        _internalRestClient =
+            new RestClientFactory($"https://cms-{securityTokenParams.Alias}.cloud.contensis.com/")
+                .SecuredRestClient(securityTokenProvider);
     }
 
     public async Task<Node?> GetByPath(string path)
@@ -67,17 +58,16 @@ public class LocalNodeService : INodeService
                 }
             }
 
-            var restDeliveryNode = await DeliveryClient.Nodes.GetByPathAsync(path);
-            if (restDeliveryNode == null)
-            {
-                _logger.LogWarning($"Could not find a delivery node for path {path}.");
-                return null;
-            }
-
             var restManagementNode = (await _internalRestClient.GetAsync<dynamic>(
-                    $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectId}/nodes/{restDeliveryNode.Id}"))
+                    $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectId}/nodes/{path.Trim('/')}"))
                 .ResponseObject;
 
+            if (restManagementNode == null)
+            {
+                _logger.LogWarning("Could not find a delivery node for path {Path}", path);
+                return null;
+            }
+            
             Guid? rendererUuid = null;
             string rendererId = null;
             var isPartialMatchRoot = false;
@@ -98,9 +88,9 @@ public class LocalNodeService : INodeService
 
             var node = new Node
             {
-                Id = restManagementNode.Id,
-                Path = restDeliveryNode.Path,
-                EntryId = restDeliveryNode.EntryId,
+                Id = restManagementNode["id"],
+                Path = restManagementNode["path"]["en-GB"],
+                EntryId = restManagementNode["entryId"],
             };
 
             if (!string.IsNullOrWhiteSpace(rendererId))
@@ -120,20 +110,5 @@ public class LocalNodeService : INodeService
             _logger.LogError(e, "Error getting a management node or renderer");
             return null;
         }
-    }
-
-    private ContensisClient CreateDeliveryClient()
-    {
-        if (_deliveryClient == null || _siteConfig != _siteConfigLoader.SiteConfig)
-        {
-            _deliveryClient = ContensisClient.Create(
-                SiteConfig!.ProjectId,
-                $"https://cms-{SiteConfig.Alias}.cloud.contensis.com",
-                SiteConfig.ClientId,
-                SiteConfig.SharedSecret,
-                VersionStatus.Latest);
-        }
-
-        return _deliveryClient;
     }
 }

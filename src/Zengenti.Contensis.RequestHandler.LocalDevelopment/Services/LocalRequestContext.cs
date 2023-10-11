@@ -2,14 +2,15 @@
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Proxies;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
+using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 
 public class LocalDevelopmentRequestContext : IRequestContext
 {
-    private readonly SiteConfigLoader _siteConfigLoader;
+    private readonly ISiteConfigLoader _siteConfigLoader;
 
-    public LocalDevelopmentRequestContext(SiteConfigLoader siteConfigLoader, bool traceEnabled = true)
+    public LocalDevelopmentRequestContext(ISiteConfigLoader siteConfigLoader, bool traceEnabled = true)
     {
         _siteConfigLoader = siteConfigLoader;
         TraceEnabled = traceEnabled;

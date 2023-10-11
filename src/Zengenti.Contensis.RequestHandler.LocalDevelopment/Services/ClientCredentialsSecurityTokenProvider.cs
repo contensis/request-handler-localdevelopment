@@ -8,11 +8,11 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 /// <summary>
 /// For internal use only. Taken from Zengenti.Contensis.Security.Api.Console.Program
 /// </summary>
-internal class InternalSecurityTokenProvider : ISecurityTokenProvider
+internal class ClientCredentialsSecurityTokenProvider : ISecurityTokenProvider
 {
     private readonly SecurityTokenParams _securityTokenParams;
 
-    public InternalSecurityTokenProvider(SecurityTokenParams securityTokenParams)
+    public ClientCredentialsSecurityTokenProvider(SecurityTokenParams securityTokenParams)
     {
         _securityTokenParams = securityTokenParams;
     }

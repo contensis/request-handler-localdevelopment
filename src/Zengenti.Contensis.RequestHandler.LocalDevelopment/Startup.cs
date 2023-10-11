@@ -10,6 +10,7 @@ using Zengenti.Contensis.RequestHandler.Application.Services;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
+using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment;
 
@@ -39,7 +40,7 @@ public class Startup
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddSingleton<ICacheKeyService, NullCacheKeyService>()
             //     .AddSingleton<IDiagnosticsCheckData>(_ => diagnosticsCheckData)
-            .AddSingleton(new BlockClusterConfig())
+            .AddSingleton(new BlockClusterConfig(ProgramOptions.Current.BlockClusterIngressIp, ProgramOptions.Current.BlockAddressSuffix))
             .AddSingleton<IRouteInfoFactory, RouteInfoFactory>();
         //     .AddScoped<IDiagnosticsCheckableAsync, RequestHandlerDiagnosticsCheckableAsync>()
         //     .AddScoped<IDiagnosticsCheckService, DiagnosticsCheckService>();
@@ -57,16 +58,16 @@ public class Startup
         else
         {
             siteConfigLoader = new SiteConfigLoader(ProgramOptions.Current.Alias!, ProgramOptions.Current.ProjectId!,
-                ProgramOptions.Current.AccessToken!, ProgramOptions.Current.ClientId!,
-                ProgramOptions.Current.ClientSecret!, ProgramOptions.Current.BlocksAsJson!,
-                ProgramOptions.Current.RenderersAsJson);
+                ProgramOptions.Current.BlocksAsJson!, ProgramOptions.Current.RenderersAsJson,
+                ProgramOptions.Current.AccessToken, ProgramOptions.Current.ClientId,
+                ProgramOptions.Current.ClientSecret, ProgramOptions.Current.Username, ProgramOptions.Current.Password);
         }
 
-        services.AddSingleton(siteConfigLoader);
+        services.AddSingleton<ISiteConfigLoader>(_ => siteConfigLoader);
         services.AddTransient<IRequestContext, LocalDevelopmentRequestContext>();
         services.AddSingleton<IPublishingServiceCache, NullPublishingServiceCache>();
-        services.AddSingleton<IPublishingApi>(_ =>
-            new HttpPublishingApi(siteConfigLoader));
+        services.AddSingleton<ISecurityTokenProviderFactory, SecurityTokenProviderFactory>();
+        services.AddSingleton<IPublishingApi, HttpPublishingApi>();
         services.AddSingleton<IGlobalApi, HttpGlobalApi>();
         services.AddSingleton<ICorePublishingService, CorePublishingService>();
         services.AddSingleton<IPublishingService, LocalDevPublishingService>();

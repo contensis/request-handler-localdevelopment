@@ -5,21 +5,23 @@ using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Blocks;
 using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Renderers;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
+using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 using Zengenti.Rest.RestClient;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 
 public class HttpPublishingApi : IPublishingApi
 {
-    private readonly SiteConfigLoader _siteConfigLoader;
+    private readonly ISiteConfigLoader _siteConfigLoader;
     private readonly RestClient _internalRestClient;
     private SiteConfig _siteConfig;
+    private readonly string _projectApiId;
 
     private SiteConfig SiteConfig
     {
         get
         {
-            if (_siteConfig != _siteConfigLoader.SiteConfig)
+            if (!_siteConfig.Equals(_siteConfigLoader.SiteConfig))
             {
                 _siteConfig = _siteConfigLoader.SiteConfig;
             }
@@ -28,27 +30,31 @@ public class HttpPublishingApi : IPublishingApi
         }
     }
 
-    public HttpPublishingApi(SiteConfigLoader siteConfigLoader)
+    public HttpPublishingApi(ISiteConfigLoader siteConfigLoader, ISecurityTokenProviderFactory securityTokenProviderFactory)
     {
         _siteConfigLoader = siteConfigLoader;
+        _siteConfig = _siteConfigLoader.SiteConfig;
+        
         var securityTokenParams =
-            new SecurityTokenParams(SiteConfig.Alias, SiteConfig.ClientId, SiteConfig.SharedSecret);
-
+            new SecurityTokenParams(SiteConfig.Alias, SiteConfig.ClientId, SiteConfig.SharedSecret, SiteConfig.Username, SiteConfig.Password);
+        var securityTokenProvider = securityTokenProviderFactory.GetSecurityTokenProvider(securityTokenParams);
+        
         _internalRestClient =
             new RestClientFactory($"https://cms-{securityTokenParams.Alias}.cloud.contensis.com/")
-                .SecuredRestClient(new InternalSecurityTokenProvider(securityTokenParams));
+                .SecuredRestClient( securityTokenProvider);
 
         // Only used for debugging locally
         // _internalRestClient =
         //     new RestClientFactory($"http://localhost:5000/")
         //         .SecuredRestClient(new InternalSecurityTokenProvider(securityTokenParams));
         // _internalRestClient.AddHeader("x-alias", securityTokenParams.Alias);
+        _projectApiId = _siteConfigLoader.SiteConfig.ProjectId;
     }
 
     public async Task<BlockVersionInfo?> GetBlockVersionInfo(Guid versionId)
     {
         var blockVersion = (await _internalRestClient.GetAsync<dynamic>(
-                $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectId}/blocks/versions/{versionId}"))
+                $"api/management/projects/{_projectApiId}/blocks/versions/{versionId}"))
             .ResponseObject;
 
         if (blockVersion == null)
@@ -69,7 +75,7 @@ public class HttpPublishingApi : IPublishingApi
     {
         var httpEndpointRequestContext = new HttpEndpointRequestContext(requestContext);
         var endpointRequestInfo = (await _internalRestClient.PostAsJsonAsync<dynamic>(
-                $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectId}/renderers/endpointrequestinfo",
+                $"api/management/projects/{_projectApiId}/renderers/endpointrequestinfo",
                 httpEndpointRequestContext))
             .ResponseObject;
         var layoutRendererIdValue = endpointRequestInfo["layoutRendererId"]?.ToString();

@@ -3,6 +3,7 @@ using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Renderers;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
+using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 using Renderer = Zengenti.Contensis.RequestHandler.LocalDevelopment.Models.Renderer;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
@@ -13,13 +14,13 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 [Obsolete("Use LocalDevPublishingService instead")]
 public class SiteConfigPublishingService : ILocalDevPublishingService
 {
-    private readonly SiteConfigLoader _siteConfigLoader;
+    private readonly ISiteConfigLoader _siteConfigLoader;
     private readonly IRouteInfoFactory _routeInfoFactory;
     private readonly ICacheKeyService _cacheKeyService;
     private readonly bool _enableFullUriRouting;
 
     public SiteConfigPublishingService(
-        SiteConfigLoader siteConfigLoader,
+        ISiteConfigLoader siteConfigLoader,
         IRouteInfoFactory routeInfoFactory,
         ICacheKeyService cacheKeyService,
         bool enableFullUriRouting = false)

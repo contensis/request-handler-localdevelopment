@@ -1,8 +1,9 @@
 ﻿using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
+using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 
-namespace Zengenti.Contensis.RequestHandler.LocalDevelopment;
+namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 
-public class SiteConfigLoader : IDisposable
+public sealed class SiteConfigLoader : IDisposable, ISiteConfigLoader
 {
     private readonly FileSystemWatcher? _fileSystemWatcher;
 
@@ -25,11 +26,12 @@ public class SiteConfigLoader : IDisposable
         _fileSystemWatcher.EnableRaisingEvents = true;
     }
 
-    public SiteConfigLoader(string alias, string projectId, string accessToken, string clientId, string sharedSecret,
-        string blocksAsJson, string? renderersAsJason = null)
+    public SiteConfigLoader(string alias, string projectId, string blocksAsJson, string? renderersAsJson = null,
+        string? accessToken = null, string? clientId = null, string? sharedSecret = null, string? username = null,
+        string? password = null)
     {
-        SiteConfig = SiteConfig.LoadFromJson(alias, projectId, accessToken, clientId, sharedSecret, blocksAsJson,
-            renderersAsJason);
+        SiteConfig = SiteConfig.LoadFromJson(alias, projectId, blocksAsJson, renderersAsJson, accessToken, clientId,
+            sharedSecret, username, password);
     }
 
     private void FileSystemWatcher_Changed(object sender, FileSystemEventArgs e)
@@ -41,7 +43,7 @@ public class SiteConfigLoader : IDisposable
 
     private bool _disposedValue; // To detect redundant calls
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (!_disposedValue)
         {

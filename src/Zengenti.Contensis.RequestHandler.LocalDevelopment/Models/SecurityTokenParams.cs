@@ -1,3 +1,4 @@
 ﻿namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
 
-internal record SecurityTokenParams(string Alias, string ClientId, string ClientSecret);
+public record SecurityTokenParams(string Alias, string? ClientId = null, string? ClientSecret = null,
+    string? Username = null, string? Password = null);
