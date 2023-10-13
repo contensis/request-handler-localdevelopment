@@ -19,7 +19,6 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
         <PackageReference Include="TestStack.BDDfy" Version="4.3.2" />
         <PackageReference Include="Verify.NUnit" Version="22.1.1" />
-        <PackageReference Include="Zengenti.Testing" Version="2.0.3" />
     </ItemGroup>
 
     <ItemGroup>
