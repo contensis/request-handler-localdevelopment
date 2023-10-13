@@ -1,0 +1,11 @@
+﻿body {
+    background-color: #cccccc;    
+    
+    background-image: url("/static/css/cat.png");
+    
+    border-image-source: url("/another/path/to/images/image01.jpg");
+
+    background: url("/some/path/to/static.jpg");
+
+    list-style-image: url("/images/image01.jpg");
+}

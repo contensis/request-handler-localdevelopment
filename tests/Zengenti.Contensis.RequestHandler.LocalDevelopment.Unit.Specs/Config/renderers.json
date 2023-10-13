@@ -1,0 +1,75 @@
+[
+  {
+    "id": "microblogRecord",
+    "assignedContentTypes": [
+      "microblog"
+    ],
+    "rules": [
+      {
+        "return": {
+          "blockId": "blogs",
+          "endpointId": "microblogRecord"
+        }
+      }
+    ]
+  },
+  {
+    "id": "blogRecord",
+    "assignedContentTypes": [
+      "blog"
+    ],
+    "rules": [
+      {
+        "return": {
+          "blockId": "blogs",
+          "endpointId": "record"
+        }
+      }
+    ]
+  },
+  {
+    "id": "layout",
+    "rules": [
+      {
+        "return": {
+          "blockId": "blogs",
+          "endpointId": "layout"
+        }
+      }
+    ]
+  },
+  {
+    "id": "pagelet1",
+    "rules": [
+      {
+        "return": {
+          "blockId": "blogs",
+          "endpointId": "pagelet1"
+        }
+      }
+    ]
+  },
+  {
+    "id": "pagelet2",
+    "rules": [
+      {
+        "return": {
+          "blockId": "blogs",
+          "endpointId": "pagelet2"
+        }
+      }
+    ]
+  },
+  {
+    "id": "pagelet3",
+    "rules": [
+      {
+        "return": {
+          "blockId": "blogs",
+          "endpointId": "pagelet3",
+          "version": "live"
+        }
+      }
+    ]
+  }
+]

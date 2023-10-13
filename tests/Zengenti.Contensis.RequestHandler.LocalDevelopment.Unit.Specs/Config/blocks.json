@@ -1,0 +1,35 @@
+[
+  {
+    "id": "blogs",
+    "baseUri": "http://website.com",
+    "staticPaths": [
+      "image-gallery"
+    ],
+    "endpoints": [
+      {
+        "id": "microblogRecord",
+        "path": "/"
+      },
+      {
+        "id": "record",
+        "path": "/website/Record-single-pagelet.html"
+      },
+      {
+        "id": "layout",
+        "path": "/website/Layout.html"
+      },
+      {
+        "id": "pagelet1",
+        "path": "/website/pagelet1.html"
+      },
+      {
+        "id": "pagelet2",
+        "path": "/website/pagelet2.html"
+      },
+      {
+        "id": "pagelet3",
+        "path": "/website/pagelet3.html"
+      }
+    ]
+  }
+]

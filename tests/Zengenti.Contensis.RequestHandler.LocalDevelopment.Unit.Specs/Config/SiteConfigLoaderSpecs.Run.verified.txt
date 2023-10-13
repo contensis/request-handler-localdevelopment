@@ -1,0 +1,316 @@
+﻿{
+  YamlSiteConfig: {
+    ContentTypeRendererMap: [
+      {
+        ContentTypeId: microblog,
+        ContentTypeUuid: Guid_1,
+        RendererId: microblogRecord,
+        RendererUuid: Guid_2
+      },
+      {
+        ContentTypeId: blog,
+        ContentTypeUuid: Guid_3,
+        RendererId: blogRecord,
+        RendererUuid: Guid_4
+      }
+    ],
+    Alias: test,
+    ProjectId: website,
+    AccessToken: token1,
+    ClientId: client1,
+    SharedSecret: secret1,
+    Renderers: [
+      {
+        Uuid: Guid_2,
+        Id: microblogRecord,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_5,
+              BlockId: blogs,
+              EndpointId: microblogRecord
+            }
+          }
+        ],
+        AssignedContentTypes: [
+          microblog
+        ]
+      },
+      {
+        Uuid: Guid_4,
+        Id: blogRecord,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_5,
+              BlockId: blogs,
+              EndpointId: record
+            }
+          }
+        ],
+        AssignedContentTypes: [
+          blog
+        ]
+      },
+      {
+        Uuid: Guid_6,
+        Id: layout,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_5,
+              BlockId: blogs,
+              EndpointId: layout
+            }
+          }
+        ]
+      },
+      {
+        Uuid: Guid_7,
+        Id: pagelet1,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_5,
+              BlockId: blogs,
+              EndpointId: pagelet1
+            }
+          }
+        ]
+      },
+      {
+        Uuid: Guid_8,
+        Id: pagelet2,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_5,
+              BlockId: blogs,
+              EndpointId: pagelet2
+            }
+          }
+        ]
+      },
+      {
+        Uuid: Guid_9,
+        Id: pagelet3,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_5,
+              BlockId: blogs,
+              EndpointId: pagelet3,
+              Version: live
+            }
+          }
+        ]
+      }
+    ],
+    Blocks: [
+      {
+        Uuid: Guid_5,
+        Id: blogs,
+        BaseUri: http://website.com,
+        StaticPaths: [
+          image-gallery,
+          /static
+        ],
+        Endpoints: [
+          {
+            Id: microblogRecord,
+            Path: /,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/
+          },
+          {
+            Id: record,
+            Path: /website/Record-single-pagelet.html,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/website/Record-single-pagelet.html
+          },
+          {
+            Id: layout,
+            Path: /website/Layout.html,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/website/Layout.html
+          },
+          {
+            Id: pagelet1,
+            Path: /website/pagelet1.html,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/website/pagelet1.html
+          },
+          {
+            Id: pagelet2,
+            Path: /website/pagelet2.html,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/website/pagelet2.html
+          },
+          {
+            Id: pagelet3,
+            Path: /website/pagelet3.html,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/website/pagelet3.html
+          }
+        ]
+      }
+    ]
+  },
+  JsonSiteConfig: {
+    ContentTypeRendererMap: [
+      {
+        ContentTypeId: microblog,
+        ContentTypeUuid: Guid_10,
+        RendererId: microblogRecord,
+        RendererUuid: Guid_11
+      },
+      {
+        ContentTypeId: blog,
+        ContentTypeUuid: Guid_12,
+        RendererId: blogRecord,
+        RendererUuid: Guid_13
+      }
+    ],
+    Alias: test,
+    ProjectId: website,
+    AccessToken: token1,
+    ClientId: client1,
+    SharedSecret: secret1,
+    Renderers: [
+      {
+        Uuid: Guid_11,
+        Id: microblogRecord,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_14,
+              BlockId: blogs,
+              EndpointId: microblogRecord
+            }
+          }
+        ],
+        AssignedContentTypes: [
+          microblog
+        ]
+      },
+      {
+        Uuid: Guid_13,
+        Id: blogRecord,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_14,
+              BlockId: blogs,
+              EndpointId: record
+            }
+          }
+        ],
+        AssignedContentTypes: [
+          blog
+        ]
+      },
+      {
+        Uuid: Guid_15,
+        Id: layout,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_14,
+              BlockId: blogs,
+              EndpointId: layout
+            }
+          }
+        ]
+      },
+      {
+        Uuid: Guid_16,
+        Id: pagelet1,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_14,
+              BlockId: blogs,
+              EndpointId: pagelet1
+            }
+          }
+        ]
+      },
+      {
+        Uuid: Guid_17,
+        Id: pagelet2,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_14,
+              BlockId: blogs,
+              EndpointId: pagelet2
+            }
+          }
+        ]
+      },
+      {
+        Uuid: Guid_18,
+        Id: pagelet3,
+        Rules: [
+          {
+            Return: {
+              BlockUuid: Guid_14,
+              BlockId: blogs,
+              EndpointId: pagelet3,
+              Version: live
+            }
+          }
+        ]
+      }
+    ],
+    Blocks: [
+      {
+        Uuid: Guid_14,
+        Id: blogs,
+        BaseUri: http://website.com,
+        StaticPaths: [
+          image-gallery,
+          /static
+        ],
+        Endpoints: [
+          {
+            Id: microblogRecord,
+            Path: /,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/
+          },
+          {
+            Id: record,
+            Path: /website/Record-single-pagelet.html,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/website/Record-single-pagelet.html
+          },
+          {
+            Id: layout,
+            Path: /website/Layout.html,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/website/Layout.html
+          },
+          {
+            Id: pagelet1,
+            Path: /website/pagelet1.html,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/website/pagelet1.html
+          },
+          {
+            Id: pagelet2,
+            Path: /website/pagelet2.html,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/website/pagelet2.html
+          },
+          {
+            Id: pagelet3,
+            Path: /website/pagelet3.html,
+            UseOriginPathAndQuery: false,
+            Uri: http://website.com/website/pagelet3.html
+          }
+        ]
+      }
+    ]
+  }
+}

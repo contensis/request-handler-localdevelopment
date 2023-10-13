@@ -23,8 +23,9 @@
       <EmbeddedResource Include="ErrorMessages\503.html" />
     </ItemGroup>    
     <ItemGroup>
-        <InternalsVisibleTo Include="Zengenti.Contensis.RequestHandler.Unit.Specs" />
-        <InternalsVisibleTo Include="Zengenti.Contensis.RequestHandler.Acceptance.Specs" />
+        <InternalsVisibleTo Include="Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs" />
+        <InternalsVisibleTo Include="Zengenti.Contensis.RequestHandler.Host.Unit.Specs" />
+        <InternalsVisibleTo Include="Zengenti.Contensis.RequestHandler.Host.Acceptance.Specs" />
     </ItemGroup>    
     <ItemGroup>
       <PackageReference Include="Grpc.Core" Version="2.46.6" />

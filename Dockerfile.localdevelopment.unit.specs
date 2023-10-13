@@ -1,0 +1,44 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim AS base
+
+WORKDIR /app
+EXPOSE 5000
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim AS build
+WORKDIR /src
+
+COPY ["src/Zengenti.Contensis.RequestHandler.Domain/", "src/Zengenti.Contensis.RequestHandler.Domain/"]
+COPY ["src/Zengenti.Contensis.RequestHandler.Application/", "src/Zengenti.Contensis.RequestHandler.Application/"]
+COPY ["src/Zengenti.Contensis.RequestHandler.LocalDevelopment/", "src/Zengenti.Contensis.RequestHandler.LocalDevelopment/"]
+COPY ["tests/Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs/", "src/Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs/"]
+
+RUN dotnet restore \
+        --runtime linux-x64 \
+        --source https://nuget.zengenti.com/nuget \
+        --source https://api.nuget.org/v3/index.json \
+        "src/Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs/LocalDevelopment.Unit.Specs.csproj"
+FROM build AS publish
+
+WORKDIR "/src/src/Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs/"
+
+RUN dotnet publish \
+        --runtime linux-x64 \
+        --configuration Release \
+        --output /app/publish \
+        --no-self-contained \
+        --nologo \
+        --no-restore \
+        "LocalDevelopment.Unit.Specs.csproj"
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+
+ARG b_branch_name=""
+ARG b_build_number=""
+ARG b_version=""
+
+ENV BRANCH=$b_branch_name
+ENV BUILD=$b_build_number
+ENV VERSION=$b_version
+
+ENTRYPOINT ["dotnet", "Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.dll"]

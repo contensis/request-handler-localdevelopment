@@ -14,6 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{43A88631-D
 		site_config_example.yaml = site_config_example.yaml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1149A3C5-2463-4BA7-BD7F-7A7D32F61855}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalDevelopment.Unit.Specs", "tests\Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs\LocalDevelopment.Unit.Specs.csproj", "{D40A102D-18AD-4628-93F0-A4C44DD3E241}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +27,7 @@ Global
 		{13A4D1A0-FC2E-4940-B09F-27FF6CED06CA} = {08A53E2D-802E-4877-8208-C6723CF16D12}
 		{40DC5BE3-3511-416D-BCCB-D7CC717C3741} = {08A53E2D-802E-4877-8208-C6723CF16D12}
 		{37C60FD8-FC92-4FF3-976D-E34FA29D3252} = {08A53E2D-802E-4877-8208-C6723CF16D12}
+		{D40A102D-18AD-4628-93F0-A4C44DD3E241} = {1149A3C5-2463-4BA7-BD7F-7A7D32F61855}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{13A4D1A0-FC2E-4940-B09F-27FF6CED06CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -37,5 +42,9 @@ Global
 		{37C60FD8-FC92-4FF3-976D-E34FA29D3252}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37C60FD8-FC92-4FF3-976D-E34FA29D3252}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37C60FD8-FC92-4FF3-976D-E34FA29D3252}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D40A102D-18AD-4628-93F0-A4C44DD3E241}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D40A102D-18AD-4628-93F0-A4C44DD3E241}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D40A102D-18AD-4628-93F0-A4C44DD3E241}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D40A102D-18AD-4628-93F0-A4C44DD3E241}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
