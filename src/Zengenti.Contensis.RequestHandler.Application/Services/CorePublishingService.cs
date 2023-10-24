@@ -58,7 +58,7 @@ public class CorePublishingService : ICorePublishingService
     }
 
     public async Task<RouteInfo?> GetRouteInfoForRequest(
-        Guid projectId,
+        Guid projectUuid,
         bool isPartialMatchPath,
         Uri originUri,
         Headers headers,
@@ -70,7 +70,7 @@ public class CorePublishingService : ICorePublishingService
     {
         try
         {
-            var requestContext = new RequestContext(projectId)
+            var requestContext = new RequestContext(projectUuid)
             {
                 RendererId = rendererId ?? "",
                 ContentTypeId = contentTypeId,
@@ -90,7 +90,7 @@ public class CorePublishingService : ICorePublishingService
                 return null;
             }
 
-            var routeInfo = BuildRouteInfoForRequest(clientResult, originUri, headers, projectId, node);
+            var routeInfo = BuildRouteInfoForRequest(clientResult, originUri, headers, projectUuid, node);
 
             return routeInfo;
         }
@@ -114,9 +114,9 @@ public class CorePublishingService : ICorePublishingService
         }
     }
 
-    public Task<RouteInfo?> GetRouteInfoForRequest(Guid projectId, Headers headers, string rendererId, Uri originUri)
+    public Task<RouteInfo?> GetRouteInfoForRequest(Guid projectUuid, Headers headers, string rendererId, Uri originUri)
     {
-        return GetRouteInfoForRequest(projectId, false, originUri, headers, rendererId: rendererId);
+        return GetRouteInfoForRequest(projectUuid, false, originUri, headers, rendererId: rendererId);
     }
 
     public RouteInfo BuildRouteInfoForRequest(EndpointRequestInfo endpointRequestInfo, Uri originUri, Headers headers,

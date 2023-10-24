@@ -17,7 +17,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                 _result = new Domain.ValueTypes.Headers(new Dictionary<string, IEnumerable<string>>
                 {
                     { Constants.Headers.Alias, new []{ "zenhub" } },
-                    { Constants.Headers.ProjectId, new []{ "contensis" } }
+                    { Constants.Headers.ProjectApiId, new []{ "contensis" } }
                 });
             }
 
@@ -26,7 +26,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(2));
                 Assert.That(_result.Values[Constants.Headers.Alias].FirstOrDefault(), Is.EqualTo("zenhub"));
-                Assert.That(_result.Values[Constants.Headers.ProjectId].FirstOrDefault(), Is.EqualTo("contensis"));
+                Assert.That(_result.Values[Constants.Headers.ProjectApiId].FirstOrDefault(), Is.EqualTo("contensis"));
             }
 
             [Test]
@@ -46,7 +46,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                 _result = new Domain.ValueTypes.Headers(new Dictionary<string, string>
                 {
                     { Constants.Headers.Alias, "zenhub" },
-                    { Constants.Headers.ProjectId, "contensis" }
+                    { Constants.Headers.ProjectApiId, "contensis" }
                 });
             }
 
@@ -55,7 +55,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(2));
                 Assert.That(_result.Values[Constants.Headers.Alias].FirstOrDefault(), Is.EqualTo("zenhub"));
-                Assert.That(_result.Values[Constants.Headers.ProjectId].FirstOrDefault(), Is.EqualTo("contensis"));
+                Assert.That(_result.Values[Constants.Headers.ProjectApiId].FirstOrDefault(), Is.EqualTo("contensis"));
             }
 
             [Test]
@@ -75,7 +75,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                 _result = new Domain.ValueTypes.Headers(new HeaderDictionary(new Dictionary<string, StringValues>
                 {
                     { Constants.Headers.Alias, "zenhub" },
-                    { Constants.Headers.ProjectId, "contensis" }
+                    { Constants.Headers.ProjectApiId, "contensis" }
                 }));
             }
 
@@ -84,7 +84,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(2));
                 Assert.That(_result.Values[Constants.Headers.Alias].FirstOrDefault(), Is.EqualTo("zenhub"));
-                Assert.That(_result.Values[Constants.Headers.ProjectId].FirstOrDefault(), Is.EqualTo("contensis"));
+                Assert.That(_result.Values[Constants.Headers.ProjectApiId].FirstOrDefault(), Is.EqualTo("contensis"));
             }
 
             [Test]
@@ -103,7 +103,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             {
                 var response = new HttpResponseMessage();
                 response.Headers.Add(Constants.Headers.Alias, "zenhub");
-                response.Headers.Add(Constants.Headers.ProjectId, "contensis");
+                response.Headers.Add(Constants.Headers.ProjectApiId, "contensis");
 
                 _result = new Domain.ValueTypes.Headers(response.Headers);
             }
@@ -113,7 +113,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(2));
                 Assert.That(_result.Values[Constants.Headers.Alias].FirstOrDefault(), Is.EqualTo("zenhub"));
-                Assert.That(_result.Values[Constants.Headers.ProjectId].FirstOrDefault(), Is.EqualTo("contensis"));
+                Assert.That(_result.Values[Constants.Headers.ProjectApiId].FirstOrDefault(), Is.EqualTo("contensis"));
             }
 
             [Test]

@@ -2,9 +2,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Net;
 using System.Web;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Logging;
 using Zengenti.Contensis.RequestHandler.Application.Resolving;
 using Zengenti.Contensis.RequestHandler.Application.Services;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
@@ -84,14 +82,16 @@ public class RequestHandlerMiddleware
                    {
                        alias = CallContext.Current[Constants.Headers.Alias] ?? "",
                        projectUuid = CallContext.Current[Constants.Headers.ProjectUuid] ?? "",
-                       projectId = CallContext.Current[Constants.Headers.ProjectId] ?? "",
+                       projectApiId = CallContext.Current[Constants.Headers.ProjectApiId] ?? "",
                        blockVersionConfig = CallContext.Current[Constants.Headers.BlockConfig] ?? "",
                        proxyConfig = CallContext.Current[Constants.Headers.ProxyConfig] ?? "",
                        rendererConfig = CallContext.Current[Constants.Headers.RendererConfig] ?? "",
                        nodeConfig = CallContext.Current[Constants.Headers.NodeVersionStatus] ?? ""
                    }))
             {
-                _logger.LogError(e, "Unhandled error caught in middleware with exception message {Message} and request url {Url}", e.Message, context.Request.GetDisplayUrl());
+                _logger.LogError(e,
+                    "Unhandled error caught in middleware with exception message {Message} and request url {Url}",
+                    e.Message, context.Request.GetDisplayUrl());
             }
 
             throw;
@@ -128,7 +128,7 @@ public class RequestHandlerMiddleware
         _callContextService.SetCallContextData(request);
         activity?.SetTag("alias", CallContext.Current[Constants.Headers.Alias]);
         activity?.SetTag("projectUuid", CallContext.Current[Constants.Headers.ProjectUuid]);
-        activity?.SetTag("projectId", CallContext.Current[Constants.Headers.ProjectId]);
+        activity?.SetTag("projectApiId", CallContext.Current[Constants.Headers.ProjectApiId]);
         activity?.SetTag("blockVersionConfig", CallContext.Current[Constants.Headers.BlockConfig]);
         activity?.SetTag("proxyConfig", CallContext.Current[Constants.Headers.ProxyConfig]);
         activity?.SetTag("rendererConfig", CallContext.Current[Constants.Headers.RendererConfig]);
@@ -144,7 +144,10 @@ public class RequestHandlerMiddleware
                 headers);
         }
 
+        // TODO: the Uri property is expected to be null - we need to change it to be nullable
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         return new RouteInfo(null, headers, "", false);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
     }
 
     private string GetPerformanceInfo(Stopwatch routeInfoTimer, Stopwatch responseTimer, Stopwatch fallbackTimer,
@@ -428,7 +431,7 @@ public class RequestHandlerMiddleware
                 var responseHtml =
                     ErrorResources.GetIisFallbackMessage(response.StatusCode, routeInfo,
                         initialRouteInfo.NodePath ?? "");
-                
+
                 return await GetFriendlyErrorResponse(context, routeInfo.Uri.Query, response, responseHtml);
             }
         }
@@ -479,7 +482,7 @@ public class RequestHandlerMiddleware
     private async Task<EndpointResponse> GetFriendlyErrorResponse(HttpContext context, string query,
         EndpointResponse response, string responseHtml)
     {
-        if (context.Request.Headers.TryGetValue(Constants.Headers.ProjectId,
+        if (context.Request.Headers.TryGetValue(Constants.Headers.ProjectApiId,
                 out var projectApiId) && context.Request.Headers.TryGetValue(Constants.Headers.Alias,
                 out var alias) && context.Request.Headers.TryGetValue(Constants.Headers.EntryVersionStatus,
                 out var entryVersionStatus))
@@ -645,7 +648,7 @@ public class RequestHandlerMiddleware
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error encountered while reading headers.");
+                    _logger.LogError(e, "Error encountered while reading headers");
                 }
             }
         }

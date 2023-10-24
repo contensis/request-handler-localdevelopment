@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Microsoft.AspNetCore.Http;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Renderers;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
@@ -42,7 +41,7 @@ public class CallContextService
         CallContext.Current.Clear();
 
         SetCallContextValueFromRequest(Constants.Headers.Alias, "");
-        SetCallContextValueFromRequest(Constants.Headers.ProjectId, "");
+        SetCallContextValueFromRequest(Constants.Headers.ProjectApiId, "");
         SetCallContextValueFromRequest(Constants.Headers.ProjectUuid, Guid.Empty.ToString());
 
         // Default all requests to published version statuses
@@ -53,12 +52,13 @@ public class CallContextService
         SetCallContextValueFromRequest(Constants.Headers.ProxyConfigDefault, "");
         SetCallContextValueFromRequest(Constants.Headers.RendererConfigDefault, "");
         SetCallContextValueFromRequest(Constants.Headers.ServerType, ServerType.Live.ToString());
+        SetCallContextValueFromRequest(Constants.Headers.TraceEnabled, null);
         SetCallContextValueFromRequest(Constants.Headers.NodeVersionStatus, "published");
 
         // TODO: remove when we deprecate old nodes delivery api
         SetCallContextValueFromRequest(Constants.Headers.UseNewNodeService, "false");
         
-        void SetCallContextValueFromRequest(string key, string alternative)
+        void SetCallContextValueFromRequest(string key, string? alternative)
         {
             bool hasKey = false;
             var isActiveConfigKey = Constants.Headers.ConfigHeaders.Contains(key);

@@ -42,7 +42,7 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
             {
                 var entryVersionStatus = routeInfo.Headers.EntryVersionStatus ?? "published";
                 var isContensisSingleSignOn = await _globalApi.IsContensisSingleSignOn();
-                SetPreviewToolbar(ref content, _requestContext.Alias, _requestContext.ProjectId, entryVersionStatus,
+                SetPreviewToolbar(ref content, _requestContext.Alias, _requestContext.ProjectApiId, entryVersionStatus,
                     routeInfo.Uri.Query, isContensisSingleSignOn);
             }
 
@@ -151,7 +151,7 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
             int currentDepth,
             CancellationToken ct)
         {
-            string messageSuffix = $" for alias {_requestContext.Alias} and project {_requestContext.ProjectId}.";
+            string messageSuffix = $" for alias {_requestContext.Alias} and project {_requestContext.ProjectApiId}.";
             try
             {
                 var routeInfo =

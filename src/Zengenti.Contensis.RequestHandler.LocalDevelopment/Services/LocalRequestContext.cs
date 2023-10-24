@@ -20,7 +20,7 @@ public class LocalDevelopmentRequestContext : IRequestContext
 
     public string Alias => _siteConfigLoader.SiteConfig!.Alias;
 
-    public string ProjectId => _siteConfigLoader.SiteConfig!.ProjectId;
+    public string ProjectApiId => _siteConfigLoader.SiteConfig!.ProjectApiId;
 
     public Guid ProjectUuid => Guid.Empty; // NOT required for local development ATM.
 

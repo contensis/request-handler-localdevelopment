@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
@@ -69,7 +68,7 @@ public class EndpointRequestService : IEndpointRequestService
         "x-forwarded-proto"
     };
 
-    private IHttpClientFactory _clientFactory;
+    private readonly IHttpClientFactory _clientFactory;
 
     public EndpointRequestService(
         IHttpClientFactory clientFactory,
@@ -105,7 +104,6 @@ public class EndpointRequestService : IEndpointRequestService
                                           httpMethod == HttpMethod.Patch);
         using var targetRequestMessage =
             await CreateRequestMessage(httpMethod, content, headers, routeInfo, isStreamingRequestMessage);
-
 
         try
         {

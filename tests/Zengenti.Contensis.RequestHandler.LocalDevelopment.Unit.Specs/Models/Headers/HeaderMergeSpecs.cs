@@ -14,7 +14,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             public void GivenHeadersExist()
             {
                 _sut.Add(Constants.Headers.Alias, new[] { "zenhub" });
-                _sut.Add(Constants.Headers.ProjectId, new[] { "contensis" });
+                _sut.Add(Constants.Headers.ProjectApiId, new[] { "contensis" });
             }
 
             [When]
@@ -31,7 +31,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(2));
                 Assert.That(_result.Values[Constants.Headers.Alias].FirstOrDefault(), Is.EqualTo("develop"));
-                Assert.That(_result.Values[Constants.Headers.ProjectId].FirstOrDefault(), Is.EqualTo("contensis"));
+                Assert.That(_result.Values[Constants.Headers.ProjectApiId].FirstOrDefault(), Is.EqualTo("contensis"));
             }
 
             [Test]
@@ -50,7 +50,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             public void GivenHeadersExist()
             {
                 _sut.Add(Constants.Headers.Alias, new[] { "zenhub" });
-                _sut.Add(Constants.Headers.ProjectId, new[] { "contensis" });
+                _sut.Add(Constants.Headers.ProjectApiId, new[] { "contensis" });
             }
 
             [When]
@@ -67,7 +67,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(3));
                 Assert.That(_result.Values[Constants.Headers.Alias].FirstOrDefault(), Is.EqualTo("zenhub"));
-                Assert.That(_result.Values[Constants.Headers.ProjectId].FirstOrDefault(), Is.EqualTo("contensis"));
+                Assert.That(_result.Values[Constants.Headers.ProjectApiId].FirstOrDefault(), Is.EqualTo("contensis"));
                 Assert.That(_result.Values[Constants.Headers.ProjectUuid].FirstOrDefault(),
                     Is.EqualTo(Guid.Empty.ToString()));
             }

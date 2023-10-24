@@ -196,7 +196,7 @@ public class RouteService : IRouteService
 
         if (headers.Debug || headers.HasKey(Constants.Headers.RequiresProjectApiId))
         {
-            CallContext.Current[Constants.Headers.RequiresProjectApiId] = _requestContext.ProjectId;
+            CallContext.Current[Constants.Headers.RequiresProjectApiId] = _requestContext.ProjectApiId;
         }
     }
 

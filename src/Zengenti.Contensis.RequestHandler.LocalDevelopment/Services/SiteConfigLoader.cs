@@ -26,11 +26,11 @@ public sealed class SiteConfigLoader : IDisposable, ISiteConfigLoader
         _fileSystemWatcher.EnableRaisingEvents = true;
     }
 
-    public SiteConfigLoader(string alias, string projectId, string blocksAsJson, string? renderersAsJson = null,
+    public SiteConfigLoader(string alias, string projectApiId, string blocksAsJson, string? renderersAsJson = null,
         string? accessToken = null, string? clientId = null, string? sharedSecret = null, string? username = null,
         string? password = null)
     {
-        SiteConfig = SiteConfig.LoadFromJson(alias, projectId, blocksAsJson, renderersAsJson, accessToken, clientId,
+        SiteConfig = SiteConfig.LoadFromJson(alias, projectApiId, blocksAsJson, renderersAsJson, accessToken, clientId,
             sharedSecret, username, password);
     }
 

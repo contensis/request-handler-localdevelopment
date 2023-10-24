@@ -5,7 +5,7 @@ public static class Constants
     public static class Headers
     {
         public const string Alias = "x-alias";
-        public const string ProjectId = "x-project-api-id";
+        public const string ProjectApiId = "x-project-api-id";
         public const string ProjectUuid = "x-project-uuid";
         public const string TraceEnabled = "x-trace-enabled";
         public const string SurrogateKey = "surrogate-key";
