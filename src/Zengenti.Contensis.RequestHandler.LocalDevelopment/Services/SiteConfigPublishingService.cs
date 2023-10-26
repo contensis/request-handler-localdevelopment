@@ -32,7 +32,7 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
     }
 
     public Task<RouteInfo?> GetRouteInfoForRequest(
-        Guid projectId,
+        Guid projectUuid,
         bool isPartialMatchPath,
         Uri originUri,
         Headers headers,
@@ -81,7 +81,7 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
 
                 var endpoint = block.Endpoints.SingleOrDefault(e =>
                     e.Id.EqualsCaseInsensitive(endpointRef.EndpointId));
-                var blockVersionInfo = new BlockVersionInfo(projectId, block.Id!, block.Uuid, block.BaseUri!,
+                var blockVersionInfo = new BlockVersionInfo(projectUuid, block.Id!, block.Uuid, block.BaseUri!,
                     block.Branch,
                     _enableFullUriRouting, block.StaticPaths, block.VersionNo);
 
@@ -111,7 +111,7 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
     }
 
 
-    public Task<RouteInfo?> GetRouteInfoForRequest(Guid projectId, Headers headers, string rendererId,
+    public Task<RouteInfo?> GetRouteInfoForRequest(Guid projectUuid, Headers headers, string rendererId,
         Uri originUri)
     {
         var renderer = _siteConfigLoader.SiteConfig.GetRendererById(rendererId);
@@ -121,7 +121,7 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
         {
             var block = _siteConfigLoader.SiteConfig.GetBlockByUuid(endpointRef.BlockUuid);
             var endpoint = block.Endpoints.SingleOrDefault(e => e.Id.EqualsCaseInsensitive(endpointRef.EndpointId));
-            var blockVersionInfo = new BlockVersionInfo(projectId, block.Id!, block.Uuid, block.BaseUri!,
+            var blockVersionInfo = new BlockVersionInfo(projectUuid, block.Id!, block.Uuid, block.BaseUri!,
                 block.Branch,
                 _enableFullUriRouting, block.StaticPaths, block.VersionNo);
 

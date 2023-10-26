@@ -21,8 +21,8 @@ public class ProgramOptions
     [Option("alias", HelpText = "The alias for the site config.")]
     public string? Alias { get; init; }
     
-    [Option("project-id", HelpText = "The API id of the project for the site config.")]
-    public string? ProjectId { get; init; }
+    [Option("project-api-id", HelpText = "The API id of the project for the site config.")]
+    public string? ProjectApiId { get; init; }
     
     [Option("access-token", HelpText = "The access token for the site config.")]
     public string? AccessToken { get; init; }

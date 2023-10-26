@@ -13,7 +13,7 @@ public class SiteConfig
 
     public string Alias { get; set; } = null!;
 
-    public string ProjectId { get; set; } = null!;
+    public string ProjectApiId { get; set; } = null!;
 
     public string? AccessToken { get; set; }
     public string? ClientId { get; set; }
@@ -48,17 +48,17 @@ public class SiteConfig
         return Nodes.FirstOrDefault(n => n.Path == "/");
     }
 
-    public Block GetBlockByUuid(Guid id)
+    public Block? GetBlockByUuid(Guid id)
     {
         return Blocks.FirstOrDefault(b => b.Uuid == id);
     }
 
-    public Renderer GetRendererById(string id)
+    public Renderer? GetRendererById(string id)
     {
         return Renderers.FirstOrDefault(r => r.Id.EqualsCaseInsensitive(id));
     }
 
-    internal Renderer GetRendererByContentTypeUuid(Guid? contentTypeUuid)
+    public Renderer? GetRendererByContentTypeUuid(Guid? contentTypeUuid)
     {
         var item = ContentTypeRendererMap.FirstOrDefault(i => i.ContentTypeUuid == contentTypeUuid);
         if (item != null)
@@ -66,15 +66,15 @@ public class SiteConfig
             return GetRendererByUuid(item.RendererUuid);
         }
 
-        return null!;
+        return null;
     }
 
-    public Renderer GetRendererByUuid(Guid uuid)
+    public Renderer? GetRendererByUuid(Guid uuid)
     {
         return Renderers.FirstOrDefault(r => r.Uuid == uuid);
     }
 
-    public Proxy GetProxyByUuid(Guid uuid)
+    public Proxy? GetProxyByUuid(Guid uuid)
     {
         return Proxies.FirstOrDefault(r => r.Id == uuid);
     }
@@ -98,14 +98,14 @@ public class SiteConfig
         return null;
     }
 
-    public static SiteConfig LoadFromJson(string alias, string projectId, string blocksAsJson,
+    public static SiteConfig LoadFromJson(string alias, string projectApiId, string blocksAsJson,
         string? renderersAsJson = null, string? accessToken = null, string? clientId = null,
         string? sharedSecret = null, string? username = null, string? password = null)
     {
         var siteConfig = new SiteConfig()
         {
             Alias = alias,
-            ProjectId = projectId,
+            ProjectApiId = projectApiId,
             AccessToken = accessToken,
             ClientId = clientId,
             SharedSecret = sharedSecret,

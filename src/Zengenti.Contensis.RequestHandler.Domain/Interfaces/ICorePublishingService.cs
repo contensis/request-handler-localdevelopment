@@ -10,7 +10,7 @@ namespace Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 public interface ICorePublishingService
 {
     Task<RouteInfo?> GetRouteInfoForRequest(
-        Guid projectId, 
+        Guid projectUuid, 
         bool isPartialMatchPath, 
         Uri originUri, 
         Headers headers,
@@ -20,7 +20,7 @@ public interface ICorePublishingService
         Guid? proxyId = null, 
         string? language = null);
 
-    Task<RouteInfo?> GetRouteInfoForRequest(Guid projectId, Headers headers, string rendererId, Uri originUri);
+    Task<RouteInfo?> GetRouteInfoForRequest(Guid projectUuid, Headers headers, string rendererId, Uri originUri);
 
     Task<BlockVersionInfo?> GetBlockVersionInfo(Guid blockVersionId);
     

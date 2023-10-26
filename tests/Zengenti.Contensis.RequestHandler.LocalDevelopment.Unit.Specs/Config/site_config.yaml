@@ -1,5 +1,5 @@
 alias: test
-projectId: website
+projectApiId: website
 accessToken: token1
 clientId: client1
 sharedSecret: secret1

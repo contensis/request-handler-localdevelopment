@@ -48,7 +48,7 @@ public class HttpPublishingApi : IPublishingApi
         //     new RestClientFactory($"http://localhost:5000/")
         //         .SecuredRestClient(new InternalSecurityTokenProvider(securityTokenParams));
         // _internalRestClient.AddHeader("x-alias", securityTokenParams.Alias);
-        _projectApiId = _siteConfigLoader.SiteConfig.ProjectId;
+        _projectApiId = _siteConfigLoader.SiteConfig.ProjectApiId;
     }
 
     public async Task<BlockVersionInfo?> GetBlockVersionInfo(Guid versionId)

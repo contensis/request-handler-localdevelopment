@@ -9,7 +9,7 @@ public interface IRequestContext
 
     public string Alias { get; }
 
-    public string ProjectId { get; }
+    public string ProjectApiId { get; }
 
     public Guid ProjectUuid { get; }
 

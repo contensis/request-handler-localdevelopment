@@ -29,7 +29,7 @@ public class LocalDevPublishingService : ILocalDevPublishingService
     }
 
     public async Task<RouteInfo?> GetRouteInfoForRequest(
-        Guid projectId,
+        Guid projectUuid,
         bool isPartialMatchPath,
         Uri originUri,
         Headers headers,
@@ -39,7 +39,7 @@ public class LocalDevPublishingService : ILocalDevPublishingService
         Guid? proxyId = null,
         string? language = null)
     {
-        var requestContext = new RequestContext(projectId)
+        var requestContext = new RequestContext(projectUuid)
         {
             RendererId = rendererId,
             ContentTypeId = contentTypeId,
@@ -67,13 +67,13 @@ public class LocalDevPublishingService : ILocalDevPublishingService
         if (overridenBlock == null)
         {
             return _corePublishingService.BuildRouteInfoForRequest(endpointForRequest, originUri, headers,
-                projectId, node);
+                projectUuid, node);
         }
 
         // TODO: deal with endpoints
         // TODO: check if we need to populate enableFullUriRouting
         var enableFullUriRouting = false;
-        var blockVersionInfo = new BlockVersionInfo(projectId, endpointForRequest.BlockId,
+        var blockVersionInfo = new BlockVersionInfo(projectUuid, endpointForRequest.BlockId,
             endpointForRequest.BlockVersionId!.Value,
             new Uri(endpointForRequest.Uri), endpointForRequest.Branch, enableFullUriRouting,
             endpointForRequest.StaticPaths,
@@ -90,10 +90,10 @@ public class LocalDevPublishingService : ILocalDevPublishingService
         return routeInfo;
     }
 
-    public async Task<RouteInfo?> GetRouteInfoForRequest(Guid projectId, Headers headers, string rendererId,
+    public async Task<RouteInfo?> GetRouteInfoForRequest(Guid projectUuid, Headers headers, string rendererId,
         Uri originUri)
     {
-        return await GetRouteInfoForRequest(projectId, false, originUri, headers, null, null, rendererId);
+        return await GetRouteInfoForRequest(projectUuid, false, originUri, headers, null, null, rendererId);
     }
 
 

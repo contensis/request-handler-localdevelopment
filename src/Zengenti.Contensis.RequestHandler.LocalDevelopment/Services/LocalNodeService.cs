@@ -59,7 +59,7 @@ public class LocalNodeService : INodeService
             }
 
             var restManagementNode = (await _internalRestClient.GetAsync<dynamic>(
-                    $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectId}/nodes/{path.Trim('/')}"))
+                    $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectApiId}/nodes/{path.Trim('/')}"))
                 .ResponseObject;
 
             if (restManagementNode == null)
@@ -81,7 +81,7 @@ public class LocalNodeService : INodeService
             if (rendererUuid != null)
             {
                 var renderer = (await _internalRestClient.GetAsync<dynamic>(
-                        $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectId}/renderers/{rendererUuid}"))
+                        $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectApiId}/renderers/{rendererUuid}"))
                     .ResponseObject;
                 rendererId = renderer["id"].ToString();
             }

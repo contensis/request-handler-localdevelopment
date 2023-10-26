@@ -15,7 +15,7 @@
       }
     ],
     Alias: test,
-    ProjectId: website,
+    ProjectApiId: website,
     AccessToken: token1,
     ClientId: client1,
     SharedSecret: secret1,
@@ -172,7 +172,7 @@
       }
     ],
     Alias: test,
-    ProjectId: website,
+    ProjectApiId: website,
     AccessToken: token1,
     ClientId: client1,
     SharedSecret: secret1,

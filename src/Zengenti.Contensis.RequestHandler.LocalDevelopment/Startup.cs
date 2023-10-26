@@ -57,7 +57,7 @@ public class Startup
         }
         else
         {
-            siteConfigLoader = new SiteConfigLoader(ProgramOptions.Current.Alias!, ProgramOptions.Current.ProjectId!,
+            siteConfigLoader = new SiteConfigLoader(ProgramOptions.Current.Alias!, ProgramOptions.Current.ProjectApiId!,
                 ProgramOptions.Current.BlocksAsJson!, ProgramOptions.Current.RenderersAsJson,
                 ProgramOptions.Current.AccessToken, ProgramOptions.Current.ClientId,
                 ProgramOptions.Current.ClientSecret, ProgramOptions.Current.Username, ProgramOptions.Current.Password);
