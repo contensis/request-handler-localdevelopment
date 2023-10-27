@@ -27,7 +27,7 @@ public class RequestHandlerMiddleware
 
     public IEndpointRequestService RequestService { get; }
 
-    public IRouteService RouteService { get; }
+    internal IRouteService RouteService { get; }
 
     public RequestHandlerMiddleware(
         RequestDelegate nextMiddleware,

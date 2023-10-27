@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.Net.Http.Headers;
@@ -92,6 +93,17 @@ public class EndpointRequestService : IEndpointRequestService
         int currentDepth,
         CancellationToken cancellationToken)
     {
+        if (routeInfo.IsIisFallback && headers != null && headers.ContainsKey(Constants.Headers.HealthCheck) &&
+            headers[Constants.Headers.HealthCheck].ContainsCaseInsensitive("true"))
+        {
+            headers.Add(HeaderNames.ContentType, new string[] {"application/json"});
+            var responseContent = new
+            {
+                msg = "No route matched so returning a success as the Classic backend will be used"
+            }.ToJsonWithLowercasePropertyNames();
+            return new EndpointResponse(responseContent, headers, (int)HttpStatusCode.OK, null);
+        }
+        
         RecursionChecker.Check(currentDepth, routeInfo);
 
         var measurer = new PageletPerformanceMeasurer(_requestContext.TraceEnabled, autoStart: true);
