@@ -208,7 +208,9 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to invoke endpoint for renderer {RendererId}{MessageSuffix}",
+                _logger.LogError(
+                    ex,
+                    "Failed to invoke endpoint for renderer {RendererId}{MessageSuffix}",
                     rendererId,
                     messageSuffix);
                 throw;
