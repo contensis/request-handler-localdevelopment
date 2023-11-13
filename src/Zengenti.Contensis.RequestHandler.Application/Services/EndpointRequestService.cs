@@ -93,17 +93,24 @@ public class EndpointRequestService : IEndpointRequestService
         int currentDepth,
         CancellationToken cancellationToken)
     {
-        if (routeInfo.IsIisFallback && headers != null && headers.ContainsKey(Constants.Headers.HealthCheck) &&
+        if (routeInfo.IsIisFallback &&
+            headers != null &&
+            headers.ContainsKey(Constants.Headers.HealthCheck) &&
             headers[Constants.Headers.HealthCheck].ContainsCaseInsensitive("true"))
         {
-            headers.Add(HeaderNames.ContentType, new string[] {"application/json"});
+            headers.Add(
+                HeaderNames.ContentType,
+                new[]
+                {
+                    "application/json"
+                });
             var responseContent = new
             {
                 msg = "No route matched so returning a success as the Classic backend will be used"
             }.ToJsonWithLowercasePropertyNames();
-            return new EndpointResponse(responseContent, headers, (int)HttpStatusCode.OK, null);
+            return new EndpointResponse(responseContent, headers, (int)HttpStatusCode.OK);
         }
-        
+
         RecursionChecker.Check(currentDepth, routeInfo);
 
         var measurer = new PageletPerformanceMeasurer(_requestContext.TraceEnabled, autoStart: true);
@@ -126,13 +133,21 @@ public class EndpointRequestService : IEndpointRequestService
                 httpClient.Timeout = new TimeSpan(0, requestTimeoutInMinutes, 0);
             }
 
-            using var responseMessage = await httpClient.SendAsync(targetRequestMessage,
-                HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            using var responseMessage = await httpClient.SendAsync(
+                targetRequestMessage,
+                HttpCompletionOption.ResponseHeadersRead,
+                cancellationToken);
             measurer.EndOfRequest();
 
-
-            var endpointResponse = await GetContent(routeInfo, responseMessage, currentDepth, cancellationToken,
-                measurer, targetRequestMessage.RequestUri, targetRequestMessage.Method, targetRequestMessage.Headers);
+            var endpointResponse = await GetContent(
+                routeInfo,
+                responseMessage,
+                currentDepth,
+                cancellationToken,
+                measurer,
+                targetRequestMessage.RequestUri,
+                targetRequestMessage.Method,
+                targetRequestMessage.Headers);
 
             if (!endpointResponse.IsErrorStatusCode())
             {
@@ -146,28 +161,34 @@ public class EndpointRequestService : IEndpointRequestService
                 return endpointResponse;
             }
 
-            using (_logger.BeginScope(new
-                   {
-                       requestContext = JsonSerializer.Serialize(_requestContext),
-                       routeInfo = JsonSerializer.Serialize(routeInfo)
-                   }))
+            using (_logger.BeginScope(
+                new
+                {
+                    requestContext = JsonSerializer.Serialize(_requestContext),
+                    routeInfo = JsonSerializer.Serialize(routeInfo)
+                }))
             {
                 _logger.LogWarning(
                     "Invoking endpoint {AbsoluteUri} was not successful: {StatusCode}",
-                    absoluteUri, endpointResponse.StatusCode);
+                    absoluteUri,
+                    endpointResponse.StatusCode);
             }
 
             return endpointResponse;
         }
         catch (Exception e)
         {
-            using (_logger.BeginScope(new
-                   {
-                       requestContext = JsonSerializer.Serialize(_requestContext),
-                       routeInfo = JsonSerializer.Serialize(routeInfo)
-                   }))
+            using (_logger.BeginScope(
+                new
+                {
+                    requestContext = JsonSerializer.Serialize(_requestContext),
+                    routeInfo = JsonSerializer.Serialize(routeInfo)
+                }))
             {
-                _logger.LogError(e, "Failed to invoke endpoint {Uri} with http method {Method}", routeInfo.Uri,
+                _logger.LogError(
+                    e,
+                    "Failed to invoke endpoint {Uri} with http method {Method}",
+                    routeInfo.Uri,
                     httpMethod.Method);
             }
 
@@ -259,7 +280,9 @@ public class EndpointRequestService : IEndpointRequestService
         return requestMessage;
     }
 
-    private static void AddHeaders(RouteInfo routeInfo, HttpRequestMessage requestMessage,
+    private static void AddHeaders(
+        RouteInfo routeInfo,
+        HttpRequestMessage requestMessage,
         Dictionary<string, IEnumerable<string>>? headers)
     {
         if (headers == null)
@@ -289,10 +312,10 @@ public class EndpointRequestService : IEndpointRequestService
             }
         }
 
-        if (routeInfo.IsIisFallback && headers.ContainsKey(Constants.Headers.IisHostName))
+        if (routeInfo.IsIisFallback && headers.TryGetValue(Constants.Headers.IisHostName, out var header))
         {
             // Override host header with IIS fallback host
-            requestMessage.Headers.Host = headers[Constants.Headers.IisHostName].FirstOrDefault();
+            requestMessage.Headers.Host = header.FirstOrDefault();
         }
         else
         {

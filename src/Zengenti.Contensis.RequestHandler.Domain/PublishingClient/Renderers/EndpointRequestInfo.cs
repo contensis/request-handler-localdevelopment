@@ -2,7 +2,8 @@ namespace Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Renderers;
 
 public class EndpointRequestInfo
 {
-    public EndpointRequestInfo(string blockId,
+    public EndpointRequestInfo(
+        string blockId,
         Guid? blockVersionId,
         string endpointId,
         Guid? layoutRendererId,

@@ -7,7 +7,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models
     {
         public class HasMetrics
         {
-            private Metrics _sut = new();
+            private readonly Metrics _sut = new();
             private string _result;
 
             [Given]
@@ -39,7 +39,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models
 
         public class HasNoMetrics
         {
-            private Metrics _sut = new();
+            private readonly Metrics _sut = new();
             private string _result;
 
             [Given]
@@ -67,5 +67,3 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models
         }
     }
 }
-    
-    

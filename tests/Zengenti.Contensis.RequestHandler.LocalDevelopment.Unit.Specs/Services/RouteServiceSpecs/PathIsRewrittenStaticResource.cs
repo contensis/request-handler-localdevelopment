@@ -33,7 +33,12 @@ public class PathIsRewrittenStaticResource
         _requestPath =
             $"/{Constants.Paths.StaticPathUniquePrefix}{RouteInfo.GetUrlFriendlyHash(_projectUuid)}{Constants.Paths.StaticPathUniquePrefix}{block.Uuid}/static/images/header.png";
 
-        _sut = new RouteService(_nodeService, publishingService, routeInfoFactory, requestContext, cacheKeyService,
+        _sut = new RouteService(
+            _nodeService,
+            publishingService,
+            routeInfoFactory,
+            requestContext,
+            cacheKeyService,
             logger);
     }
 
@@ -53,7 +58,8 @@ public class PathIsRewrittenStaticResource
     public void AndThenARouteIsReturnedWithTheInternalResourceUri()
     {
         Assert.That(_result, Is.Not.Null);
-        Assert.That(_result.Uri.ToString(),
+        Assert.That(
+            _result.Uri.ToString(),
             Is.EqualTo("http://website.com/static/images/header.png"));
     }
 

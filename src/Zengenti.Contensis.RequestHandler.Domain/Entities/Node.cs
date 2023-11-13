@@ -9,8 +9,17 @@ public class Node
     }
 #pragma warning restore CS8618
 
-    public Node(string path, Guid? id, Guid? entryId, Guid? contentTypeId, IEnumerable<string> cacheKeys,
-        Guid? rendererId, bool? isPartialMatchRoot, string language, Guid? proxyId, bool? parseContent,
+    public Node(
+        string path,
+        Guid? id,
+        Guid? entryId,
+        Guid? contentTypeId,
+        IEnumerable<string> cacheKeys,
+        Guid? rendererId,
+        bool? isPartialMatchRoot,
+        string language,
+        Guid? proxyId,
+        bool? parseContent,
         bool? isPartialMatchProxy)
     {
         Id = id;

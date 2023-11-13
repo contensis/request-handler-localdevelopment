@@ -27,12 +27,16 @@ public class StaticResourcePath
         var blockGuid = Guid.NewGuid();
         var projectUuid = Guid.NewGuid();
         _result = _sut.CreateForNonNodePath(
-            new Uri($"http://www.mysite.com/_{RouteInfo.GetUrlFriendlyHash(Guid.NewGuid())}_{Guid.NewGuid()}/images/header.png?w=100&h=200"),
-            new Headers(new Dictionary<string, string>
-            {
-                { Constants.Headers.Alias, "zenhub" }
-            }),
-            new BlockVersionInfo(projectUuid, "",blockGuid, new Uri(_baseUriString), "main", false,null, 1));
+            new Uri(
+                $"http://www.mysite.com/_{RouteInfo.GetUrlFriendlyHash(Guid.NewGuid())}_{Guid.NewGuid()}/images/header.png?w=100&h=200"),
+            new Headers(
+                new Dictionary<string, string>
+                {
+                    {
+                        Constants.Headers.Alias, "zenhub"
+                    }
+                }),
+            new BlockVersionInfo(projectUuid, "", blockGuid, new Uri(_baseUriString), "main", false, null, 1));
     }
 
     [Then]

@@ -1,8 +1,4 @@
-﻿using System.Text.Json;
-using FluentAssertions;
-using NUnit.Framework;
-using TestStack.BDDfy;
-using Zengenti.Contensis.RequestHandler.LocalDevelopment;
+﻿using TestStack.BDDfy;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs;
 
@@ -21,19 +17,26 @@ public class SiteConfigLoaderSpecs
     {
         _siteConfigLoaderFromFile = new SiteConfigLoader("Config/site_config.yaml");
 
-        _siteConfigLoaderFromJson = new SiteConfigLoader("test", "website", SpecHelper.GetFile("Config/blocks.json"),
-            SpecHelper.GetFile("Config/renderers.json"), "token1", "client1", "secret1");
+        _siteConfigLoaderFromJson = new SiteConfigLoader(
+            "test",
+            "website",
+            SpecHelper.GetFile("Config/blocks.json"),
+            SpecHelper.GetFile("Config/renderers.json"),
+            "token1",
+            "client1",
+            "secret1");
     }
 
     public async Task ThenTheyAreEqual()
     {
-        await Verify(new
-        {
-            YamlSiteConfig = _siteConfigLoaderFromFile.SiteConfig,
-            JsonSiteConfig = _siteConfigLoaderFromJson.SiteConfig
-        });
+        await Verify(
+            new
+            {
+                YamlSiteConfig = _siteConfigLoaderFromFile.SiteConfig,
+                JsonSiteConfig = _siteConfigLoaderFromJson.SiteConfig
+            });
     }
-    
+
     [Ignore("fails on the build server")]
     [Test]
     public void Run()

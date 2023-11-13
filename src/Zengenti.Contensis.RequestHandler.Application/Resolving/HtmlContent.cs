@@ -1,11 +1,10 @@
 using System.Text;
-using Microsoft.Extensions.Logging;
 using Zengenti.Contensis.RequestHandler.Application.Parsing;
 
 namespace Zengenti.Contensis.RequestHandler.Application.Resolving;
 
 /// <summary>
-/// Wraps a mutable instance of HTML content and controls updates to pagelet tags.
+///     Wraps a mutable instance of HTML content and controls updates to pagelet tags.
 /// </summary>
 public class HtmlContent
 {
@@ -68,8 +67,11 @@ public class HtmlContent
         catch (Exception e)
         {
             // Potentially a miscalculated offset
-            _logger.LogWarning(e, "Error updating tag in HtmlContent - tag: {Tag}, content: {Content}",
-                tagId, tagContent);
+            _logger.LogWarning(
+                e,
+                "Error updating tag in HtmlContent - tag: {Tag}, content: {Content}",
+                tagId,
+                tagContent);
         }
         finally
         {
@@ -92,8 +94,11 @@ public class HtmlContent
         catch (Exception e)
         {
             // Potentially a miscalculated offset
-            _logger.LogWarning(e, "Error updating layout in HtmlContent - startPos: {StartPos}, endPos: {EndPos}",
-                contentTagStartPos, contentTagEndPos);
+            _logger.LogWarning(
+                e,
+                "Error updating layout in HtmlContent - startPos: {StartPos}, endPos: {EndPos}",
+                contentTagStartPos,
+                contentTagEndPos);
         }
         finally
         {

@@ -4,7 +4,7 @@ using System.Text;
 namespace Zengenti.Contensis.RequestHandler.Domain.Common;
 
 /// <summary>
-/// Builds a small cache (taken from Zengenti.Services.Caching.Keys)
+///     Builds a small cache (taken from Zengenti.Services.Caching.Keys)
 /// </summary>
 public static class Keys
 {
@@ -16,7 +16,7 @@ public static class Keys
     }
 
     /// <summary>
-    /// Builds the plain text key from the given params, if a part is null an asterix is used.
+    ///     Builds the plain text key from the given params, if a part is null an asterix is used.
     /// </summary>
     /// <param name="keyParts">The key parts.</param>
     /// <returns></returns>
@@ -28,11 +28,11 @@ public static class Keys
             throw new ArgumentException("At least one key part is required", nameof(keyParts));
         }
 
-        return keyParts.Select(k => k?.ToString() ?? "*").Aggregate((a, b) => $"{a}_{b}");
+        return keyParts.Select(k => k.ToString() ?? "*").Aggregate((a, b) => $"{a}_{b}");
     }
 
     /// <summary>
-    /// Creates cache key from the given params, if a part is null an asterix is used.
+    ///     Creates cache key from the given params, if a part is null an asterix is used.
     /// </summary>
     /// <param name="keyParts">The key parts.</param>
     /// <returns></returns>
@@ -42,7 +42,7 @@ public static class Keys
     }
 
     /// <summary>
-    /// Returns a hashed cache key for the given key.
+    ///     Returns a hashed cache key for the given key.
     /// </summary>
     /// <param name="key">The key.</param>
     /// <returns></returns>

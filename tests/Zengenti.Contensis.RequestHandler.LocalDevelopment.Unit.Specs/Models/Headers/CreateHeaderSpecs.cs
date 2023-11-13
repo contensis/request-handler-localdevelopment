@@ -14,11 +14,22 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             [When]
             public void WhenHeadersAreCreatedFromAnIEnumerableDictionary()
             {
-                _result = new Domain.ValueTypes.Headers(new Dictionary<string, IEnumerable<string>>
-                {
-                    { Constants.Headers.Alias, new []{ "zenhub" } },
-                    { Constants.Headers.ProjectApiId, new []{ "contensis" } }
-                });
+                _result = new Domain.ValueTypes.Headers(
+                    new Dictionary<string, IEnumerable<string>>
+                    {
+                        {
+                            Constants.Headers.Alias, new[]
+                            {
+                                "zenhub"
+                            }
+                        },
+                        {
+                            Constants.Headers.ProjectApiId, new[]
+                            {
+                                "contensis"
+                            }
+                        }
+                    });
             }
 
             [Then]
@@ -43,11 +54,16 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             [When]
             public void WhenHeadersAreCreatedFromASingleValueDictionary()
             {
-                _result = new Domain.ValueTypes.Headers(new Dictionary<string, string>
-                {
-                    { Constants.Headers.Alias, "zenhub" },
-                    { Constants.Headers.ProjectApiId, "contensis" }
-                });
+                _result = new Domain.ValueTypes.Headers(
+                    new Dictionary<string, string>
+                    {
+                        {
+                            Constants.Headers.Alias, "zenhub"
+                        },
+                        {
+                            Constants.Headers.ProjectApiId, "contensis"
+                        }
+                    });
             }
 
             [Then]
@@ -72,11 +88,17 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             [When]
             public void WhenHeadersAreCreatedFromAnIHeaderDictionary()
             {
-                _result = new Domain.ValueTypes.Headers(new HeaderDictionary(new Dictionary<string, StringValues>
-                {
-                    { Constants.Headers.Alias, "zenhub" },
-                    { Constants.Headers.ProjectApiId, "contensis" }
-                }));
+                _result = new Domain.ValueTypes.Headers(
+                    new HeaderDictionary(
+                        new Dictionary<string, StringValues>
+                        {
+                            {
+                                Constants.Headers.Alias, "zenhub"
+                            },
+                            {
+                                Constants.Headers.ProjectApiId, "contensis"
+                            }
+                        }));
             }
 
             [Then]
@@ -122,6 +144,5 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                 this.BDDfy();
             }
         }
-
     }
 }

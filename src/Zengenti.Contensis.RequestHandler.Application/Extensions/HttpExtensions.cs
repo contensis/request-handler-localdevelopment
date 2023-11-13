@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using Microsoft.AspNetCore.Http;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
 
 namespace Zengenti.Contensis.RequestHandler.Application;
@@ -30,17 +29,19 @@ public static class HttpExtensions
 
     public static bool IsResponseResolvable(this HttpResponseMessage? responseMessage)
     {
-        if (responseMessage == null || 
+        if (responseMessage == null ||
             (!responseMessage.IsSuccessStatusCode && responseMessage.StatusCode != HttpStatusCode.NotModified))
         {
             // We may want to use WPP for formatted/container based error responses in the future...
             return false;
         }
 
-        if (responseMessage.Content.Headers.TryGetValues(Constants.Headers.ContentType, 
-                out var contentTypes))
+        if (responseMessage.Content.Headers.TryGetValues(
+            Constants.Headers.ContentType,
+            out var contentTypes))
         {
-            if (ParseableContentTypes.Any(pct => 
+            if (ParseableContentTypes.Any(
+                pct =>
                     contentTypes.Any(rct => rct.StartsWithCaseInsensitive(pct))))
             {
                 return true;
@@ -56,7 +57,7 @@ public static class HttpExtensions
         {
             return new Uri($"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}");
         }
-            
+
         return new Uri($"{request.Path}{request.QueryString}");
     }
 }

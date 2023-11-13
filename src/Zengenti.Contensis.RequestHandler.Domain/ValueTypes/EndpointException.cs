@@ -7,8 +7,7 @@ public class EndpointException : Exception
         RouteInfo? endpoint,
         EndpointResponse endpointResponse,
         string? message = null,
-        Exception? innerException = null
-    )
+        Exception? innerException = null)
         : base(message, innerException)
     {
         Endpoint = endpoint;

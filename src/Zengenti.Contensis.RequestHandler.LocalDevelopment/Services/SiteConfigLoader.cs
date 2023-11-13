@@ -26,12 +26,27 @@ public sealed class SiteConfigLoader : IDisposable, ISiteConfigLoader
         _fileSystemWatcher.EnableRaisingEvents = true;
     }
 
-    public SiteConfigLoader(string alias, string projectApiId, string blocksAsJson, string? renderersAsJson = null,
-        string? accessToken = null, string? clientId = null, string? sharedSecret = null, string? username = null,
+    public SiteConfigLoader(
+        string alias,
+        string projectApiId,
+        string blocksAsJson,
+        string? renderersAsJson = null,
+        string? accessToken = null,
+        string? clientId = null,
+        string? sharedSecret = null,
+        string? username = null,
         string? password = null)
     {
-        SiteConfig = SiteConfig.LoadFromJson(alias, projectApiId, blocksAsJson, renderersAsJson, accessToken, clientId,
-            sharedSecret, username, password);
+        SiteConfig = SiteConfig.LoadFromJson(
+            alias,
+            projectApiId,
+            blocksAsJson,
+            renderersAsJson,
+            accessToken,
+            clientId,
+            sharedSecret,
+            username,
+            password);
     }
 
     private void FileSystemWatcher_Changed(object sender, FileSystemEventArgs e)
@@ -39,7 +54,7 @@ public sealed class SiteConfigLoader : IDisposable, ISiteConfigLoader
         SiteConfig = SiteConfig.LoadFromFile(e.FullPath)!;
     }
 
-    #region IDisposable Support
+#region IDisposable Support
 
     private bool _disposedValue; // To detect redundant calls
 
@@ -62,5 +77,5 @@ public sealed class SiteConfigLoader : IDisposable, ISiteConfigLoader
         Dispose(true);
     }
 
-    #endregion
+#endregion
 }

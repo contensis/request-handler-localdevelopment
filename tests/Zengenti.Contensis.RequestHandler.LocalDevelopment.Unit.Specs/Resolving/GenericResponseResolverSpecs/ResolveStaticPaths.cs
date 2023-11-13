@@ -10,8 +10,8 @@ class ResolveStaticPaths
 {
     IResponseResolver _sut;
     private string _result;
-    private Guid _blockVersionId = Guid.NewGuid();
-    private Guid _projectUuid = Guid.NewGuid();
+    private readonly Guid _blockVersionId = Guid.NewGuid();
+    private readonly Guid _projectUuid = Guid.NewGuid();
 
     [Given]
     public void GivenTheGenericResponseResolver()
@@ -41,9 +41,9 @@ class ResolveStaticPaths
     {
         var expectedUrls = new[]
         {
-            $"url(\"/another/path/to/images/image01.jpg\")",
-            $"url(\"/images/image01.jpg\")",
-            $"url(\"/some/path/to/static.jpg\")"
+            "url(\"/another/path/to/images/image01.jpg\")",
+            "url(\"/images/image01.jpg\")",
+            "url(\"/some/path/to/static.jpg\")"
         };
 
         foreach (var expectedUrl in expectedUrls)

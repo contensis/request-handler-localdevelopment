@@ -1,10 +1,8 @@
-﻿using Zengenti.Contensis.Delivery;
-using Zengenti.Contensis.RequestHandler.Domain.Entities;
+﻿using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 using Zengenti.Rest.RestClient;
-using Node = Zengenti.Contensis.RequestHandler.Domain.Entities.Node;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 
@@ -28,16 +26,22 @@ public class LocalNodeService : INodeService
         }
     }
 
-    public LocalNodeService(ISiteConfigLoader siteConfigLoader,
-        ISecurityTokenProviderFactory securityTokenProviderFactory, ILogger<LocalNodeService> logger)
+    public LocalNodeService(
+        ISiteConfigLoader siteConfigLoader,
+        ISecurityTokenProviderFactory securityTokenProviderFactory,
+        ILogger<LocalNodeService> logger)
     {
         _logger = logger;
         _siteConfigLoader = siteConfigLoader;
-        _siteConfig = _siteConfigLoader.SiteConfig!;
+        _siteConfig = _siteConfigLoader.SiteConfig;
 
         var securityTokenParams =
-            new SecurityTokenParams(_siteConfig!.Alias, _siteConfig.ClientId, _siteConfig.SharedSecret,
-                _siteConfig.Username, _siteConfig.Password);
+            new SecurityTokenParams(
+                _siteConfig.Alias,
+                _siteConfig.ClientId,
+                _siteConfig.SharedSecret,
+                _siteConfig.Username,
+                _siteConfig.Password);
 
         var securityTokenProvider = securityTokenProviderFactory.GetSecurityTokenProvider(securityTokenParams);
         _internalRestClient =
@@ -67,9 +71,9 @@ public class LocalNodeService : INodeService
                 _logger.LogWarning("Could not find a delivery node for path {Path}", path);
                 return null;
             }
-            
+
             Guid? rendererUuid = null;
-            string rendererId = null;
+            string rendererId = "";
             var isPartialMatchRoot = false;
             if (restManagementNode["renderer"] != null)
             {
@@ -93,9 +97,9 @@ public class LocalNodeService : INodeService
                 EntryId = restManagementNode["entryId"],
             };
 
-            if (!string.IsNullOrWhiteSpace(rendererId))
+            if (!string.IsNullOrWhiteSpace(rendererId) && rendererUuid != null)
             {
-                node.RendererRef = new RendererRef()
+                node.RendererRef = new RendererRef
                 {
                     Id = rendererId,
                     Uuid = rendererUuid.Value,

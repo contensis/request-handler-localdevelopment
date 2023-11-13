@@ -33,6 +33,7 @@ public class PageletPerformanceMeasurer
         {
             return;
         }
+
         _stopWatch = Stopwatch.StartNew();
     }
 

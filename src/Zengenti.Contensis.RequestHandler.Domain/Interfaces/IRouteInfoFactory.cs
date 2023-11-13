@@ -21,6 +21,5 @@ public interface IRouteInfoFactory
 
     RouteInfo CreateForIisFallback(
         Uri originUri,
-        Headers headers
-    );
+        Headers headers);
 }

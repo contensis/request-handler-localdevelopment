@@ -3,10 +3,10 @@ namespace Zengenti.Contensis.RequestHandler.Application.Parsing;
 public class TextParser
 {
     private readonly string _text;
-    private int _pos;
 
-    protected int Position => _pos;
-    protected int Remaining => _text.Length - _pos;
+    protected int Position { get; private set; }
+
+    protected int Remaining => _text.Length - Position;
 
     protected const char NullChar = (char)0;
 
@@ -16,20 +16,20 @@ public class TextParser
     }
 
     /// <summary>
-    /// Indicates if the current position is at the end of the current document
+    ///     Indicates if the current position is at the end of the current document
     /// </summary>
-    protected bool EndOfText => (_pos >= _text.Length);
+    protected bool EndOfText => (Position >= _text.Length);
 
     /// <summary>
-    /// Returns the character at the specified number of characters beyond the current
-    /// position, or a null character if the specified position is at the end of the
-    /// document
+    ///     Returns the character at the specified number of characters beyond the current
+    ///     position, or a null character if the specified position is at the end of the
+    ///     document
     /// </summary>
     /// <param name="ahead">The number of characters beyond the current position</param>
     /// <returns>The character at the specified position</returns>
     protected char Peek(int ahead = 0)
     {
-        var pos = (_pos + ahead);
+        var pos = (Position + ahead);
 
         if (pos < _text.Length)
         {
@@ -40,7 +40,7 @@ public class TextParser
     }
 
     /// <summary>
-    /// Extracts a substring from the specified position to the end of the text
+    ///     Extracts a substring from the specified position to the end of the text
     /// </summary>
     /// <param name="start"></param>
     /// <returns></returns>
@@ -50,7 +50,7 @@ public class TextParser
     }
 
     /// <summary>
-    /// Extracts a substring from the specified range of the current text
+    ///     Extracts a substring from the specified range of the current text
     /// </summary>
     /// <param name="start"></param>
     /// <param name="end"></param>
@@ -61,60 +61,62 @@ public class TextParser
     }
 
     /// <summary>
-    /// Moves the current position ahead the specified number of characters
+    ///     Moves the current position ahead the specified number of characters
     /// </summary>
     /// <param name="ahead">The number of characters to move ahead</param>
     protected void MoveAhead(int ahead = 1)
     {
-        _pos = Math.Min(_pos + ahead, _text.Length);
+        Position = Math.Min(Position + ahead, _text.Length);
     }
 
     /// <summary>
-    /// Moves to the next occurrence of the specified string
+    ///     Moves to the next occurrence of the specified string
     /// </summary>
     /// <param name="s">String to find</param>
     /// <param name="ignoreCase">Indicates if case-insensitive comparisons are used</param>
     protected void MoveTo(string s, bool ignoreCase = false)
     {
-        _pos = _text.IndexOf(s, _pos,
+        Position = _text.IndexOf(
+            s,
+            Position,
             ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 
-        if (_pos < 0)
+        if (Position < 0)
         {
-            _pos = _text.Length;
+            Position = _text.Length;
         }
     }
 
     /// <summary>
-    /// Moves to the next occurrence of the specified character
+    ///     Moves to the next occurrence of the specified character
     /// </summary>
     /// <param name="c">Character to find</param>
     protected void MoveTo(char c)
     {
-        _pos = _text.IndexOf(c, _pos);
+        Position = _text.IndexOf(c, Position);
 
-        if (_pos < 0)
+        if (Position < 0)
         {
-            _pos = _text.Length;
+            Position = _text.Length;
         }
     }
 
     /// <summary>
-    /// Moves to the next occurrence of any one of the specified
-    /// characters
+    ///     Moves to the next occurrence of any one of the specified
+    ///     characters
     /// </summary>
     /// <param name="carr">Array of characters to find</param>
     protected void MoveTo(char[] carr)
     {
-        _pos = _text.IndexOfAny(carr, _pos);
-        if (_pos < 0)
+        Position = _text.IndexOfAny(carr, Position);
+        if (Position < 0)
         {
-            _pos = _text.Length;
+            Position = _text.Length;
         }
     }
 
     /// <summary>
-    /// Moves the current position to the first character that is part of a newline
+    ///     Moves the current position to the first character that is part of a newline
     /// </summary>
     protected void MoveToEndOfLine()
     {
@@ -127,7 +129,7 @@ public class TextParser
     }
 
     /// <summary>
-    /// Moves the current position to the next character that is not whitespace, returning the whitespace as an element.
+    ///     Moves the current position to the next character that is not whitespace, returning the whitespace as an element.
     /// </summary>
     protected int MovePastWhitespace()
     {

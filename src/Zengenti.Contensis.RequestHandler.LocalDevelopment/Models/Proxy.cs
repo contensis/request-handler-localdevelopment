@@ -3,5 +3,5 @@
 public class Proxy
 {
     public Guid Id { get; set; }
-    public string Server { get; set; }
+    public string Server { get; set; } = "";
 }

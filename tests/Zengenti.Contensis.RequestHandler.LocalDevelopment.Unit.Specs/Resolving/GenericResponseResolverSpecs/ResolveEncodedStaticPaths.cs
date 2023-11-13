@@ -10,8 +10,8 @@ class ResolveEncodedStaticPaths
 {
     IResponseResolver _sut;
     private string _result;
-    private Guid _blockVersionId = Guid.NewGuid();
-    private Guid _projectUuid = Guid.NewGuid();
+    private readonly Guid _blockVersionId = Guid.NewGuid();
+    private readonly Guid _projectUuid = Guid.NewGuid();
 
     [Given]
     public void GivenTheGenericResponseResolver()

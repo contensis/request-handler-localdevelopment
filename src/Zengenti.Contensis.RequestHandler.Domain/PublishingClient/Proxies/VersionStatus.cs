@@ -5,4 +5,3 @@ public enum VersionStatus
     Latest = 1,
     Published = 2,
 }
-

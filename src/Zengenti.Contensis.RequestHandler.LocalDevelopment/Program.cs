@@ -1,6 +1,4 @@
 ﻿using CommandLine;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment;
 
@@ -11,27 +9,26 @@ public class Program
         var parser = new Parser(with => { with.IgnoreUnknownArguments = true; });
 
         parser.ParseArguments<ProgramOptions>(args)
-            .WithParsed(opts =>
-            {
-                CreateHostBuilder(args, opts).Build().Run();
-            })
+            .WithParsed(opts => { CreateHostBuilder(args, opts).Build().Run(); })
             .WithNotParsed(HandleParseError);
     }
-    
+
     public static IHostBuilder CreateHostBuilder(string[] args, ProgramOptions opts) =>
         Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder
-                    .UseStartup<Startup>()
-                    .UseUrls($"http://*:{opts.Port}")
-                    .UseKestrel(options =>
-                    {
-                        options.AddServerHeader = false;
-                        options.Limits.MaxRequestBodySize = 5368709120;
-                    });
-            });
-    
+            .ConfigureWebHostDefaults(
+                webBuilder =>
+                {
+                    webBuilder
+                        .UseStartup<Startup>()
+                        .UseUrls($"http://*:{opts.Port}")
+                        .UseKestrel(
+                            options =>
+                            {
+                                options.AddServerHeader = false;
+                                options.Limits.MaxRequestBodySize = 5368709120;
+                            });
+                });
+
     private static void HandleParseError(IEnumerable<Error> errors)
     {
         var errorMessages = new List<string>();
@@ -44,8 +41,7 @@ public class Program
                         $"Unable to parse `--{namedError.NameInfo.LongName}` with error `{namedError.Tag}`");
                     break;
                 default:
-                    errorMessages.Add(
-                        $"Unable to parse non-named argument with error `{error.Tag}`");
+                    errorMessages.Add($"Unable to parse non-named argument with error `{error.Tag}`");
                     break;
             }
         }
@@ -54,9 +50,9 @@ public class Program
         {
             return;
         }
-                        
+
         Console.WriteLine(string.Join("\n", errorMessages));
-                        
+
         Environment.Exit(1);
     }
 }

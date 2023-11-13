@@ -36,7 +36,12 @@ public class NodeExistsAndRendererDoesNotMatch
             new RouteInfoFactory(requestContext, new BlockClusterConfig());
         var publishingService = SpecHelper.CreatePublishingService(routeInfoFactory);
 
-        _sut = new RouteService(_nodeService, publishingService, routeInfoFactory, requestContext, cacheKeyService,
+        _sut = new RouteService(
+            _nodeService,
+            publishingService,
+            routeInfoFactory,
+            requestContext,
+            cacheKeyService,
             logger);
     }
 

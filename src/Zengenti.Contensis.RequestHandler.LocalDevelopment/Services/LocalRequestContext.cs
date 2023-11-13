@@ -1,7 +1,6 @@
 ﻿using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Proxies;
-using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
@@ -16,15 +15,15 @@ public class LocalDevelopmentRequestContext : IRequestContext
         TraceEnabled = traceEnabled;
     }
 
-    public bool TraceEnabled { get; private set; }
+    public bool TraceEnabled { get; }
 
-    public string Alias => _siteConfigLoader.SiteConfig!.Alias;
+    public string Alias => _siteConfigLoader.SiteConfig.Alias;
 
-    public string ProjectApiId => _siteConfigLoader.SiteConfig!.ProjectApiId;
+    public string ProjectApiId => _siteConfigLoader.SiteConfig.ProjectApiId;
 
     public Guid ProjectUuid => Guid.Empty; // NOT required for local development ATM.
 
-    public Uri ApiUri => new Uri($"https://cms-{_siteConfigLoader.SiteConfig!.Alias}.cloud.contensis.com");
+    public Uri ApiUri => new Uri($"https://cms-{_siteConfigLoader.SiteConfig.Alias}.cloud.contensis.com");
 
     public VersionStatus NodeVersionStatus =>
         CallContext.Current[Constants.Headers.NodeVersionStatus].EqualsCaseInsensitive("published")

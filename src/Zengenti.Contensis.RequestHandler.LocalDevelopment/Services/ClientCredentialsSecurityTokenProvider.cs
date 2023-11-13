@@ -6,7 +6,7 @@ using Zengenti.Security;
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 
 /// <summary>
-/// For internal use only. Taken from Zengenti.Contensis.Security.Api.Console.Program
+///     For internal use only. Taken from Zengenti.Contensis.Security.Api.Console.Program
 /// </summary>
 internal class ClientCredentialsSecurityTokenProvider : ISecurityTokenProvider
 {
@@ -24,20 +24,20 @@ internal class ClientCredentialsSecurityTokenProvider : ISecurityTokenProvider
         httpClient.BaseAddress =
             new Uri($"https://cms-{_securityTokenParams.Alias}.cloud.contensis.com/authenticate/connect/token/");
 
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type",
+        httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
+            "Content-Type",
             "application/x-www-form-urlencoded");
 
-        FormUrlEncodedContent payload = new FormUrlEncodedContent
-        (
+        FormUrlEncodedContent payload = new FormUrlEncodedContent(
             new[]
             {
                 new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("client_id", _securityTokenParams.ClientId),
-                new KeyValuePair<string, string>("client_secret", _securityTokenParams.ClientSecret),
-                new KeyValuePair<string, string>("scope",
+                new KeyValuePair<string, string>("client_id", _securityTokenParams.ClientId ?? ""),
+                new KeyValuePair<string, string>("client_secret", _securityTokenParams.ClientSecret ?? ""),
+                new KeyValuePair<string, string>(
+                    "scope",
                     "Security_Administrator ContentType_Delete ContentType_Read ContentType_Write Entry_Delete Entry_Read Entry_Write Project_Read Project_Write Project_Delete DiagnosticsAllUsers DiagnosticsAdministrator Workflow_Administrator"),
-            }
-        );
+            });
 
         try
         {
@@ -66,7 +66,7 @@ internal class ClientCredentialsSecurityTokenProvider : ISecurityTokenProvider
     {
         var response = await httpClient.PostAsync(string.Empty, payload);
         var result = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
-        return result;
+        return result ?? "";
     }
 
     public void ClearToken()

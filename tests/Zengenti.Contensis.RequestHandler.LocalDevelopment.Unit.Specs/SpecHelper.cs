@@ -1,8 +1,6 @@
 using System.Reflection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using Zengenti.Contensis.RequestHandler.Application.Middleware;
 using Zengenti.Contensis.RequestHandler.Application.Resolving;
 using Zengenti.Contensis.RequestHandler.Application.Services;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
@@ -19,8 +17,14 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
         internal static readonly SiteConfigLoader SiteConfigLoaderFromFile =
             new SiteConfigLoader("Config/site_config.yaml");
 
-        internal static readonly SiteConfigLoader SiteConfigLoaderFromJson = new SiteConfigLoader("test", "website",
-            GetFile("Config/blocks.json"), GetFile("Config/renderers.json"), "token1", "client1", "secret1");
+        internal static readonly SiteConfigLoader SiteConfigLoaderFromJson = new SiteConfigLoader(
+            "test",
+            "website",
+            GetFile("Config/blocks.json"),
+            GetFile("Config/renderers.json"),
+            "token1",
+            "client1",
+            "secret1");
 
         public static SiteConfigLoader SiteConfigLoader => SiteConfigLoaderFromJson;
 
@@ -42,7 +46,8 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
             return value.Replace("\r\n", "\n");
         }
 
-        public static ILocalDevPublishingService CreatePublishingService(IRouteInfoFactory routeInfoFactory,
+        public static ILocalDevPublishingService CreatePublishingService(
+            IRouteInfoFactory routeInfoFactory,
             bool enableFullUriRouting = false)
         {
             return new SiteConfigPublishingService(
@@ -60,16 +65,22 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
         public static HtmlResponseResolver CreateHtmlResponseResolver(bool traceEnabled = false)
         {
             var requestContext = CreateRequestContext(traceEnabled);
-            return new HtmlResponseResolver(requestContext,
+            return new HtmlResponseResolver(
+                requestContext,
                 CreatePublishingService(new RouteInfoFactory(requestContext, new BlockClusterConfig())),
-                Substitute.For<IGlobalApi>(), Substitute.For<ILogger<HtmlResponseResolver>>())
+                Substitute.For<IGlobalApi>(),
+                Substitute.For<ILogger<HtmlResponseResolver>>())
             {
                 RequestService = Substitute.For<IEndpointRequestService>()
             };
         }
 
-        public static void SetEndpointResponse(IEndpointRequestService requestService, string path,
-            string responseContent, int statusCode = 200, PageletPerformanceData pageletPerformanceData = null)
+        public static void SetEndpointResponse(
+            IEndpointRequestService requestService,
+            string path,
+            string responseContent,
+            int statusCode = 200,
+            PageletPerformanceData pageletPerformanceData = null)
         {
             requestService
                 .Invoke(
@@ -79,16 +90,28 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
                     Arg.Is<RouteInfo>(r => r.Uri.AbsolutePath == path),
                     Arg.Any<int>(),
                     Arg.Any<CancellationToken>())
-                .Returns(new EndpointResponse(responseContent, new Dictionary<string, IEnumerable<string>>(),
-                    statusCode, pageletPerformanceData));
+                .Returns(
+                    new EndpointResponse(
+                        responseContent,
+                        new Dictionary<string, IEnumerable<string>>(),
+                        statusCode,
+                        pageletPerformanceData));
         }
 
-        public static RouteInfo CreateBasicRouteInfo(Guid? projectUuid = null, Guid? blockVersionId = null,
+        public static RouteInfo CreateBasicRouteInfo(
+            Guid? projectUuid = null,
+            Guid? blockVersionId = null,
             params string[] staticPaths)
         {
-            var blockVersionInfo = new BlockVersionInfo(projectUuid ?? Guid.NewGuid(), "",
+            var blockVersionInfo = new BlockVersionInfo(
+                projectUuid ?? Guid.NewGuid(),
+                "",
                 blockVersionId ?? Guid.NewGuid(),
-                new Uri("http://website.com"), "master", false, staticPaths, 1);
+                new Uri("http://website.com"),
+                "master",
+                false,
+                staticPaths,
+                1);
             blockVersionInfo.EnsureDefaultStaticPaths();
             return new RouteInfo(
                 new Uri("http://website.com"),

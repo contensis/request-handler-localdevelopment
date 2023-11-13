@@ -12,16 +12,21 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
         {
             private HtmlContent _sut;
             private readonly List<Guid> _tagIds = new List<Guid>();
-            
+
             [Given]
             public void GivenMultiplePagelets()
             {
                 var html = SpecHelper.GetFile("Resolving/Files/Record-multiple-pagelets.html");
                 var parser = new HtmlParser(html);
-                
+
                 _sut = new HtmlContent(html, Substitute.For<ILogger>());
 
-                while (parser.ParseNext(new []{"pagelet"}, out var tag))
+                while (parser.ParseNext(
+                    new[]
+                    {
+                        "pagelet"
+                    },
+                    out var tag))
                 {
                     _tagIds.Add(tag.Id);
                     _sut.AddTagOffset(tag);
@@ -54,21 +59,26 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 this.BDDfy();
             }
         }
-        
+
         class MultiplePageletsResolvedUnordered
         {
             private HtmlContent _sut;
             private readonly List<Guid> _tagIds = new List<Guid>();
-            
+
             [Given]
             public void GivenMultiplePagelets()
             {
                 var html = SpecHelper.GetFile("Resolving/Files/Record-multiple-pagelets.html");
                 var parser = new HtmlParser(html);
-                
-                _sut = new HtmlContent(html,Substitute.For<ILogger>());
 
-                while (parser.ParseNext(new []{"pagelet"}, out var tag))
+                _sut = new HtmlContent(html, Substitute.For<ILogger>());
+
+                while (parser.ParseNext(
+                    new[]
+                    {
+                        "pagelet"
+                    },
+                    out var tag))
                 {
                     _tagIds.Add(tag.Id);
                     _sut.AddTagOffset(tag);
@@ -101,7 +111,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 this.BDDfy();
             }
         }
-        
+
         class HtmlTagIdDoesNotExist
         {
             private HtmlContent _sut;
@@ -111,10 +121,15 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             {
                 var html = SpecHelper.GetFile("Resolving/Files/Record-single-pagelet.html");
                 var parser = new HtmlParser(html);
-                
+
                 _sut = new HtmlContent(html, Substitute.For<ILogger>());
 
-                while (parser.ParseNext(new []{"pagelet"}, out var tag))
+                while (parser.ParseNext(
+                    new[]
+                    {
+                        "pagelet"
+                    },
+                    out var tag))
                 {
                     _sut.AddTagOffset(tag);
                 }
@@ -143,16 +158,21 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
         {
             private HtmlContent _sut;
             private Guid _tagId;
-            
+
             [Given]
             public void GivenAPageletResponseIsNull()
             {
                 var html = SpecHelper.GetFile("Resolving/Files/Record-single-pagelet.html");
                 var parser = new HtmlParser(html);
-                
+
                 _sut = new HtmlContent(html, Substitute.For<ILogger>());
 
-                while (parser.ParseNext(new []{"pagelet"}, out var tag))
+                while (parser.ParseNext(
+                    new[]
+                    {
+                        "pagelet"
+                    },
+                    out var tag))
                 {
                     _tagId = tag.Id;
                     _sut.AddTagOffset(tag);

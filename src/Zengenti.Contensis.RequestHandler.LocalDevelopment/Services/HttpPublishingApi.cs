@@ -30,18 +30,25 @@ public class HttpPublishingApi : IPublishingApi
         }
     }
 
-    public HttpPublishingApi(ISiteConfigLoader siteConfigLoader, ISecurityTokenProviderFactory securityTokenProviderFactory)
+    public HttpPublishingApi(
+        ISiteConfigLoader siteConfigLoader,
+        ISecurityTokenProviderFactory securityTokenProviderFactory)
     {
         _siteConfigLoader = siteConfigLoader;
         _siteConfig = _siteConfigLoader.SiteConfig;
-        
+
         var securityTokenParams =
-            new SecurityTokenParams(SiteConfig.Alias, SiteConfig.ClientId, SiteConfig.SharedSecret, SiteConfig.Username, SiteConfig.Password);
+            new SecurityTokenParams(
+                SiteConfig.Alias,
+                SiteConfig.ClientId,
+                SiteConfig.SharedSecret,
+                SiteConfig.Username,
+                SiteConfig.Password);
         var securityTokenProvider = securityTokenProviderFactory.GetSecurityTokenProvider(securityTokenParams);
-        
+
         _internalRestClient =
             new RestClientFactory($"https://cms-{securityTokenParams.Alias}.cloud.contensis.com/")
-                .SecuredRestClient( securityTokenProvider);
+                .SecuredRestClient(securityTokenProvider);
 
         // Only used for debugging locally
         // _internalRestClient =
@@ -66,8 +73,18 @@ public class HttpPublishingApi : IPublishingApi
 
         // TODO: check if we need to populate enableFullUriRouting
         var enableFullUriRouting = false;
-        var blockVersionInfo = new BlockVersionInfo(projectUuid, "", versionId, new Uri(""), "", enableFullUriRouting,
-            new[] { "" }, 1);
+        var blockVersionInfo = new BlockVersionInfo(
+            projectUuid,
+            "",
+            versionId,
+            new Uri(""),
+            "",
+            enableFullUriRouting,
+            new[]
+            {
+                ""
+            },
+            1);
         return blockVersionInfo;
     }
 
@@ -93,7 +110,7 @@ public class HttpPublishingApi : IPublishingApi
             endpointRequestInfo["endpointID"]?.ToString(),
             layoutRendererId,
             endpointRequestInfo["uri"].ToString(),
-            ((JToken)endpointRequestInfo["staticPaths"]).ToObject<string[]>().ToList(),
+            ((JToken)endpointRequestInfo["staticPaths"])?.ToObject<string[]>()?.ToList(),
             Guid.Parse(endpointRequestInfo["rendererId"].ToString()),
             null,
             endpointRequestInfo["branch"].ToString(),
@@ -102,9 +119,12 @@ public class HttpPublishingApi : IPublishingApi
             null);
     }
 
-    public Task<IList<BlockWithVersions>> ListBlocksThatAreAvailable(Guid projectUuid, string viewType,
+    public Task<IList<BlockWithVersions>> ListBlocksThatAreAvailable(
+        Guid projectUuid,
+        string viewType,
         string activeBlockVersionConfig,
-        string defaultBlockVersionConfig, string serverType)
+        string defaultBlockVersionConfig,
+        string serverType)
     {
         throw new NotImplementedException();
     }

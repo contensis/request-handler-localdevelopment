@@ -3,7 +3,7 @@
 public interface ICacheKeyService
 {
     /// <summary>
-    /// Adds a cache key for local development
+    ///     Adds a cache key for local development
     /// </summary>
     /// <param name="key"></param>
     void Add(string key);

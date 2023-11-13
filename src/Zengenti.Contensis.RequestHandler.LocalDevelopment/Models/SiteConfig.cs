@@ -8,7 +8,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
 
 public class SiteConfig
 {
-    public List<ContentTypeRendererMapItem> ContentTypeRendererMap { get; private set; } =
+    public List<ContentTypeRendererMapItem> ContentTypeRendererMap { get; } =
         new List<ContentTypeRendererMapItem>();
 
     public string Alias { get; set; } = null!;
@@ -98,11 +98,18 @@ public class SiteConfig
         return null;
     }
 
-    public static SiteConfig LoadFromJson(string alias, string projectApiId, string blocksAsJson,
-        string? renderersAsJson = null, string? accessToken = null, string? clientId = null,
-        string? sharedSecret = null, string? username = null, string? password = null)
+    public static SiteConfig LoadFromJson(
+        string alias,
+        string projectApiId,
+        string blocksAsJson,
+        string? renderersAsJson = null,
+        string? accessToken = null,
+        string? clientId = null,
+        string? sharedSecret = null,
+        string? username = null,
+        string? password = null)
     {
-        var siteConfig = new SiteConfig()
+        var siteConfig = new SiteConfig
         {
             Alias = alias,
             ProjectApiId = projectApiId,
@@ -113,7 +120,7 @@ public class SiteConfig
             Password = password
         };
 
-        var jsonSerializerOptions = new JsonSerializerOptions()
+        var jsonSerializerOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
@@ -163,7 +170,7 @@ public class SiteConfig
 
             if (!string.IsNullOrWhiteSpace(renderer.LayoutRenderer))
             {
-                renderer.LayoutRendererId = siteConfig.GetRendererById(renderer.LayoutRenderer).Uuid;
+                renderer.LayoutRendererId = siteConfig.GetRendererById(renderer.LayoutRenderer)?.Uuid;
             }
         }
     }

@@ -20,7 +20,7 @@ public class NodeExistsAndRendererMatchedWithFullUriRouting
     private Node _node;
     private ILocalDevPublishingService _publishingService;
     private readonly Guid _projectUuid = Guid.NewGuid();
-    
+
     [Given]
     public void GivenARequestPathExistsAsANode()
     {
@@ -42,7 +42,12 @@ public class NodeExistsAndRendererMatchedWithFullUriRouting
         _nodeService = Substitute.For<INodeService>();
         _nodeService.GetByPath(Path).Returns(_node);
 
-        _sut = new RouteService(_nodeService, _publishingService, routeInfoFactory, requestContext, cacheKeyService,
+        _sut = new RouteService(
+            _nodeService,
+            _publishingService,
+            routeInfoFactory,
+            requestContext,
+            cacheKeyService,
             logger);
     }
 
@@ -62,8 +67,9 @@ public class NodeExistsAndRendererMatchedWithFullUriRouting
     public void AndThenTheCorrectRouteInfoIsReturned()
     {
         Assert.That(_result, Is.Not.Null);
-        Assert.That(_result.Uri.ToString(), Is.EqualTo(
-            $"http://website.com/blogs/keeping-it-real?nodeId={_node.Id}&entryId={_node.EntryId}"));
+        Assert.That(
+            _result.Uri.ToString(),
+            Is.EqualTo($"http://website.com/blogs/keeping-it-real?nodeId={_node.Id}&entryId={_node.EntryId}"));
 
         var expectedRoutePrefix =
             $"{Constants.Paths.StaticPathUniquePrefix}{RouteInfo.GetUrlFriendlyHash(_projectUuid)}{Constants.Paths.StaticPathUniquePrefix}{_publishingService.GetBlockById("blogs").Uuid}";

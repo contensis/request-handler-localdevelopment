@@ -25,10 +25,13 @@ public class ApiPath
     {
         _result = _sut.CreateForNonNodePath(
             new Uri("http://www.mysite.com/api/delivery/projects/website/entries?versionStatus=latest"),
-            new Headers(new Dictionary<string, string>
-            {
-                { Constants.Headers.Alias, "zenhub" }
-            }));
+            new Headers(
+                new Dictionary<string, string>
+                {
+                    {
+                        Constants.Headers.Alias, "zenhub"
+                    }
+                }));
     }
 
     [Then]
@@ -44,7 +47,7 @@ public class ApiPath
     {
         Assert.That(_result.Headers.GetFirstValueIfExists(Constants.Headers.Alias) == "zenhub");
     }
-    
+
     [AndThen]
     public void AndThenTheQueryStringValuesAreCorrect()
     {
@@ -52,7 +55,7 @@ public class ApiPath
         Assert.That(query.Count, Is.EqualTo(1));
         Assert.That(query["versionStatus"], Is.EqualTo("latest"));
     }
-    
+
     [Test]
     public void Run()
     {

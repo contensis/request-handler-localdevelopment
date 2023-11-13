@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 
 namespace Zengenti.Contensis.RequestHandler.Application.Resolving;

@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Http;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
 
 namespace Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
@@ -8,7 +7,11 @@ namespace Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 [DebuggerDisplay("{_values}")]
 public sealed class Headers
 {
-    public readonly string[] CaseInsensitiveHeaderNames = { "host" };
+    public readonly string[] CaseInsensitiveHeaderNames =
+    {
+        "host"
+    };
+
     private readonly Dictionary<string, IEnumerable<string>> _values;
 
     public IReadOnlyDictionary<string, IEnumerable<string>> Values => _values.ToReadOnlyDictionary();
@@ -25,8 +28,10 @@ public sealed class Headers
 
     public Headers(IHeaderDictionary headerDictionary)
     {
-        _values = headerDictionary.ToDictionary(h =>
-            h.Key, h => h.Value.AsEnumerable());
+        _values = headerDictionary.ToDictionary(
+            h =>
+                h.Key,
+            h => h.Value.AsEnumerable());
     }
 
     public Headers(Dictionary<string, string>? headers)
@@ -34,8 +39,12 @@ public sealed class Headers
         _values =
             _values = headers is null
                 ? new Dictionary<string, IEnumerable<string>>()
-                : headers.ToDictionary(x => x.Key,
-                    x => new[] { x.Value }.Select(header => header));
+                : headers.ToDictionary(
+                    x => x.Key,
+                    x => new[]
+                    {
+                        x.Value
+                    }.Select(header => header));
     }
 
     public Headers(HttpResponseHeaders? headers)
@@ -45,8 +54,9 @@ public sealed class Headers
             : headers.ToDictionary(h => h.Key, h => h.Value);
     }
 
-    public bool IisFallbackHeadersAreSet => _values.ContainsKey(Constants.Headers.LoadBalancerVip) &&
-                                            _values.ContainsKey(Constants.Headers.IisHostName);
+    public bool IisFallbackHeadersAreSet =>
+        _values.ContainsKey(Constants.Headers.LoadBalancerVip) &&
+        _values.ContainsKey(Constants.Headers.IisHostName);
 
     public string? LoadBalancerVip => GetFirstValueIfExists(Constants.Headers.LoadBalancerVip);
 
@@ -58,12 +68,17 @@ public sealed class Headers
 
     public static implicit operator Headers(Dictionary<string, IEnumerable<string>> dictionary) => new(dictionary);
 
-    public static implicit operator Dictionary<string, IEnumerable<string>>(Headers headers) =>
-        new(headers._values);
+    public static implicit operator Dictionary<string, IEnumerable<string>>(Headers headers) => new(headers._values);
 
     public string? this[string name]
     {
-        set => SetValue(name, new[] { value }!);
+        set =>
+            SetValue(
+                name,
+                new[]
+                {
+                    value
+                }!);
     }
 
     public bool HasKey(string key)
@@ -115,9 +130,9 @@ public sealed class Headers
             return null;
         }
 
-        if (_values.ContainsKey(key))
+        if (_values.TryGetValue(key, out var value))
         {
-            return _values[key].FirstOrDefault();
+            return value.FirstOrDefault();
         }
 
         return null;

@@ -1,12 +1,19 @@
 ﻿namespace Zengenti.Contensis.RequestHandler.Domain.Entities;
 
 /// <summary>
-/// A light-weight object to hold the details of a block version required for invoking static resource endpoints.
+///     A light-weight object to hold the details of a block version required for invoking static resource endpoints.
 /// </summary>
 public class BlockVersionInfo
 {
-    public BlockVersionInfo(Guid projectUuid, string blockId, Guid blockVersionId, Uri baseUri, string branch, bool enableFullUriRouting,
-        IEnumerable<string>? staticPaths = null, int? versionNo = null)
+    public BlockVersionInfo(
+        Guid projectUuid,
+        string blockId,
+        Guid blockVersionId,
+        Uri baseUri,
+        string branch,
+        bool enableFullUriRouting,
+        IEnumerable<string>? staticPaths = null,
+        int? versionNo = null)
     {
         ProjectUuid = projectUuid;
         BlockId = blockId;

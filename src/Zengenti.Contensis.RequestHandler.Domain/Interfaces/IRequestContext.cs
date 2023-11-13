@@ -1,5 +1,4 @@
 ﻿using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Proxies;
-using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 

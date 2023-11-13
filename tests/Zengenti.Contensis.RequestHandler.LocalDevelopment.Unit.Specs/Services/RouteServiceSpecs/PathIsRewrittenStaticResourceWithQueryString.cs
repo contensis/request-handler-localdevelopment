@@ -15,7 +15,7 @@ public class PathIsRewrittenStaticResourceWithQueryString
     private INodeService _nodeService;
     private RouteInfo _result;
     private Uri _originUri;
-    private Headers _headers = new();
+    private readonly Headers _headers = new();
     private readonly Guid _projectUuid = Guid.NewGuid();
 
     [Given]
@@ -35,7 +35,12 @@ public class PathIsRewrittenStaticResourceWithQueryString
             $"/{Constants.Paths.StaticPathUniquePrefix}{RouteInfo.GetUrlFriendlyHash(_projectUuid)}{Constants.Paths.StaticPathUniquePrefix}{block.Uuid}/static/images/header.png?foo=bar";
         _originUri = new Uri("http://www.origin.com" + _requestPath);
 
-        _sut = new RouteService(_nodeService, publishingService, routeInfoFactory, requestContext, cacheKeyService,
+        _sut = new RouteService(
+            _nodeService,
+            publishingService,
+            routeInfoFactory,
+            requestContext,
+            cacheKeyService,
             logger);
     }
 
@@ -55,7 +60,8 @@ public class PathIsRewrittenStaticResourceWithQueryString
     public void AndThenARouteIsReturnedWithTheInternalResourceUri()
     {
         Assert.That(_result, Is.Not.Null);
-        Assert.That(_result.Uri.ToString(),
+        Assert.That(
+            _result.Uri.ToString(),
             Is.EqualTo("http://website.com/static/images/header.png?foo=bar"));
     }
 

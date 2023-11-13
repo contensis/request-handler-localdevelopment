@@ -12,7 +12,6 @@ public class Endpoint
 
     public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
 
-    
     [JsonIgnore]
     public Block Block { get; set; } = null!;
 

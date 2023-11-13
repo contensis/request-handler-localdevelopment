@@ -1,8 +1,6 @@
 using System.Diagnostics;
 using Grpc.Core;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Logging;
 using Zengenti.Contensis.RequestHandler.Application.Resolving;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
@@ -119,19 +117,26 @@ public class RouteService : IRouteService
         catch (RpcException e)
         {
             var logLevel = LogLevel.Error;
-            
+
             if (e.StatusCode == StatusCode.NotFound)
             {
                 logLevel = LogLevel.Warning;
             }
-            else
-            {
-                _logger.Log(logLevel, e, "Failed to GetRouteForRequest with RpcException.Message {Message} for url {Uri}", e.Message, originUri);
-            }
+
+            _logger.Log(
+                logLevel,
+                e,
+                "Failed to GetRouteForRequest with RpcException.Message {Message} for url {Uri}",
+                e.Message,
+                originUri);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to GetRouteForRequest with Exception.Message {Message} for url {Uri}", e.Message, originUri);
+            _logger.LogError(
+                e,
+                "Failed to GetRouteForRequest with Exception.Message {Message} for url {Uri}",
+                e.Message,
+                originUri);
         }
 
         var nodePath = "";
@@ -178,11 +183,11 @@ public class RouteService : IRouteService
         // We can negate anything that is a rewritten static path
         var pathIsRewritten = StaticPath.Parse(path)?.IsRewritten;
 
-        bool doLookup = path.ToLowerInvariant() != "/favicon.ico"
-                        && !path.StartsWithCaseInsensitive("/contensis-preview-toolbar/")
-                        && !pathIsRewritten.GetValueOrDefault()
-                        && !Constants.Paths.ApiPrefixes.Any(path.StartsWithCaseInsensitive)
-                        && !Constants.Paths.PassThroughPrefixes.Any(path.StartsWithCaseInsensitive);
+        bool doLookup = path.ToLowerInvariant() != "/favicon.ico" &&
+                        !path.StartsWithCaseInsensitive("/contensis-preview-toolbar/") &&
+                        !pathIsRewritten.GetValueOrDefault() &&
+                        !Constants.Paths.ApiPrefixes.Any(path.StartsWithCaseInsensitive) &&
+                        !Constants.Paths.PassThroughPrefixes.Any(path.StartsWithCaseInsensitive);
 
         return doLookup;
     }

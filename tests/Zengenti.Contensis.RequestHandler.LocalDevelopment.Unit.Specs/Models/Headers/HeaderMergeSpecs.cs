@@ -13,15 +13,30 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             [Given]
             public void GivenHeadersExist()
             {
-                _sut.Add(Constants.Headers.Alias, new[] { "zenhub" });
-                _sut.Add(Constants.Headers.ProjectApiId, new[] { "contensis" });
+                _sut.Add(
+                    Constants.Headers.Alias,
+                    new[]
+                    {
+                        "zenhub"
+                    });
+                _sut.Add(
+                    Constants.Headers.ProjectApiId,
+                    new[]
+                    {
+                        "contensis"
+                    });
             }
 
             [When]
             public void WhenAMatchingHeaderValueIsMerged()
             {
                 var toMerge = new Domain.ValueTypes.Headers();
-                toMerge.Add(Constants.Headers.Alias, new[] { "develop" });
+                toMerge.Add(
+                    Constants.Headers.Alias,
+                    new[]
+                    {
+                        "develop"
+                    });
 
                 _result = _sut.Merge(toMerge);
             }
@@ -49,15 +64,30 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             [Given]
             public void GivenHeadersExist()
             {
-                _sut.Add(Constants.Headers.Alias, new[] { "zenhub" });
-                _sut.Add(Constants.Headers.ProjectApiId, new[] { "contensis" });
+                _sut.Add(
+                    Constants.Headers.Alias,
+                    new[]
+                    {
+                        "zenhub"
+                    });
+                _sut.Add(
+                    Constants.Headers.ProjectApiId,
+                    new[]
+                    {
+                        "contensis"
+                    });
             }
 
             [When]
             public void WhenAHeaderValueIsMergedThatDoesNotAlreadyExist()
             {
                 var toMerge = new Domain.ValueTypes.Headers();
-                toMerge.Add(Constants.Headers.ProjectUuid, new[] { Guid.Empty.ToString() });
+                toMerge.Add(
+                    Constants.Headers.ProjectUuid,
+                    new[]
+                    {
+                        Guid.Empty.ToString()
+                    });
 
                 _result = _sut.Merge(toMerge);
             }
@@ -68,7 +98,8 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                 Assert.That(_result.Values.Count, Is.EqualTo(3));
                 Assert.That(_result.Values[Constants.Headers.Alias].FirstOrDefault(), Is.EqualTo("zenhub"));
                 Assert.That(_result.Values[Constants.Headers.ProjectApiId].FirstOrDefault(), Is.EqualTo("contensis"));
-                Assert.That(_result.Values[Constants.Headers.ProjectUuid].FirstOrDefault(),
+                Assert.That(
+                    _result.Values[Constants.Headers.ProjectUuid].FirstOrDefault(),
                     Is.EqualTo(Guid.Empty.ToString()));
             }
 
@@ -87,14 +118,24 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             [Given]
             public void GivenAHeadersExistsThatIsHandledCaseInsensitively()
             {
-                _sut.Add("host", new[] { "http://www.mywebsite.com" });
+                _sut.Add(
+                    "host",
+                    new[]
+                    {
+                        "http://www.mywebsite.com"
+                    });
             }
 
             [When]
             public void WhenAHeaderWithTheSameNameButDifferentCaseIsMerged()
             {
                 var toMerge = new Domain.ValueTypes.Headers();
-                toMerge.Add("host", new[] { "http://www.myotherwebsite.com" });
+                toMerge.Add(
+                    "host",
+                    new[]
+                    {
+                        "http://www.myotherwebsite.com"
+                    });
 
                 _result = _sut.Merge(toMerge);
             }
@@ -114,4 +155,3 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
         }
     }
 }
-

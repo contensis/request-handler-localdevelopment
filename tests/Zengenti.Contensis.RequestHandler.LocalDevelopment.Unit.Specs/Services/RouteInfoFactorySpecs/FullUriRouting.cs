@@ -31,17 +31,27 @@ public class FullUriRouting
         _result = _sut.Create(
             new Uri(_baseUriString),
             new Uri("http://www.mysite.com/some-path/?page=2"),
-            new Headers(new Dictionary<string, string>
-            {
-                { Constants.Headers.Alias, "zenhub" }
-            }),
+            new Headers(
+                new Dictionary<string, string>
+                {
+                    {
+                        Constants.Headers.Alias, "zenhub"
+                    }
+                }),
             new Node
             {
                 Id = _nodeId,
                 EntryId = _entryId
             },
-            new BlockVersionInfo(Guid.NewGuid(), "", Guid.NewGuid(),
-                new Uri(_baseUriString), "main",true, null, 1));
+            new BlockVersionInfo(
+                Guid.NewGuid(),
+                "",
+                Guid.NewGuid(),
+                new Uri(_baseUriString),
+                "main",
+                true,
+                null,
+                1));
     }
 
     [Then]

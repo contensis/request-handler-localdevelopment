@@ -11,7 +11,7 @@ public class IisFallback
 {
     private readonly IRouteInfoFactory _sut =
         new RouteInfoFactory(
-            SpecHelper.CreateRequestContext(), 
+            SpecHelper.CreateRequestContext(),
             new BlockClusterConfig("10.0.1.2", "suffix"));
 
     private RouteInfo _result;
@@ -26,12 +26,19 @@ public class IisFallback
     {
         _result = _sut.CreateForIisFallback(
             new Uri("http://www.mysite.com/news/today-is-the-day?page=2"),
-            new Headers(new Dictionary<string, string>
-            {
-                { Constants.Headers.Alias, "zenhub" },
-                { Constants.Headers.LoadBalancerVip, "10.0.0.1" },
-                { Constants.Headers.IisHostName, "www.mysite.com" }
-            }));
+            new Headers(
+                new Dictionary<string, string>
+                {
+                    {
+                        Constants.Headers.Alias, "zenhub"
+                    },
+                    {
+                        Constants.Headers.LoadBalancerVip, "10.0.0.1"
+                    },
+                    {
+                        Constants.Headers.IisHostName, "www.mysite.com"
+                    }
+                }));
     }
 
     [Then]
@@ -48,7 +55,7 @@ public class IisFallback
         Assert.That(_result.Headers.Values.Count, Is.EqualTo(4));
         Assert.That(_result.Headers.GetFirstValueIfExists(Constants.Headers.Alias) == "zenhub");
     }
-    
+
     [AndThen]
     public void AndThenTheHostHeaderIsSetToTheOriginHeader()
     {
@@ -59,11 +66,11 @@ public class IisFallback
     public void AndThenTheQueryStringValuesAreCorrect()
     {
         var query = HttpUtility.ParseQueryString(_result.Uri.Query);
-        
+
         Assert.That(query.Count, Is.EqualTo(1));
         Assert.That(query["page"], Is.EqualTo("2"));
     }
-    
+
     [Test]
     public void Run()
     {

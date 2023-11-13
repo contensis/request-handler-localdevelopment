@@ -38,15 +38,29 @@ public static class Constants
         public const string LoadBalancerVip = "x-loadbalancer-vip";
         public const string IisHostName = "x-iis-hostname";
 
-        public static readonly string[] ConfigHeaders = new[] { BlockConfig, ProxyConfig, RendererConfig };
+        public static readonly string[] ConfigHeaders =
+        {
+            BlockConfig,
+            ProxyConfig,
+            RendererConfig
+        };
 
         public static readonly string[] ConfigHeadersWithDefaults =
-            new[] { BlockConfigDefault, ProxyConfigDefault, RendererConfigDefault };
-
-        public static readonly string[] RequiresHeaders = new[]
         {
-            RequiresAlias, RequiresProjectApiId, RequiresNodeId, RequiresEntryId, RequiresEntryLanguage,
-            RequiresBlockId, RequiresVersionNo
+            BlockConfigDefault,
+            ProxyConfigDefault,
+            RendererConfigDefault
+        };
+
+        public static readonly string[] RequiresHeaders =
+        {
+            RequiresAlias,
+            RequiresProjectApiId,
+            RequiresNodeId,
+            RequiresEntryId,
+            RequiresEntryLanguage,
+            RequiresBlockId,
+            RequiresVersionNo
         };
     }
 
@@ -68,11 +82,16 @@ public static class Constants
     {
         public const string StaticPathUniquePrefix = "_";
 
-        public static readonly string[] ApiPrefixes = new[]
-            { "/api/" };
-        
-        public static readonly string[] PassThroughPrefixes = new[]
-            { "/REST/UI/FormsModule/TestAccessibility/", "/REST/Contensis/content/GetFormSettings" };
+        public static readonly string[] ApiPrefixes =
+        {
+            "/api/"
+        };
+
+        public static readonly string[] PassThroughPrefixes =
+        {
+            "/REST/UI/FormsModule/TestAccessibility/",
+            "/REST/Contensis/content/GetFormSettings"
+        };
     }
 
     public static class CacheKeys

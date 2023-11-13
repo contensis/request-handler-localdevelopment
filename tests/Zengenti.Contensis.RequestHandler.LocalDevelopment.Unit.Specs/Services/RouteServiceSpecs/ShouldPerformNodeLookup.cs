@@ -25,7 +25,12 @@ public class ShouldPerformNodeLookup
         var logger = Substitute.For<ILogger<RouteService>>();
         var routeInfoFactory = Substitute.For<IRouteInfoFactory>();
 
-        _sut = new RouteService(_nodeService, publishingService, routeInfoFactory, requestContext, cacheKeyService,
+        _sut = new RouteService(
+            _nodeService,
+            publishingService,
+            routeInfoFactory,
+            requestContext,
+            cacheKeyService,
             logger);
     }
 

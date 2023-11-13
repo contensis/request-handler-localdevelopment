@@ -4,7 +4,7 @@ namespace Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 public class RequestContext
 {
-    public RequestContext(Guid projectUuid) => this.ProjectUuid = projectUuid;
+    public RequestContext(Guid projectUuid) => ProjectUuid = projectUuid;
 
     public Guid ProjectUuid { get; set; }
 

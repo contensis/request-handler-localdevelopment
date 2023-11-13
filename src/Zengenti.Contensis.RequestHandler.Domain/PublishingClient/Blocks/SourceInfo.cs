@@ -2,5 +2,5 @@
 
 public record SourceInfo
 {
-    public CommitInfo Commit { get; set; }
+    public CommitInfo Commit { get; set; } = null!;
 }

@@ -8,7 +8,13 @@ public class PageletPerformanceData
     private readonly Uri? _requestUri;
     private readonly HttpMethod _requestMethod;
 
-    public PageletPerformanceData(long requestMs, long parsingMs, long durationMs, Uri? requestUri, HttpMethod requestMethod, HttpRequestHeaders requestHeaders)
+    public PageletPerformanceData(
+        long requestMs,
+        long parsingMs,
+        long durationMs,
+        Uri? requestUri,
+        HttpMethod requestMethod,
+        HttpRequestHeaders requestHeaders)
     {
         RequestMs = requestMs;
         ParsingMs = parsingMs;
@@ -18,7 +24,11 @@ public class PageletPerformanceData
         _requestMethod = requestMethod;
     }
 
-    public PageletPerformanceData(PageletPerformanceMeasurer measurer, Uri? requestUri, HttpMethod requestMethod, HttpRequestHeaders requestHeaders) 
+    public PageletPerformanceData(
+        PageletPerformanceMeasurer measurer,
+        Uri? requestUri,
+        HttpMethod requestMethod,
+        HttpRequestHeaders requestHeaders)
         : this(measurer.RequestMs, measurer.ParsingMs, measurer.DurationMs, requestUri, requestMethod, requestHeaders)
     {
     }
@@ -32,9 +42,10 @@ public class PageletPerformanceData
     public override string ToString()
     {
         var separator = Environment.NewLine;
-        var headers = string.Join("", 
+        var headers = string.Join(
+            "",
             _requestHeaders.Select(h => $" -H \"{h.Key}: {string.Join("; ", h.Value)}\""));
-            
+
         return $"<!-- {separator} durationMs = {DurationMs} {separator} requestMs = {RequestMs} {separator} " +
                $"parsingMs = {ParsingMs} {separator} curl{headers} --request {_requestMethod.Method} " +
                $"{_requestUri?.AbsoluteUri} {separator} -->{separator}";

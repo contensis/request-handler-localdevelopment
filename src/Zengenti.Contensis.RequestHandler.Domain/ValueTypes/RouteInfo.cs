@@ -6,7 +6,7 @@ using Zengenti.Contensis.RequestHandler.Domain.Entities;
 namespace Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 /// <summary>
-/// Contains the information required to invoke a block or proxied call.
+///     Contains the information required to invoke a block or proxied call.
 /// </summary>
 [DebuggerDisplay("Uri: {Uri}")]
 public class RouteInfo
@@ -34,12 +34,13 @@ public class RouteInfo
         FoundRoute = foundRoute;
 
         var hashedProjectUuid = GetUrlFriendlyHash(BlockVersionInfo?.ProjectUuid);
-        RoutePrefix = $"{Constants.Paths.StaticPathUniquePrefix}{hashedProjectUuid}{Constants.Paths.StaticPathUniquePrefix}{BlockVersionInfo?.BlockVersionId}";
+        RoutePrefix =
+            $"{Constants.Paths.StaticPathUniquePrefix}{hashedProjectUuid}{Constants.Paths.StaticPathUniquePrefix}{BlockVersionInfo?.BlockVersionId}";
     }
 
     public static string GetUrlFriendlyHash(Guid? guid)
     {
-        var hashedGuid = Keys.Hash(guid.ToString() ?? "")!;
+        var hashedGuid = Keys.Hash(guid.ToString() ?? "");
         if (hashedGuid != HttpUtility.UrlEncode(hashedGuid))
         {
             hashedGuid = hashedGuid.Replace("/", "+");
@@ -49,58 +50,57 @@ public class RouteInfo
     }
 
     /// <summary>
-    /// The full calculated URI to invoke.
+    ///     The full calculated URI to invoke.
     /// </summary>
     public Uri Uri { get; }
 
     /// <summary>
-    /// The request headers.
+    ///     The request headers.
     /// </summary>
     public Headers Headers { get; }
 
     /// <summary>
-    /// The block version information required to invoke a running block.
+    ///     The block version information required to invoke a running block.
     /// </summary>
     public BlockVersionInfo? BlockVersionInfo { get; }
 
     /// <summary>
-    /// Maintained for information and error logging.
+    ///     Maintained for information and error logging.
     /// </summary>
     public string? EndpointId { get; }
 
     /// <summary>
-    /// Contextual layout renderer identifier.
+    ///     Contextual layout renderer identifier.
     /// </summary>
     public Guid? LayoutRendererId { get; }
 
     /// <summary>
-    /// Whether the content served by the proxy should be parsed
+    ///     Whether the content served by the proxy should be parsed
     /// </summary>
     public bool ParseContent { get; }
 
     /// <summary>
-    /// The static route prefix for a block
+    ///     The static route prefix for a block
     /// </summary>
     public string RoutePrefix { get; init; }
-        
 
     /// <summary>
-    /// Whether the route is falling back and reverse proxying to an IIS site
+    ///     Whether the route is falling back and reverse proxying to an IIS site
     /// </summary>
     public bool IsIisFallback { get; }
 
     /// <summary>
-    /// Metrics collected along the pipeline.
+    ///     Metrics collected along the pipeline.
     /// </summary>
     public Metrics Metrics { get; }
 
     /// <summary>
-    /// Maintained to enable friendly error messages.
+    ///     Maintained to enable friendly error messages.
     /// </summary>
     public string? NodePath { get; }
 
     /// <summary>
-    /// Maintained to enable friendly error messages.
+    ///     Maintained to enable friendly error messages.
     /// </summary>
     public bool FoundRoute { get; }
 }

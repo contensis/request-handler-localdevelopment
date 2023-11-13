@@ -1,11 +1,14 @@
 namespace Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 /// <summary>
-/// The response from a EndpointRequestService
+///     The response from a EndpointRequestService
 /// </summary>
 public class EndpointResponse
 {
-    public EndpointResponse(string? content, Dictionary<string, IEnumerable<string>> headers, int statusCode,
+    public EndpointResponse(
+        string? content,
+        Dictionary<string, IEnumerable<string>> headers,
+        int statusCode,
         PageletPerformanceData? pageletPerformanceData = null)
     {
         StringContent = content;
@@ -18,7 +21,10 @@ public class EndpointResponse
         }
     }
 
-    public EndpointResponse(Stream content, Dictionary<string, IEnumerable<string>> headers, int statusCode,
+    public EndpointResponse(
+        Stream content,
+        Dictionary<string, IEnumerable<string>> headers,
+        int statusCode,
         PageletPerformanceData? pageletPerformanceData = null)
     {
         StreamContent = content;

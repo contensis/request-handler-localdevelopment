@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Headers;
 using System.Text.Json;
-using Microsoft.AspNetCore.Http;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
@@ -24,14 +23,18 @@ public static class ExceptionHandler
 
         var exceptionsAsJson = JsonSerializer.Serialize(
             innerExceptionDataObjects,
-            new JsonSerializerOptions { WriteIndented = true });
+            new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
 
-        await context.Response.WriteAsync(
-            exceptionsAsJson);
+        await context.Response.WriteAsync(exceptionsAsJson);
         return true;
     }
 
-    private static void GatherExceptionData(AggregateException? aggregateException, List<object> innerExceptionDataObjects)
+    private static void GatherExceptionData(
+        AggregateException? aggregateException,
+        List<object> innerExceptionDataObjects)
     {
         if (aggregateException == null)
         {

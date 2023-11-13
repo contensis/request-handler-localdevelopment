@@ -13,7 +13,10 @@ public class ResponseResolverService : IResponseResolverService
         _resolverFactory = resolverFactory;
     }
 
-    public async Task<string?> Resolve(HttpResponseMessage response, RouteInfo routeInfo, int currentDepth,
+    public async Task<string?> Resolve(
+        HttpResponseMessage response,
+        RouteInfo routeInfo,
+        int currentDepth,
         CancellationToken ct)
     {
         if (!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NotModified)

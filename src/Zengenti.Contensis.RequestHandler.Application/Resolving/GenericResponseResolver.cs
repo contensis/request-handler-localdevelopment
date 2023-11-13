@@ -8,8 +8,10 @@ public class GenericResponseResolver : IResponseResolver
 {
     public async Task<string> Resolve(string content, RouteInfo routeInfo, int currentDepth, CancellationToken ct)
     {
-        return await Task.Run(() =>
-            ReplaceStaticPaths(content, routeInfo.RoutePrefix, routeInfo.BlockVersionInfo?.StaticPaths.ToArray()), ct);
+        return await Task.Run(
+            () =>
+                ReplaceStaticPaths(content, routeInfo.RoutePrefix, routeInfo.BlockVersionInfo?.StaticPaths.ToArray()),
+            ct);
     }
 
     private static string ReplaceStaticPaths(string content, string endpointPrefix, string[]? staticPaths)

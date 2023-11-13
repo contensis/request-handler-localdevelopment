@@ -21,20 +21,20 @@ internal class ContensisClassicSecurityTokenProvider : ISecurityTokenProvider
         httpClient.BaseAddress =
             new Uri($"https://cms-{_securityTokenParams.Alias}.cloud.contensis.com/authenticate/connect/token/");
 
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type",
+        httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
+            "Content-Type",
             "application/x-www-form-urlencoded");
 
-        FormUrlEncodedContent payload = new FormUrlEncodedContent
-        (
+        FormUrlEncodedContent payload = new FormUrlEncodedContent(
             new[]
             {
                 new KeyValuePair<string, string>("grant_type", "contensis_classic"),
                 new KeyValuePair<string, string>("username", _securityTokenParams.Username!),
                 new KeyValuePair<string, string>("password", _securityTokenParams.Password!),
-                new KeyValuePair<string, string>("scope",
+                new KeyValuePair<string, string>(
+                    "scope",
                     "openid offline_access Security_Administrator ContentType_Delete ContentType_Read ContentType_Write Entry_Delete Entry_Read Entry_Write Project_Read Project_Write Project_Delete DiagnosticsAllUsers DiagnosticsAdministrator Workflow_Administrator"),
-            }
-        );
+            });
 
         try
         {

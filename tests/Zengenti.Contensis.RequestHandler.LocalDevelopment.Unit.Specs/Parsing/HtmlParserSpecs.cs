@@ -8,8 +8,8 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
         class SelfClosingTags
         {
             private HtmlParser _sut;
-            private List<HtmlTag> _tags = new List<HtmlTag>();
-            
+            private readonly List<HtmlTag> _tags = new List<HtmlTag>();
+
             [Given]
             public void GivenHtmlContainsSelfClosingTags()
             {
@@ -19,7 +19,12 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             [When]
             public void WhenTheHtmlIsParsed()
             {
-                while (_sut.ParseNext(new []{"pagelet"}, out var tag))
+                while (_sut.ParseNext(
+                    new[]
+                    {
+                        "pagelet"
+                    },
+                    out var tag))
                 {
                     _tags.Add(tag);
                 }
@@ -40,12 +45,12 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
                 this.BDDfy();
             }
         }
-        
+
         class EndTags
         {
             private HtmlParser _sut;
-            private List<HtmlTag> _tags = new List<HtmlTag>();
-            
+            private readonly List<HtmlTag> _tags = new List<HtmlTag>();
+
             [Given]
             public void GivenHtmlContainsTagsWithEndTags()
             {
@@ -55,7 +60,12 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             [When]
             public void WhenTheHtmlIsParsed()
             {
-                while (_sut.ParseNext(new []{"pagelet"}, out var tag))
+                while (_sut.ParseNext(
+                    new[]
+                    {
+                        "pagelet"
+                    },
+                    out var tag))
                 {
                     _tags.Add(tag);
                 }
@@ -78,12 +88,12 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
                 this.BDDfy();
             }
         }
-        
+
         class NonClosedTags
         {
             private HtmlParser _sut;
-            private List<HtmlTag> _tags = new List<HtmlTag>();
-            
+            private readonly List<HtmlTag> _tags = new List<HtmlTag>();
+
             [Given]
             public void GivenHtmlContainsNonClosedTags()
             {
@@ -93,7 +103,12 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             [When]
             public void WhenTheHtmlIsParsed()
             {
-                while (_sut.ParseNext(new []{"pagelet"}, out var tag))
+                while (_sut.ParseNext(
+                    new[]
+                    {
+                        "pagelet"
+                    },
+                    out var tag))
                 {
                     _tags.Add(tag);
                 }
@@ -113,12 +128,12 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
                 this.BDDfy();
             }
         }
-        
+
         class NoClosingBracket
         {
             private HtmlParser _sut;
-            private List<HtmlTag> _tags = new List<HtmlTag>();
-            
+            private readonly List<HtmlTag> _tags = new List<HtmlTag>();
+
             [Given]
             public void GivenHtmlContainsATagWithoutAClosingBracket()
             {
@@ -128,7 +143,12 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             [When]
             public void WhenTheHtmlIsParsed()
             {
-                while (_sut.ParseNext(new []{"pagelet"}, out var tag))
+                while (_sut.ParseNext(
+                    new[]
+                    {
+                        "pagelet"
+                    },
+                    out var tag))
                 {
                     _tags.Add(tag);
                 }
@@ -150,18 +170,24 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
         class LastTagWithNoClosingBracket
         {
             private HtmlParser _sut;
-            private List<HtmlTag> _tags = new List<HtmlTag>();
+            private readonly List<HtmlTag> _tags = new List<HtmlTag>();
 
             [Given]
             public void GivenHtmlContainsAnEndTagWithoutAClosingBracket()
             {
-                _sut = new HtmlParser(SpecHelper.GetFile("Parsing/Files/Invalid-last-tag-with-no-closing-bracket.html"));
+                _sut = new HtmlParser(
+                    SpecHelper.GetFile("Parsing/Files/Invalid-last-tag-with-no-closing-bracket.html"));
             }
 
             [When]
             public void WhenTheHtmlIsParsed()
             {
-                while (_sut.ParseNext(new[] { "pagelet" }, out var tag))
+                while (_sut.ParseNext(
+                    new[]
+                    {
+                        "pagelet"
+                    },
+                    out var tag))
                 {
                     _tags.Add(tag);
                 }
@@ -183,7 +209,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
         class InvalidAttributes
         {
             private HtmlParser _sut;
-            private List<HtmlTag> _tags = new List<HtmlTag>();
+            private readonly List<HtmlTag> _tags = new List<HtmlTag>();
 
             [Given]
             public void GivenHtmlContainsATagWithInvalidAttributes()
@@ -194,7 +220,12 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             [When]
             public void WhenTheHtmlIsParsed()
             {
-                while (_sut.ParseNext(new[] { "pagelet" }, out var tag))
+                while (_sut.ParseNext(
+                    new[]
+                    {
+                        "pagelet"
+                    },
+                    out var tag))
                 {
                     _tags.Add(tag);
                 }

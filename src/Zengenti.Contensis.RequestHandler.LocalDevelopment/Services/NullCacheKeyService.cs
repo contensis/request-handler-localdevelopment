@@ -2,7 +2,7 @@
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 
-public class NullCacheKeyService: ICacheKeyService
+public class NullCacheKeyService : ICacheKeyService
 {
     public void Add(string key)
     {

@@ -28,10 +28,13 @@ public class ProxyPath
         _result = _sut.Create(
             _baseUri,
             new Uri("http://www.mysite.com/news/woman-worlds-longest-nails?page=1"),
-            new Headers(new Dictionary<string, string>
-            {
-                { Constants.Headers.Alias, "zenhub" }
-            }), 
+            new Headers(
+                new Dictionary<string, string>
+                {
+                    {
+                        Constants.Headers.Alias, "zenhub"
+                    }
+                }),
             new Node
             {
                 Id = Guid.NewGuid(),
@@ -56,7 +59,7 @@ public class ProxyPath
     {
         Assert.That(_result.Headers.GetFirstValueIfExists(Constants.Headers.Alias) == "zenhub");
     }
-    
+
     [AndThen]
     public void AndThenTheQueryStringValuesAreCorrect()
     {
@@ -64,7 +67,7 @@ public class ProxyPath
         Assert.That(query.Count, Is.EqualTo(2));
         Assert.That(query["page"], Is.EqualTo("1"));
     }
-    
+
     [Test]
     public void Run()
     {

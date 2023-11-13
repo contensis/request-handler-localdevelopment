@@ -9,9 +9,12 @@ public interface IPublishingApi
 {
     Task<BlockVersionInfo?> GetBlockVersionInfo(Guid versionId);
 
-    Task<EndpointRequestInfo?> GetEndpointForRequest(
-        RequestContext requestContext);
+    Task<EndpointRequestInfo?> GetEndpointForRequest(RequestContext requestContext);
 
-    Task<IList<BlockWithVersions>> ListBlocksThatAreAvailable(Guid projectUuid, string viewType,
-        string activeBlockVersionConfig, string defaultBlockVersionConfig, string serverType);
+    Task<IList<BlockWithVersions>> ListBlocksThatAreAvailable(
+        Guid projectUuid,
+        string viewType,
+        string activeBlockVersionConfig,
+        string defaultBlockVersionConfig,
+        string serverType);
 }

@@ -1,5 +1,4 @@
 ﻿using Grpc.Core;
-using Microsoft.Extensions.Logging;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Extensions;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
@@ -102,14 +101,21 @@ public class CorePublishingService : ICorePublishingService
                 logLevel = LogLevel.Warning;
             }
 
-            _logger.Log(logLevel, e, "GetEndpointForRequest failed with RpcException.Message {Message} for Uri {Uri}",
-                e.Message, originUri);
+            _logger.Log(
+                logLevel,
+                e,
+                "GetEndpointForRequest failed with RpcException.Message {Message} for Uri {Uri}",
+                e.Message,
+                originUri);
             throw;
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "GetEndpointForRequest failed with RpcException.Message {Message} for Uri {Uri}",
-                e.Message, originUri);
+            _logger.LogError(
+                e,
+                "GetEndpointForRequest failed with RpcException.Message {Message} for Uri {Uri}",
+                e.Message,
+                originUri);
             throw;
         }
     }
@@ -119,8 +125,12 @@ public class CorePublishingService : ICorePublishingService
         return GetRouteInfoForRequest(projectUuid, false, originUri, headers, rendererId: rendererId);
     }
 
-    public RouteInfo BuildRouteInfoForRequest(EndpointRequestInfo endpointRequestInfo, Uri originUri, Headers headers,
-        Guid projectUuid, Node? node)
+    public RouteInfo BuildRouteInfoForRequest(
+        EndpointRequestInfo endpointRequestInfo,
+        Uri originUri,
+        Headers headers,
+        Guid projectUuid,
+        Node? node)
     {
         var uri = new Uri(endpointRequestInfo.Uri);
         RouteInfo routeInfo;
@@ -145,8 +155,7 @@ public class CorePublishingService : ICorePublishingService
                 node,
                 blockVersionInfo,
                 endpointRequestInfo.EndpointId,
-                endpointRequestInfo.LayoutRendererId
-            );
+                endpointRequestInfo.LayoutRendererId);
 
             blockVersionInfo.EnsureDefaultStaticPaths();
 
@@ -159,8 +168,7 @@ public class CorePublishingService : ICorePublishingService
                 new Uri(endpointRequestInfo.Uri),
                 originUri,
                 headers,
-                node
-            );
+                node);
         }
 
         _cacheKeyService.AddRange(endpointRequestInfo.CacheKeys);

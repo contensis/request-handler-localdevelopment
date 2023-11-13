@@ -15,7 +15,7 @@ public static class BlockExtensions
         {
             return;
         }
-            
+
         var defaultStaticPath = "/static";
         if (!staticPaths.ContainsCaseInsensitive(defaultStaticPath))
         {

@@ -18,7 +18,9 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             {
                 _sut = SpecHelper.CreateHtmlResponseResolver();
 
-                SpecHelper.SetEndpointResponse(_sut.RequestService, "/website/pagelet1.html",
+                SpecHelper.SetEndpointResponse(
+                    _sut.RequestService,
+                    "/website/pagelet1.html",
                     SpecHelper.GetFile("Resolving/Files/Pagelet1.html"));
             }
 
@@ -28,11 +30,17 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 var html = SpecHelper.GetFile("Resolving/Files/Record-single-pagelet.html");
 
                 var blockVersionInfo =
-                    new BlockVersionInfo(Guid.NewGuid(),"", Guid.NewGuid(), new Uri("http://website.com"), "master", false, null,
+                    new BlockVersionInfo(
+                        Guid.NewGuid(),
+                        "",
+                        Guid.NewGuid(),
+                        new Uri("http://website.com"),
+                        "master",
+                        false,
+                        null,
                         1);
 
-                var routeInfo = new RouteInfo(
-                    new Uri("http://website.com"), new Headers(), "", true, blockVersionInfo);
+                var routeInfo = new RouteInfo(new Uri("http://website.com"), new Headers(), "", true, blockVersionInfo);
 
                 _result = await _sut.Resolve(html, routeInfo, 0, CancellationToken.None);
             }
@@ -62,23 +70,30 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             {
                 _sut = SpecHelper.CreateHtmlResponseResolver(true);
 
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "http://website.com/website/pagelet1.html")
-                {
-                    Headers =
+                HttpRequestMessage requestMessage =
+                    new HttpRequestMessage(HttpMethod.Get, "http://website.com/website/pagelet1.html")
                     {
-                        Host = "website.com",
-                        Accept =
+                        Headers =
                         {
-                            new MediaTypeWithQualityHeaderValue("application/json"),
-                            new MediaTypeWithQualityHeaderValue("text/xml")
+                            Host = "website.com",
+                            Accept =
+                            {
+                                new MediaTypeWithQualityHeaderValue("application/json"),
+                                new MediaTypeWithQualityHeaderValue("text/xml")
+                            }
                         }
-                    }
-                };
+                    };
                 SpecHelper.SetEndpointResponse(
                     _sut.RequestService,
                     "/website/pagelet1.html",
                     SpecHelper.GetFile("Resolving/Files/Pagelet1.html"),
-                    pageletPerformanceData: new PageletPerformanceData(5, 5, 10, requestMessage.RequestUri, requestMessage.Method, requestMessage.Headers));
+                    pageletPerformanceData: new PageletPerformanceData(
+                        5,
+                        5,
+                        10,
+                        requestMessage.RequestUri,
+                        requestMessage.Method,
+                        requestMessage.Headers));
             }
 
             [When]
@@ -91,7 +106,14 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                     new Headers(),
                     "",
                     true,
-                    new BlockVersionInfo(Guid.NewGuid(), "",Guid.NewGuid(), new Uri("http://website.com"), "master", false, null,
+                    new BlockVersionInfo(
+                        Guid.NewGuid(),
+                        "",
+                        Guid.NewGuid(),
+                        new Uri("http://website.com"),
+                        "master",
+                        false,
+                        null,
                         1));
 
                 _result = await _sut.Resolve(html, routeInfo, 0, CancellationToken.None);
@@ -102,10 +124,12 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             {
                 var separator = Environment.NewLine;
                 Assert.That(_result, Is.Not.Null.Or.Empty);
-                Assert.That(_result,
+                Assert.That(
+                    _result,
                     Does.Contain(
                         $"<!-- {separator} durationMs = 10 {separator} requestMs = 5 {separator} parsingMs = 5 "));
-                Assert.That(_result,
+                Assert.That(
+                    _result,
                     Does.Contain(
                         $@"curl -H ""Host: website.com"" -H ""Accept: application/json; text/xml"" --request GET http://website.com/website/pagelet1.html {separator} -->"));
             }

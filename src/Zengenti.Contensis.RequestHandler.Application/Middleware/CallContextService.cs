@@ -12,30 +12,27 @@ public class CallContextService
         var headerDictionary = (Dictionary<string, IEnumerable<string>>)new Headers(request.Headers);
         var activeVersionConfigDictionary = new Dictionary<string, string>();
         var defaultVersionConfigDictionary = new Dictionary<string, string>();
-        
+
         var simpleCookieDictionary = new Dictionary<string, string>(request.Cookies);
         foreach (var configEntry in ExtractConfigDictionary(simpleCookieDictionary, Constants.Headers.ConfigHeaders))
         {
             var key = configEntry.Key.ToLowerInvariant();
-            if (IsVersionConfigKey(key) && !activeVersionConfigDictionary.ContainsKey(key))
+            if (IsVersionConfigKey(key))
             {
-                activeVersionConfigDictionary.Add(key, configEntry.Value);
+                activeVersionConfigDictionary.TryAdd(key, configEntry.Value);
             }
         }
-        var simpleHeaderDictionary = headerDictionary.ToDictionary(keyValuePair =>
-            keyValuePair.Key, keyValuePair => keyValuePair.Value.FirstOrDefault() ?? "");
+
+        var simpleHeaderDictionary = headerDictionary.ToDictionary(
+            keyValuePair =>
+                keyValuePair.Key,
+            keyValuePair => keyValuePair.Value.FirstOrDefault() ?? "");
 
         foreach (var configEntry in ExtractConfigDictionary(simpleHeaderDictionary, Constants.Headers.ConfigHeaders))
         {
-            if (!activeVersionConfigDictionary.ContainsKey(configEntry.Key))
-            {
-                activeVersionConfigDictionary.Add(configEntry.Key, configEntry.Value);
-            }
+            activeVersionConfigDictionary.TryAdd(configEntry.Key, configEntry.Value);
 
-            if (!defaultVersionConfigDictionary.ContainsKey(configEntry.Key))
-            {
-                defaultVersionConfigDictionary.Add(configEntry.Key, configEntry.Value);
-            }
+            defaultVersionConfigDictionary.TryAdd(configEntry.Key, configEntry.Value);
         }
 
         CallContext.Current.Clear();
@@ -57,7 +54,7 @@ public class CallContextService
 
         // TODO: remove when we deprecate old nodes delivery api
         SetCallContextValueFromRequest(Constants.Headers.UseNewNodeService, "false");
-        
+
         void SetCallContextValueFromRequest(string key, string? alternative)
         {
             bool hasKey = false;
@@ -75,7 +72,9 @@ public class CallContextService
                     configPrefix = configPrefix.Remove(configPrefix.Length - "config-default".Length);
                 }
 
-                var configValue = ExtractConfigValues(isActiveConfigKey ? activeVersionConfigDictionary : defaultVersionConfigDictionary, configPrefix);
+                var configValue = ExtractConfigValues(
+                    isActiveConfigKey ? activeVersionConfigDictionary : defaultVersionConfigDictionary,
+                    configPrefix);
 
                 if (!string.IsNullOrWhiteSpace(configValue))
                 {
@@ -83,9 +82,9 @@ public class CallContextService
                     hasKey = true;
                 }
             }
-            else if (headerDictionary.ContainsKey(key))
+            else if (headerDictionary.TryGetValue(key, out var value))
             {
-                CallContext.Current[key] = headerDictionary[key].ToString();
+                CallContext.Current[key] = value.ToString();
                 hasKey = true;
             }
 
@@ -100,7 +99,8 @@ public class CallContextService
     {
         if (key.StartsWithCaseInsensitive("block-") &&
             (key.EndsWithCaseInsensitive("-versionstatus") ||
-             key.EndsWithCaseInsensitive("-versionno") || key.EndsWithCaseInsensitive("-branch")))
+             key.EndsWithCaseInsensitive("-versionno") ||
+             key.EndsWithCaseInsensitive("-branch")))
         {
             return true;
         }
@@ -116,7 +116,8 @@ public class CallContextService
     }
 
     private Dictionary<string, string> ExtractConfigDictionary(
-        Dictionary<string, string> sourceDictionary, string[] headerConfigKeys)
+        Dictionary<string, string> sourceDictionary,
+        string[] headerConfigKeys)
     {
         var versionConfigEntries = new Dictionary<string, string>();
 
@@ -135,14 +136,7 @@ public class CallContextService
                 if (keyValueParts.Length == 2 && IsVersionConfigKey(keyValueParts[0]))
                 {
                     var key = keyValueParts[0].ToLowerInvariant();
-                    if (versionConfigEntries.ContainsKey(key))
-                    {
-                        versionConfigEntries[key] = keyValueParts[1];
-                    }
-                    else
-                    {
-                        versionConfigEntries.Add(key, keyValueParts[1]);
-                    }
+                    versionConfigEntries[key] = keyValueParts[1];
                 }
             }
         }
@@ -150,11 +144,13 @@ public class CallContextService
         return versionConfigEntries;
     }
 
-    private string ExtractConfigValues(Dictionary<string, string> versionConfigDictionary,
+    private string ExtractConfigValues(
+        Dictionary<string, string> versionConfigDictionary,
         string configPrefix)
     {
         var blockKeyValues = versionConfigDictionary
-            .Where(keyValue => keyValue.Key.StartsWithCaseInsensitive($"{configPrefix}")).ToList();
+            .Where(keyValue => keyValue.Key.StartsWithCaseInsensitive($"{configPrefix}"))
+            .ToList();
         if (blockKeyValues.Count == 0)
         {
             return "";

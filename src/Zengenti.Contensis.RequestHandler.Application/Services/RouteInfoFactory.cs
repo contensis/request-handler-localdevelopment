@@ -1,5 +1,4 @@
 ﻿using System.Web;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using Zengenti.Contensis.RequestHandler.Application.Resolving;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
@@ -85,9 +84,9 @@ public class RouteInfoFactory : IRouteInfoFactory
         var queryString = BuildQueryString(originUri);
 
         // Handle API requests
-        bool isApiRequest = Constants.Paths.ApiPrefixes.Any(prefix => path.StartsWithCaseInsensitive(prefix))
-                            && !path.StartsWithCaseInsensitive("/api/publishing/request-handler")
-                            && !path.StartsWithCaseInsensitive("/api/preview-toolbar/blocks");
+        bool isApiRequest = Constants.Paths.ApiPrefixes.Any(prefix => path.StartsWithCaseInsensitive(prefix)) &&
+                            !path.StartsWithCaseInsensitive("/api/publishing/request-handler") &&
+                            !path.StartsWithCaseInsensitive("/api/preview-toolbar/blocks");
         if (isApiRequest)
         {
             var apiHost = $"api-{_requestContext.Alias}.cloud.contensis.com";
@@ -119,8 +118,7 @@ public class RouteInfoFactory : IRouteInfoFactory
             null,
             headers,
             "",
-            false,
-            null);
+            false);
     }
 
     public RouteInfo CreateForIisFallback(Uri originUri, Headers headers)
@@ -175,7 +173,6 @@ public class RouteInfoFactory : IRouteInfoFactory
         newOriginQueryString.Remove("nodeId"); //prevent injection
         newOriginQueryString.Remove("entryId"); //prevent injection
 
-
         newOriginQueryString.Add("nodeId", node.Id.ToString());
 
         if (node.EntryId.HasValue)
@@ -183,6 +180,6 @@ public class RouteInfoFactory : IRouteInfoFactory
             newOriginQueryString.Add("entryId", node.EntryId.ToString());
         }
 
-        return QueryString.FromUriComponent("?" + newOriginQueryString.ToString());
+        return QueryString.FromUriComponent("?" + newOriginQueryString);
     }
 }

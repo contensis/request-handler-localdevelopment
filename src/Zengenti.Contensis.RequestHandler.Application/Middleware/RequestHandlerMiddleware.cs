@@ -7,8 +7,8 @@ using Zengenti.Contensis.RequestHandler.Application.Resolving;
 using Zengenti.Contensis.RequestHandler.Application.Services;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
+using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Renderers;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
-using ServerType = Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Renderers.ServerType;
 
 namespace Zengenti.Contensis.RequestHandler.Application.Middleware;
 
@@ -22,8 +22,14 @@ public class RequestHandlerMiddleware
     private readonly CallContextService _callContextService;
     private static readonly ActivitySource ActivitySource = new("Zengenti.Contensis.RequestHandler.Middleware");
 
-    private static readonly string[] ExcludedPaths = new[]
-        { "/api/preview-toolbar/blocks", "/pingz", "/healthz", "/infoz", "/livez" };
+    private static readonly string[] ExcludedPaths =
+    {
+        "/api/preview-toolbar/blocks",
+        "/pingz",
+        "/healthz",
+        "/infoz",
+        "/livez"
+    };
 
     public IEndpointRequestService RequestService { get; }
 
@@ -78,20 +84,23 @@ public class RequestHandlerMiddleware
                 }
             }
 
-            using (_logger.BeginScope(new
-                   {
-                       alias = CallContext.Current[Constants.Headers.Alias] ?? "",
-                       projectUuid = CallContext.Current[Constants.Headers.ProjectUuid] ?? "",
-                       projectApiId = CallContext.Current[Constants.Headers.ProjectApiId] ?? "",
-                       blockVersionConfig = CallContext.Current[Constants.Headers.BlockConfig] ?? "",
-                       proxyConfig = CallContext.Current[Constants.Headers.ProxyConfig] ?? "",
-                       rendererConfig = CallContext.Current[Constants.Headers.RendererConfig] ?? "",
-                       nodeConfig = CallContext.Current[Constants.Headers.NodeVersionStatus] ?? ""
-                   }))
+            using (_logger.BeginScope(
+                new
+                {
+                    alias = CallContext.Current[Constants.Headers.Alias] ?? "",
+                    projectUuid = CallContext.Current[Constants.Headers.ProjectUuid] ?? "",
+                    projectApiId = CallContext.Current[Constants.Headers.ProjectApiId] ?? "",
+                    blockVersionConfig = CallContext.Current[Constants.Headers.BlockConfig] ?? "",
+                    proxyConfig = CallContext.Current[Constants.Headers.ProxyConfig] ?? "",
+                    rendererConfig = CallContext.Current[Constants.Headers.RendererConfig] ?? "",
+                    nodeConfig = CallContext.Current[Constants.Headers.NodeVersionStatus] ?? ""
+                }))
             {
-                _logger.LogError(e,
+                _logger.LogError(
+                    e,
                     "Unhandled error caught in middleware with exception message {Message} and request url {Url}",
-                    e.Message, context.Request.GetDisplayUrl());
+                    e.Message,
+                    context.Request.GetDisplayUrl());
             }
 
             throw;
@@ -101,7 +110,6 @@ public class RequestHandlerMiddleware
             CallContext.Current.Clear();
         }
     }
-
 
     private Dictionary<string, string> GetConfigCookieCollection(HttpRequest request)
     {
@@ -150,12 +158,18 @@ public class RequestHandlerMiddleware
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
     }
 
-    private string GetPerformanceInfo(Stopwatch routeInfoTimer, Stopwatch responseTimer, Stopwatch fallbackTimer,
+    private string GetPerformanceInfo(
+        Stopwatch routeInfoTimer,
+        Stopwatch responseTimer,
+        Stopwatch fallbackTimer,
         string mainRouteInfoMetrics)
     {
-        return string.Format("routeInfoFetch: {0} ms ({3}), generalRequestFetch: {1} ms, fallbackRequest {2} ms",
-            routeInfoTimer.ElapsedMilliseconds, responseTimer.ElapsedMilliseconds,
-            fallbackTimer.ElapsedMilliseconds, mainRouteInfoMetrics);
+        return string.Format(
+            "routeInfoFetch: {0} ms ({3}), generalRequestFetch: {1} ms, fallbackRequest {2} ms",
+            routeInfoTimer.ElapsedMilliseconds,
+            responseTimer.ElapsedMilliseconds,
+            fallbackTimer.ElapsedMilliseconds,
+            mainRouteInfoMetrics);
     }
 
     private bool IsValidVersionStatus(string? entryVersionStatus)
@@ -220,7 +234,6 @@ public class RequestHandlerMiddleware
         var routeInfo = await RouteService.GetRouteForRequest(context.Request, headers);
         var initialRouteInfo = routeInfo;
 
-
         var mainRouteInfoMetrics = "";
         if (routeInfo.FoundRoute == false)
         {
@@ -276,7 +289,6 @@ public class RequestHandlerMiddleware
 
         AddCacheHeadersFor404Errors(response, context);
 
-
         fallbackTimer.Stop();
         var performanceLog = GetPerformanceInfo(routeInfoTimer, responseTimer, fallbackTimer, mainRouteInfoMetrics);
         if (response.Headers.ContainsKey("request-handler-metrics"))
@@ -284,11 +296,14 @@ public class RequestHandlerMiddleware
             response.Headers.Remove("request-handler-metrics");
         }
 
-        response.Headers.Add("request-handler-metrics", new List<string>() { performanceLog });
-
+        response.Headers.Add(
+            "request-handler-metrics",
+            new List<string>
+            {
+                performanceLog
+            });
 
         UpdateLocationResponseHeader(context, response, routeInfo);
-
 
         return response;
     }
@@ -367,7 +382,10 @@ public class RequestHandlerMiddleware
             updatedUri += $"?{newQueryString}";
         }
 
-        redirectResponse.Headers["location"] = new List<string>() { updatedUri };
+        redirectResponse.Headers["location"] = new List<string>
+        {
+            updatedUri
+        };
 
         if (blockConfigCookie.Length > 0)
         {
@@ -396,7 +414,6 @@ public class RequestHandlerMiddleware
         // Headers
         SetResponseHeaders(context, response.Headers);
 
-
         // The content may have changed due to resolving pagelets and re-writing static paths, so get the actual length.
         var responseContent = response.ToStream();
         if (responseContent is MemoryStream)
@@ -410,7 +427,9 @@ public class RequestHandlerMiddleware
         }
     }
 
-    private async Task<EndpointResponse> GenerateFriendlyErrorResponse(HttpContext context, RouteInfo routeInfo,
+    private async Task<EndpointResponse> GenerateFriendlyErrorResponse(
+        HttpContext context,
+        RouteInfo routeInfo,
         RouteInfo? initialRouteInfo,
         EndpointResponse response)
     {
@@ -429,7 +448,9 @@ public class RequestHandlerMiddleware
             if (response.StatusCode == (int)HttpStatusCode.NotFound)
             {
                 var responseHtml =
-                    ErrorResources.GetIisFallbackMessage(response.StatusCode, routeInfo,
+                    ErrorResources.GetIisFallbackMessage(
+                        response.StatusCode,
+                        routeInfo,
                         initialRouteInfo.NodePath ?? "");
 
                 return await GetFriendlyErrorResponse(context, routeInfo.Uri.Query, response, responseHtml);
@@ -456,43 +477,56 @@ public class RequestHandlerMiddleware
                 if (response.StatusCode == (int)HttpStatusCode.ServiceUnavailable)
                 {
                     responseHtml =
-                        $"<html><body><h1>503 Service Unavailable</h1> No server is available to handle this request.</body></html>";
+                        "<html><body><h1>503 Service Unavailable</h1> No server is available to handle this request.</body></html>";
                 }
 
                 if (response.StatusCode == (int)HttpStatusCode.NotFound)
                 {
-                    responseHtml = $"<html><body><h1>404 Not Found</h1> No page can be found.</body></html>";
+                    responseHtml = "<html><body><h1>404 Not Found</h1> No page can be found.</body></html>";
                 }
 
                 if (response.StatusCode == (int)HttpStatusCode.InternalServerError)
                 {
-                    responseHtml = $"<html><body><h1>500 InternalServerError</h1> An error has occured.</body></html>";
+                    responseHtml = "<html><body><h1>500 InternalServerError</h1> An error has occured.</body></html>";
                 }
             }
 
-
             return await GetFriendlyErrorResponse(context, routeInfo.Uri.Query, response, responseHtml);
         }
-        else
-        {
-            return response;
-        }
+
+        return response;
     }
 
-    private async Task<EndpointResponse> GetFriendlyErrorResponse(HttpContext context, string query,
-        EndpointResponse response, string responseHtml)
+    private async Task<EndpointResponse> GetFriendlyErrorResponse(
+        HttpContext context,
+        string query,
+        EndpointResponse response,
+        string responseHtml)
     {
-        if (context.Request.Headers.TryGetValue(Constants.Headers.ProjectApiId,
-                out var projectApiId) && context.Request.Headers.TryGetValue(Constants.Headers.Alias,
-                out var alias) && context.Request.Headers.TryGetValue(Constants.Headers.EntryVersionStatus,
+        if (context.Request.Headers.TryGetValue(
+                Constants.Headers.ProjectApiId,
+                out var projectApiId) &&
+            context.Request.Headers.TryGetValue(
+                Constants.Headers.Alias,
+                out var alias) &&
+            context.Request.Headers.TryGetValue(
+                Constants.Headers.EntryVersionStatus,
                 out var entryVersionStatus))
         {
             var isContensisSingleSignOn = await _globalApi.IsContensisSingleSignOn();
-            HtmlResponseResolver.SetPreviewToolbar(ref responseHtml, alias[0]!, projectApiId[0]!,
-                entryVersionStatus[0]!, query, isContensisSingleSignOn);
+            HtmlResponseResolver.SetPreviewToolbar(
+                ref responseHtml,
+                alias[0]!,
+                projectApiId[0]!,
+                entryVersionStatus[0]!,
+                query,
+                isContensisSingleSignOn);
         }
 
-        response = new EndpointResponse(responseHtml, response.Headers, response.StatusCode,
+        response = new EndpointResponse(
+            responseHtml,
+            response.Headers,
+            response.StatusCode,
             response.PageletPerformanceData);
         // This ensures varnish will not replace our 503 with its own.
         if (response.Headers.ContainsKey("expose-raw-errors"))
@@ -500,9 +534,19 @@ public class RequestHandlerMiddleware
             response.Headers.Remove("expose-raw-errors");
         }
 
-        response.Headers.Add("expose-raw-errors", new List<string>() { "True" });
+        response.Headers.Add(
+            "expose-raw-errors",
+            new List<string>
+            {
+                "True"
+            });
 
-        response.Headers.Add("content-type", new List<string>() { "text/html; charset=utf-8" });
+        response.Headers.Add(
+            "content-type",
+            new List<string>
+            {
+                "text/html; charset=utf-8"
+            });
         return response;
     }
 
@@ -530,20 +574,32 @@ public class RequestHandlerMiddleware
         {
             if (context.Request.Path == "/")
             {
-                response.Headers.Add("Surrogate-Control", new List<string>() { "max-age=30" });
+                response.Headers.Add(
+                    "Surrogate-Control",
+                    new List<string>
+                    {
+                        "max-age=30"
+                    });
             }
             else
             {
                 //This is to prevent malicious requests bombarding the backend services.
-                response.Headers.Add("Surrogate-Control", new List<string>() { "max-age=5" });
+                response.Headers.Add(
+                    "Surrogate-Control",
+                    new List<string>
+                    {
+                        "max-age=5"
+                    });
             }
         }
     }
 
     private static bool PotentiallyHasLocationHeader(EndpointResponse response)
     {
-        if (response.StatusCode == 301 || response.StatusCode == 302 ||
-            response.StatusCode == 307 || response.StatusCode == 308)
+        if (response.StatusCode == 301 ||
+            response.StatusCode == 302 ||
+            response.StatusCode == 307 ||
+            response.StatusCode == 308)
         {
             return true;
         }
@@ -565,8 +621,10 @@ public class RequestHandlerMiddleware
         }
     }
 
-    private static void UpdateLocationResponseHeader(HttpContext context,
-        EndpointResponse response, RouteInfo routeInfo)
+    private static void UpdateLocationResponseHeader(
+        HttpContext context,
+        EndpointResponse response,
+        RouteInfo routeInfo)
     {
         if (!PotentiallyHasLocationHeader(response))
         {
@@ -596,7 +654,8 @@ public class RequestHandlerMiddleware
             }
 
             var locationUri = new Uri(locationHeader, UriKind.RelativeOrAbsolute);
-            if (locationUri.IsAbsoluteUri && routeInfo.BlockVersionInfo != null &&
+            if (locationUri.IsAbsoluteUri &&
+                routeInfo.BlockVersionInfo != null &&
                 locationUri.Host.Contains(routeInfo.BlockVersionInfo.BaseUri.Host))
             {
                 var newQueryString = HttpUtility.ParseQueryString(locationUri.Query);
@@ -608,11 +667,17 @@ public class RequestHandlerMiddleware
                     updatedUri += $"?{newQueryString}";
                 }
 
-                response.Headers["location"] = new List<string>() { updatedUri };
+                response.Headers["location"] = new List<string>
+                {
+                    updatedUri
+                };
             }
             else
             {
-                response.Headers["location"] = new List<string>() { locationUri.ToString() };
+                response.Headers["location"] = new List<string>
+                {
+                    locationUri.ToString()
+                };
             }
         }
     }

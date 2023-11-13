@@ -15,8 +15,11 @@ public class LocalDevPublishingService : ILocalDevPublishingService
     private readonly ICorePublishingService _corePublishingService;
     private readonly IRouteInfoFactory _routeInfoFactory;
 
-    public LocalDevPublishingService(ISiteConfigLoader siteConfigLoader, IRequestContext requestContext,
-        IPublishingApi publishingApi, ICorePublishingService corePublishingService,
+    public LocalDevPublishingService(
+        ISiteConfigLoader siteConfigLoader,
+        IRequestContext requestContext,
+        IPublishingApi publishingApi,
+        ICorePublishingService corePublishingService,
         IRouteInfoFactory routeInfoFactory)
     {
         _siteConfigLoader = siteConfigLoader;
@@ -41,7 +44,7 @@ public class LocalDevPublishingService : ILocalDevPublishingService
     {
         var requestContext = new RequestContext(projectUuid)
         {
-            RendererId = rendererId,
+            RendererId = rendererId ?? "",
             ContentTypeId = contentTypeId,
             ProxyId = proxyId,
             Language = language ?? "en-GB",
@@ -66,16 +69,24 @@ public class LocalDevPublishingService : ILocalDevPublishingService
         var overridenBlock = _siteConfigLoader.SiteConfig.GetBlockById(endpointForRequest!.BlockId);
         if (overridenBlock == null)
         {
-            return _corePublishingService.BuildRouteInfoForRequest(endpointForRequest, originUri, headers,
-                projectUuid, node);
+            return _corePublishingService.BuildRouteInfoForRequest(
+                endpointForRequest,
+                originUri,
+                headers,
+                projectUuid,
+                node);
         }
 
         // TODO: deal with endpoints
         // TODO: check if we need to populate enableFullUriRouting
         var enableFullUriRouting = false;
-        var blockVersionInfo = new BlockVersionInfo(projectUuid, endpointForRequest.BlockId,
+        var blockVersionInfo = new BlockVersionInfo(
+            projectUuid,
+            endpointForRequest.BlockId,
             endpointForRequest.BlockVersionId!.Value,
-            new Uri(endpointForRequest.Uri), endpointForRequest.Branch, enableFullUriRouting,
+            new Uri(endpointForRequest.Uri),
+            endpointForRequest.Branch,
+            enableFullUriRouting,
             endpointForRequest.StaticPaths,
             endpointForRequest.BlockVersionNo);
 
@@ -90,22 +101,32 @@ public class LocalDevPublishingService : ILocalDevPublishingService
         return routeInfo;
     }
 
-    public async Task<RouteInfo?> GetRouteInfoForRequest(Guid projectUuid, Headers headers, string rendererId,
+    public async Task<RouteInfo?> GetRouteInfoForRequest(
+        Guid projectUuid,
+        Headers headers,
+        string rendererId,
         Uri originUri)
     {
         return await GetRouteInfoForRequest(projectUuid, false, originUri, headers, null, null, rendererId);
     }
-
 
     public Task<BlockVersionInfo?> GetBlockVersionInfo(Guid blockVersionId)
     {
         return _publishingApi.GetBlockVersionInfo(blockVersionId);
     }
 
-    public RouteInfo? BuildRouteInfoForRequest(EndpointRequestInfo endpointRequestInfo, Uri originUri,
-        Headers headers, Guid projectUuid, Node? node)
+    public RouteInfo? BuildRouteInfoForRequest(
+        EndpointRequestInfo endpointRequestInfo,
+        Uri originUri,
+        Headers headers,
+        Guid projectUuid,
+        Node? node)
     {
-        return _corePublishingService.BuildRouteInfoForRequest(endpointRequestInfo, originUri, headers, projectUuid,
+        return _corePublishingService.BuildRouteInfoForRequest(
+            endpointRequestInfo,
+            originUri,
+            headers,
+            projectUuid,
             node);
     }
 
@@ -117,6 +138,6 @@ public class LocalDevPublishingService : ILocalDevPublishingService
 
     public Block GetBlockById(string id)
     {
-        return _siteConfigLoader.SiteConfig.GetBlockById(id);
+        return _siteConfigLoader.SiteConfig.GetBlockById(id)!;
     }
 }

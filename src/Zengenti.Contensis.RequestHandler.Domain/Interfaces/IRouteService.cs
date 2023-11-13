@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
+﻿using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 
