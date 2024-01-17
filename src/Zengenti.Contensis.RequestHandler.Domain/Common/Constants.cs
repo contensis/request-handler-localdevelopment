@@ -34,6 +34,7 @@ public static class Constants
         // TODO: remove when we deprecate old nodes delivery api
         public const string UseNewNodeService = "x-use-new-node-service";
 
+        public const string IsLocalRequestHandler = "x-is-local-request-handler";
         public const string ServerType = "x-site-type";
         public const string LoadBalancerVip = "x-loadbalancer-vip";
         public const string IisHostName = "x-iis-hostname";

@@ -1,4 +1,5 @@
-﻿using Zengenti.Contensis.RequestHandler.Domain.Entities;
+﻿using Zengenti.Contensis.RequestHandler.Domain.Common;
+using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
@@ -62,6 +63,7 @@ public class LocalNodeService : INodeService
                 }
             }
 
+            _internalRestClient.AddHeader(Constants.Headers.IsLocalRequestHandler, "true");
             var restManagementNode = (await _internalRestClient.GetAsync<dynamic>(
                     $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectApiId}/nodes/{path.Trim('/')}"))
                 .ResponseObject;
