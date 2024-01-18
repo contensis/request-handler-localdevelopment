@@ -50,7 +50,7 @@ public class LocalDevPublishingService : ILocalDevPublishingService
             Language = language ?? "en-GB",
             IsPartialMatchPath = isPartialMatchPath,
             BlockVersionConfig = string.IsNullOrWhiteSpace(_requestContext.BlockConfig)
-                ? "block-versionstatus=latest"
+                ? "block-versionstatus=live"
                 : _requestContext.BlockConfig,
             ProxyVersionConfig = string.IsNullOrWhiteSpace(_requestContext.ProxyConfig)
                 ? "proxy-versionstatus=published"
