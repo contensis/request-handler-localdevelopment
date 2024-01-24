@@ -54,12 +54,6 @@ public sealed class Headers
             : headers.ToDictionary(h => h.Key, h => h.Value);
     }
 
-    public bool IisFallbackHeadersAreSet =>
-        _values.ContainsKey(Constants.Headers.LoadBalancerVip) &&
-        _values.ContainsKey(Constants.Headers.IisHostName);
-
-    public string? LoadBalancerVip => GetFirstValueIfExists(Constants.Headers.LoadBalancerVip);
-
     public string? SiteType => GetFirstValueIfExists(Constants.Headers.ServerType);
 
     public string? EntryVersionStatus => GetFirstValueIfExists(Constants.Headers.EntryVersionStatus);

@@ -22,7 +22,7 @@ public class ProgramOptions
 
     [Option("project-api-id", HelpText = "The API id of the project for the site config.")]
     public string? ProjectApiId { get; init; }
-
+    
     [Option("access-token", HelpText = "The access token for the site config.")]
     public string? AccessToken { get; init; }
 
@@ -46,6 +46,12 @@ public class ProgramOptions
     [Option("renderers-json", HelpText = "The renderers as JSON for the site config.")]
     public string? RenderersAsJson { get; init; }
 
+    [Option("iis-hostname", HelpText = "The IIS hostname for the site config.")]
+    public string? IisHostname { get; init; }
+    
+    [Option("pod-cluster-id", HelpText = "The pod cluster id", Default = null)]
+    public string? PodClusterId { get; set; } = null!;
+    
     [Option("block-cluster-ingress-ip", HelpText = "The ingress IP for the block cluster", Default = null)]
     public string? BlockClusterIngressIp { get; set; } = null!;
 

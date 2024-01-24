@@ -37,7 +37,7 @@ public static class Constants
         public const string IsLocalRequestHandler = "x-is-local-request-handler";
         public const string ServerType = "x-site-type";
         public const string LoadBalancerVip = "x-loadbalancer-vip";
-        public const string IisHostName = "x-iis-hostname";
+        public const string IisHostname = "x-iis-hostname";
 
         public static readonly string[] ConfigHeaders =
         {

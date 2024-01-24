@@ -51,6 +51,8 @@ public class CallContextService
         SetCallContextValueFromRequest(Constants.Headers.ServerType, ServerType.Live.ToString());
         SetCallContextValueFromRequest(Constants.Headers.TraceEnabled, null);
         SetCallContextValueFromRequest(Constants.Headers.NodeVersionStatus, "published");
+        SetCallContextValueFromRequest(Constants.Headers.IisHostname, "");
+        SetCallContextValueFromRequest(Constants.Headers.LoadBalancerVip, "");
 
         // TODO: remove when we deprecate old nodes delivery api
         SetCallContextValueFromRequest(Constants.Headers.UseNewNodeService, "false");

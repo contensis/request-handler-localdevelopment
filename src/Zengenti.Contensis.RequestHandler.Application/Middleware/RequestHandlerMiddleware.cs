@@ -31,12 +31,15 @@ public class RequestHandlerMiddleware
         "/livez"
     };
 
+    private readonly IRequestContext _requestContext;
+
     public IEndpointRequestService RequestService { get; }
 
     internal IRouteService RouteService { get; }
 
     public RequestHandlerMiddleware(
         RequestDelegate nextMiddleware,
+        IRequestContext requestContext,
         IRouteService routeService,
         IRouteInfoFactory routeInfoFactory,
         ICacheKeyService cacheKeyService,
@@ -45,15 +48,15 @@ public class RequestHandlerMiddleware
         CallContextService callContextService,
         ILogger<RequestHandlerMiddleware> logger)
     {
-        _globalApi = globalApi;
         _nextMiddleware = nextMiddleware;
+        _requestContext = requestContext;
+        RouteService = routeService;
         _routeInfoFactory = routeInfoFactory;
         _cacheKeyService = cacheKeyService;
+        RequestService = endpointRequestService;
+        _globalApi = globalApi;
         _callContextService = callContextService;
         _logger = logger;
-
-        RouteService = routeService;
-        RequestService = endpointRequestService;
     }
 
     public async Task Invoke(HttpContext context)
@@ -145,7 +148,7 @@ public class RequestHandlerMiddleware
 
     private RouteInfo TryToCreateIisFallbackRouteInfo(HttpContext context, Headers headers)
     {
-        if (headers.IisFallbackHeadersAreSet)
+        if (!string.IsNullOrWhiteSpace(_requestContext.IisHostname) && ! string.IsNullOrWhiteSpace(_requestContext.LoadBalancerVip))
         {
             return _routeInfoFactory.CreateForIisFallback(
                 context.Request.GetOriginUri(),

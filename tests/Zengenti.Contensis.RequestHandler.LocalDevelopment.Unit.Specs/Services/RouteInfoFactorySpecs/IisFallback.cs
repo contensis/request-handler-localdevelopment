@@ -31,12 +31,6 @@ public class IisFallback
                 {
                     {
                         Constants.Headers.Alias, "zenhub"
-                    },
-                    {
-                        Constants.Headers.LoadBalancerVip, "10.0.0.1"
-                    },
-                    {
-                        Constants.Headers.IisHostName, "www.mysite.com"
                     }
                 }));
     }
@@ -52,7 +46,7 @@ public class IisFallback
     [AndThen]
     public void AndThenTheHeadersAreMapped()
     {
-        Assert.That(_result.Headers.Values.Count, Is.EqualTo(4));
+        Assert.That(_result.Headers.Values.Count, Is.EqualTo(2));
         Assert.That(_result.Headers.GetFirstValueIfExists(Constants.Headers.Alias) == "zenhub");
     }
 

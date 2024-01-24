@@ -24,7 +24,9 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
             GetFile("Config/renderers.json"),
             "token1",
             "client1",
-            "secret1");
+            "secret1",
+            iisHostname: "www.mysite.com",
+            podIngressIp: "10.0.0.1");
 
         public static SiteConfigLoader SiteConfigLoader => SiteConfigLoaderFromJson;
 
@@ -59,7 +61,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
 
         public static IRequestContext CreateRequestContext(bool traceEnabled = false)
         {
-            return new LocalDevelopmentRequestContext(SiteConfigLoader, traceEnabled);
+            return new LocalRequestContext(SiteConfigLoader, traceEnabled);
         }
 
         public static HtmlResponseResolver CreateHtmlResponseResolver(bool traceEnabled = false)

@@ -113,7 +113,7 @@ public class LocalNodeService : INodeService
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error getting a management node or renderer");
+            _logger.LogError(e, "Error getting a management node or renderer for path {Path}", path);
             return null;
         }
     }

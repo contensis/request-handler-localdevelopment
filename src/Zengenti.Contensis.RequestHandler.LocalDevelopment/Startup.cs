@@ -55,6 +55,15 @@ public class Startup
         }
         else
         {
+            var podIngressIpDictionary = new Dictionary<string, string>()
+            {
+                {"local", "127.0.0.1" },
+                {"hq", "185.18.139.20" },
+                {"hq2", "185.18.139.242" },
+                {"lon", "185.18.139.108" },
+                {"man", "185.18.139.88" },
+            };
+            
             siteConfigLoader = new SiteConfigLoader(
                 ProgramOptions.Current.Alias!,
                 ProgramOptions.Current.ProjectApiId!,
@@ -64,11 +73,13 @@ public class Startup
                 ProgramOptions.Current.ClientId,
                 ProgramOptions.Current.ClientSecret,
                 ProgramOptions.Current.Username,
-                ProgramOptions.Current.Password);
+                ProgramOptions.Current.Password,
+                ProgramOptions.Current.IisHostname,
+                podIngressIpDictionary[ProgramOptions.Current.PodClusterId]);
         }
 
         services.AddSingleton<ISiteConfigLoader>(_ => siteConfigLoader);
-        services.AddTransient<IRequestContext, LocalDevelopmentRequestContext>();
+        services.AddTransient<IRequestContext, LocalRequestContext>();
         services.AddSingleton<IPublishingServiceCache, NullPublishingServiceCache>();
         services.AddSingleton<ISecurityTokenProviderFactory, SecurityTokenProviderFactory>();
         services.AddSingleton<IPublishingApi, HttpPublishingApi>();

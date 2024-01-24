@@ -280,7 +280,7 @@ public class EndpointRequestService : IEndpointRequestService
         return requestMessage;
     }
 
-    private static void AddHeaders(
+    private void AddHeaders(
         RouteInfo routeInfo,
         HttpRequestMessage requestMessage,
         Dictionary<string, IEnumerable<string>>? headers)
@@ -312,10 +312,10 @@ public class EndpointRequestService : IEndpointRequestService
             }
         }
 
-        if (routeInfo.IsIisFallback && headers.TryGetValue(Constants.Headers.IisHostName, out var header))
+        if (routeInfo.IsIisFallback && !string.IsNullOrWhiteSpace(_requestContext.IisHostname))
         {
             // Override host header with IIS fallback host
-            requestMessage.Headers.Host = header.FirstOrDefault();
+            requestMessage.Headers.Host = _requestContext.IisHostname;
         }
         else
         {

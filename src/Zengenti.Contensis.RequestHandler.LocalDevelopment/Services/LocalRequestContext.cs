@@ -5,11 +5,11 @@ using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 
-public class LocalDevelopmentRequestContext : IRequestContext
+public class LocalRequestContext : IRequestContext
 {
     private readonly ISiteConfigLoader _siteConfigLoader;
 
-    public LocalDevelopmentRequestContext(ISiteConfigLoader siteConfigLoader, bool traceEnabled = true)
+    public LocalRequestContext(ISiteConfigLoader siteConfigLoader, bool traceEnabled = true)
     {
         _siteConfigLoader = siteConfigLoader;
         TraceEnabled = traceEnabled;
@@ -23,8 +23,6 @@ public class LocalDevelopmentRequestContext : IRequestContext
 
     public Guid ProjectUuid => Guid.Empty; // NOT required for local development ATM.
 
-    public Uri ApiUri => new Uri($"https://cms-{_siteConfigLoader.SiteConfig.Alias}.cloud.contensis.com");
-
     public VersionStatus NodeVersionStatus =>
         CallContext.Current[Constants.Headers.NodeVersionStatus].EqualsCaseInsensitive("published")
             ? VersionStatus.Published
@@ -33,4 +31,6 @@ public class LocalDevelopmentRequestContext : IRequestContext
     public string BlockConfig => CallContext.Current[Constants.Headers.BlockConfig];
     public string RendererConfig => CallContext.Current[Constants.Headers.RendererConfig];
     public string ProxyConfig => CallContext.Current[Constants.Headers.ProxyConfig];
+    public string IisHostname => _siteConfigLoader.SiteConfig.IisHostname;
+    public string LoadBalancerVip => _siteConfigLoader.SiteConfig.PodIngressIp;
 }

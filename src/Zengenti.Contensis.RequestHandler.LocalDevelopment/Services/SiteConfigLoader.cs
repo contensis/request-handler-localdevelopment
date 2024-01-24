@@ -35,7 +35,9 @@ public sealed class SiteConfigLoader : IDisposable, ISiteConfigLoader
         string? clientId = null,
         string? sharedSecret = null,
         string? username = null,
-        string? password = null)
+        string? password = null,
+        string? iisHostname = null,
+        string? podIngressIp = null)
     {
         SiteConfig = SiteConfig.LoadFromJson(
             alias,
@@ -46,7 +48,9 @@ public sealed class SiteConfigLoader : IDisposable, ISiteConfigLoader
             clientId,
             sharedSecret,
             username,
-            password);
+            password,
+            iisHostname,
+            podIngressIp);
     }
 
     private void FileSystemWatcher_Changed(object sender, FileSystemEventArgs e)

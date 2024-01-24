@@ -15,7 +15,8 @@ public class HttpPublishingApi : IPublishingApi
     private readonly ISiteConfigLoader _siteConfigLoader;
     private readonly RestClient _internalRestClient;
     private SiteConfig _siteConfig;
-    private readonly string _projectApiId;
+    private readonly IRequestContext _requestContext;
+    private ILogger<HttpPublishingApi> _logger;
 
     private SiteConfig SiteConfig
     {
@@ -31,9 +32,13 @@ public class HttpPublishingApi : IPublishingApi
     }
 
     public HttpPublishingApi(
+        IRequestContext requestContext,
         ISiteConfigLoader siteConfigLoader,
-        ISecurityTokenProviderFactory securityTokenProviderFactory)
+        ISecurityTokenProviderFactory securityTokenProviderFactory,
+        ILogger<HttpPublishingApi> logger)
     {
+        _logger = logger;
+        _requestContext = requestContext;
         _siteConfigLoader = siteConfigLoader;
         _siteConfig = _siteConfigLoader.SiteConfig;
 
@@ -55,36 +60,38 @@ public class HttpPublishingApi : IPublishingApi
         //     new RestClientFactory($"http://localhost:5000/")
         //         .SecuredRestClient(new InternalSecurityTokenProvider(securityTokenParams));
         // _internalRestClient.AddHeader("x-alias", securityTokenParams.Alias);
-        _projectApiId = _siteConfigLoader.SiteConfig.ProjectApiId;
+     
     }
 
     public async Task<BlockVersionInfo?> GetBlockVersionInfo(Guid versionId)
     {
         var blockVersion = (await _internalRestClient.GetAsync<dynamic>(
-                $"api/management/projects/{_projectApiId}/blocks/versions/{versionId}"))
+                $"api/management/projects/{_requestContext.ProjectApiId}/blocks/versions/{versionId}"))
             .ResponseObject;
 
         if (blockVersion == null)
         {
+            _logger.LogWarning("Could not find block version with uuid {Uuid} using the http api", versionId);
             return null;
         }
 
-        var projectUuid = Guid.Empty; // NOT required for local development ATM.
-
-        // TODO: check if we need to populate enableFullUriRouting
-        var enableFullUriRouting = false;
+        var blockId = (string)blockVersion.id;
+        var block = _siteConfig.GetBlockById(blockId);
+        if (block == null)
+        {
+            _logger.LogWarning("Could not find block version with id {Id} in site config", blockId);
+            return null;
+        }
+        
         var blockVersionInfo = new BlockVersionInfo(
-            projectUuid,
-            "",
+            _requestContext.ProjectUuid,
+            blockId,
             versionId,
-            new Uri(""),
-            "",
-            enableFullUriRouting,
-            new[]
-            {
-                ""
-            },
-            1);
+            block.BaseUri,
+            block.Branch,
+            block.EnableFullUriRouting??false,
+            block.StaticPaths,
+            block.VersionNo);
         return blockVersionInfo;
     }
 
@@ -92,7 +99,7 @@ public class HttpPublishingApi : IPublishingApi
     {
         var httpEndpointRequestContext = new HttpEndpointRequestContext(requestContext);
         var endpointRequestInfo = (await _internalRestClient.PostAsJsonAsync<dynamic>(
-                $"api/management/projects/{_projectApiId}/renderers/endpointrequestinfo",
+                $"api/management/projects/{_requestContext.ProjectApiId}/renderers/endpointrequestinfo",
                 httpEndpointRequestContext))
             .ResponseObject;
         var layoutRendererIdValue = endpointRequestInfo["layoutRendererId"]?.ToString();

@@ -123,9 +123,9 @@ public class RouteInfoFactory : IRouteInfoFactory
 
     public RouteInfo CreateForIisFallback(Uri originUri, Headers headers)
     {
-        var baseUri = new Uri($"https://{headers.LoadBalancerVip}");
+        var baseUri = new Uri($"https://{_requestContext.LoadBalancerVip}");
         var uri = BuildUri(baseUri, originUri.AbsolutePath, new QueryString(originUri.Query));
-        headers["Host"] = headers.GetFirstValueIfExists("x-iis-hostname");
+        headers["Host"] = _requestContext.IisHostname;
 
         return new RouteInfo(uri, headers, "", true, isIisFallback: true);
     }
