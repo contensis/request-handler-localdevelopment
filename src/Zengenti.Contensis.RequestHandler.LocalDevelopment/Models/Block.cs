@@ -7,7 +7,7 @@ public class Block
     public string? Id { get; set; }
 
     public Uri? BaseUri { get; set; }
-    
+
     public bool? EnableFullUriRouting { get; set; }
 
     public List<string> StaticPaths { get; set; } = new();

@@ -55,15 +55,25 @@ public class Startup
         }
         else
         {
-            var podIngressIpDictionary = new Dictionary<string, string>()
+            var podIngressIpDictionary = new Dictionary<string, string>
             {
-                {"local", "127.0.0.1" },
-                {"hq", "185.18.139.20" },
-                {"hq2", "185.18.139.242" },
-                {"lon", "185.18.139.108" },
-                {"man", "185.18.139.88" },
+                {
+                    "local", "127.0.0.1"
+                },
+                {
+                    "hq", "185.18.139.20"
+                },
+                {
+                    "hq2", "185.18.139.242"
+                },
+                {
+                    "lon", "185.18.139.108"
+                },
+                {
+                    "man", "185.18.139.88"
+                },
             };
-            
+
             siteConfigLoader = new SiteConfigLoader(
                 ProgramOptions.Current.Alias!,
                 ProgramOptions.Current.ProjectApiId!,

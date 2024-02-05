@@ -64,8 +64,9 @@ public class LocalNodeService : INodeService
             }
 
             _internalRestClient.AddHeader(Constants.Headers.IsLocalRequestHandler, "true");
-            var restManagementNode = (await _internalRestClient.GetAsync<dynamic>(
-                    $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectApiId}/nodes/{path.Trim('/')}"))
+            var requestUrl =
+                $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectApiId}/nodes/{path.Trim('/')}";
+            var restManagementNode = (await _internalRestClient.GetAsync<dynamic>(requestUrl))
                 .ResponseObject;
 
             if (restManagementNode == null)

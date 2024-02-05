@@ -148,7 +148,8 @@ public class RequestHandlerMiddleware
 
     private RouteInfo TryToCreateIisFallbackRouteInfo(HttpContext context, Headers headers)
     {
-        if (!string.IsNullOrWhiteSpace(_requestContext.IisHostname) && ! string.IsNullOrWhiteSpace(_requestContext.LoadBalancerVip))
+        if (!string.IsNullOrWhiteSpace(_requestContext.IisHostname) &&
+            !string.IsNullOrWhiteSpace(_requestContext.LoadBalancerVip))
         {
             return _routeInfoFactory.CreateForIisFallback(
                 context.Request.GetOriginUri(),

@@ -14,9 +14,9 @@ public class SiteConfig
     public string Alias { get; set; } = null!;
 
     public string ProjectApiId { get; set; } = null!;
-    
+
     public string? IisHostname { get; set; }
-    
+
     public string? PodIngressIp { get; set; }
 
     public string? AccessToken { get; set; }

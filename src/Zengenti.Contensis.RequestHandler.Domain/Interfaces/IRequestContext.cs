@@ -19,8 +19,8 @@ public interface IRequestContext
     public string RendererConfig { get; }
 
     public string ProxyConfig { get; }
-    
+
     public string IisHostname { get; }
-    
+
     public string LoadBalancerVip { get; }
 }

@@ -16,7 +16,7 @@ public class HttpPublishingApi : IPublishingApi
     private readonly RestClient _internalRestClient;
     private SiteConfig _siteConfig;
     private readonly IRequestContext _requestContext;
-    private ILogger<HttpPublishingApi> _logger;
+    private readonly ILogger<HttpPublishingApi> _logger;
 
     private SiteConfig SiteConfig
     {
@@ -60,7 +60,6 @@ public class HttpPublishingApi : IPublishingApi
         //     new RestClientFactory($"http://localhost:5000/")
         //         .SecuredRestClient(new InternalSecurityTokenProvider(securityTokenParams));
         // _internalRestClient.AddHeader("x-alias", securityTokenParams.Alias);
-     
     }
 
     public async Task<BlockVersionInfo?> GetBlockVersionInfo(Guid versionId)
@@ -82,14 +81,14 @@ public class HttpPublishingApi : IPublishingApi
             _logger.LogWarning("Could not find block version with id {Id} in site config", blockId);
             return null;
         }
-        
+
         var blockVersionInfo = new BlockVersionInfo(
             _requestContext.ProjectUuid,
             blockId,
             versionId,
             block.BaseUri,
             block.Branch,
-            block.EnableFullUriRouting??false,
+            block.EnableFullUriRouting ?? false,
             block.StaticPaths,
             block.VersionNo);
         return blockVersionInfo;
