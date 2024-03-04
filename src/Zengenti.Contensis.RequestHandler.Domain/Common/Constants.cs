@@ -22,6 +22,7 @@ public static class Constants
         public const string NodeVersionStatus = "x-node-versionstatus";
         public const string EntryVersionStatus = "x-entry-versionstatus";
         public const string HealthCheck = "x-healthcheck";
+        public const string HidePreviewToolbar = "x-hide-preview-toolbar";
 
         public const string RequiresAlias = "x-requires-alias";
         public const string RequiresProjectApiId = "x-requires-project-api-id";

@@ -38,8 +38,9 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
 
             SetGeneratorMetaTag(ref content);
 
-            if (routeInfo.Headers.SiteType.EqualsCaseInsensitive("staging") ||
-                routeInfo.Headers.SiteType.EqualsCaseInsensitive("test"))
+            if ((routeInfo.Headers.SiteType.EqualsCaseInsensitive("staging") ||
+                 routeInfo.Headers.SiteType.EqualsCaseInsensitive("test")) &&
+                !routeInfo.Headers.HidePreviewToolbar.EqualsCaseInsensitive("true"))
             {
                 var entryVersionStatus = routeInfo.Headers.EntryVersionStatus ?? "published";
                 var isContensisSingleSignOn = await _globalApi.IsContensisSingleSignOn();

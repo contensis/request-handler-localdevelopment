@@ -55,6 +55,8 @@ public sealed class Headers
     }
 
     public string? SiteType => GetFirstValueIfExists(Constants.Headers.ServerType);
+    
+    public string? HidePreviewToolbar => GetFirstValueIfExists(Constants.Headers.HidePreviewToolbar);
 
     public string? EntryVersionStatus => GetFirstValueIfExists(Constants.Headers.EntryVersionStatus);
 
