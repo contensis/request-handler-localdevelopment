@@ -8,6 +8,7 @@ public static class Constants
         public const string ProjectApiId = "x-project-api-id";
         public const string ProjectUuid = "x-project-uuid";
         public const string TraceEnabled = "x-trace-enabled";
+        public const string SurrogateControl = "surrogate-control";
         public const string SurrogateKey = "surrogate-key";
         public const string DebugSurrogateKey = "debug-surrogate-key";
         public const string Debug = "debug";
@@ -39,6 +40,7 @@ public static class Constants
         public const string ServerType = "x-site-type";
         public const string LoadBalancerVip = "x-loadbalancer-vip";
         public const string IisHostname = "x-iis-hostname";
+        public const string OrigHost = "x-orig-host";
 
         public static readonly string[] ConfigHeaders =
         {
