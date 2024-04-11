@@ -10,7 +10,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models
             private readonly Metrics _sut = new();
             private string _result;
 
-            [Given]
             public void GivenThereAreSomeMetrics()
             {
                 _sut.Add("metric1", 100);
@@ -18,13 +17,11 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models
                 _sut.Add("metric3", 300);
             }
 
-            [When]
             public void WhenToStringIsInvoked()
             {
                 _result = _sut.ToString();
             }
 
-            [Then]
             public void ThenTheMetricsAreFormattedCorrectly()
             {
                 Assert.That(_result, Is.EqualTo("metric1: 100ms, metric2: 200ms, metric3: 300ms"));
@@ -42,18 +39,15 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models
             private readonly Metrics _sut = new();
             private string _result;
 
-            [Given]
             public void GivenThereAreSomeMetrics()
             {
             }
 
-            [When]
             public void WhenToStringIsInvoked()
             {
                 _result = _sut.ToString();
             }
 
-            [Then]
             public void ThenTheMetricsAreFormattedCorrectly()
             {
                 Assert.That(_result, Is.EqualTo(""));

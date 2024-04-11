@@ -11,19 +11,16 @@ public class ShouldResolveForValidData
     private ServerType _serverType;
     private ServerType _expectedServerType;
 
-    [Given]
     public void GivenAServerTypeResolver()
     {
         _sut = new ServerTypeResolver();
     }
 
-    [When]
     public void WhenTheServerTypeIsResolvedForValidData()
     {
         _serverType = _sut.GetServerType();
     }
 
-    [Then]
     public void ThenTheServerTypeIsCorrect()
     {
         Assert.That(_serverType, Is.EqualTo(_expectedServerType));

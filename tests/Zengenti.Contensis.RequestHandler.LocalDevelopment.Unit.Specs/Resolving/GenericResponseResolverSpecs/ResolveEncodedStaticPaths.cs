@@ -13,13 +13,11 @@ class ResolveEncodedStaticPaths
     private readonly Guid _blockVersionId = Guid.NewGuid();
     private readonly Guid _projectUuid = Guid.NewGuid();
 
-    [Given]
     public void GivenTheGenericResponseResolver()
     {
         _sut = new GenericResponseResolver();
     }
 
-    [When]
     public async void WhenAResponseContainsStaticLinks()
     {
         var html = SpecHelper.GetFile("Resolving/Files/encoded.json");
@@ -28,7 +26,6 @@ class ResolveEncodedStaticPaths
         _result = await _sut.Resolve(html, routeInfo, 0, CancellationToken.None);
     }
 
-    [Then]
     public void ThenTheStaticPathsAreRewrittenWithABlockVersionIdPrefix()
     {
         var expected =

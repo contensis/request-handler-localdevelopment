@@ -16,12 +16,10 @@ public class StaticResourcePath
     private RouteInfo _result;
     private readonly string _baseUriString = "http://my-block.contensis.com";
 
-    [Given]
     public void GivenAStaticResourcePathContainsABlockIdPrefix()
     {
     }
 
-    [When]
     public void WhenCreateIsInvoked()
     {
         var blockGuid = Guid.NewGuid();
@@ -39,20 +37,17 @@ public class StaticResourcePath
             new BlockVersionInfo(projectUuid, "", blockGuid, new Uri(_baseUriString), "main", false, null, 1));
     }
 
-    [Then]
     public void ThenTheUriIsRewrittenCorrectly()
     {
         Assert.That(_result, Is.Not.Null);
         Assert.That(_result.Uri.ToString(), Is.EqualTo(_baseUriString + "/images/header.png?w=100&h=200"));
     }
 
-    [AndThen]
     public void AndThenTheHeadersAreMapped()
     {
         Assert.That(_result.Headers.GetFirstValueIfExists(Constants.Headers.Alias) == "zenhub");
     }
 
-    [AndThen]
     public void AndThenTheQueryStringValuesAreCorrect()
     {
         var query = HttpUtility.ParseQueryString(_result.Uri.Query);

@@ -13,13 +13,11 @@ class ResolveStaticPaths
     private readonly Guid _blockVersionId = Guid.NewGuid();
     private readonly Guid _projectUuid = Guid.NewGuid();
 
-    [Given]
     public void GivenTheGenericResponseResolver()
     {
         _sut = new GenericResponseResolver();
     }
 
-    [When]
     public async void WhenAResponseContainsStaticLinks()
     {
         var html = SpecHelper.GetFile("Resolving/Files/site.css");
@@ -28,7 +26,6 @@ class ResolveStaticPaths
         _result = await _sut.Resolve(html, routeInfo, 0, CancellationToken.None);
     }
 
-    [Then]
     public void ThenTheTargetedStaticPathsAreRewrittenWithABlockVersionIdPrefix()
     {
         var expected =
@@ -36,7 +33,6 @@ class ResolveStaticPaths
         Assert.That(_result, Contains.Substring(expected));
     }
 
-    [AndThen]
     public void AndThenTheRestOfTheStaticPathsAreNotRewritten()
     {
         var expectedUrls = new[]

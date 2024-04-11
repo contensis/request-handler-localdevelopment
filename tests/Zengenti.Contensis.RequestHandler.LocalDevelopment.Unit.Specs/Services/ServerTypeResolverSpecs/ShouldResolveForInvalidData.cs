@@ -10,19 +10,16 @@ public class ShouldResolveForInvalidData
     private ServerTypeResolver _sut;
     private ServerType _serverType;
 
-    [Given]
     public void GivenAServerTypeResolver()
     {
         _sut = new ServerTypeResolver();
     }
 
-    [When]
     public void WhenTheServerTypeIsResolvedForInvalidData()
     {
         _serverType = _sut.GetServerType();
     }
 
-    [Then]
     public void ThenTheServerTypeIsCorrect()
     {
         Assert.That(_serverType, Is.EqualTo(ServerType.Live));

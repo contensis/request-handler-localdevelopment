@@ -21,7 +21,6 @@ public class NodeExistsAndRendererMatchedWithFullUriRouting
     private ILocalDevPublishingService _publishingService;
     private readonly Guid _projectUuid = Guid.NewGuid();
 
-    [Given]
     public void GivenARequestPathExistsAsANode()
     {
         var requestContext = Substitute.For<IRequestContext>();
@@ -51,19 +50,16 @@ public class NodeExistsAndRendererMatchedWithFullUriRouting
             logger);
     }
 
-    [When]
     public async Task WhenTheRouteIsRequested()
     {
         _result = await _sut.GetRouteForRequest(new Uri(Host + Path), new Headers());
     }
 
-    [Then]
     public void ThenTheCorrectNodeIsLookedUp()
     {
         _nodeService.Received(1).GetByPath(Path);
     }
 
-    [AndThen]
     public void AndThenTheCorrectRouteInfoIsReturned()
     {
         Assert.That(_result, Is.Not.Null);

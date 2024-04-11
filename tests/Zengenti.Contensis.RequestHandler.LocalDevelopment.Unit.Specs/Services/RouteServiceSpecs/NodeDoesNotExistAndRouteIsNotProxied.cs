@@ -16,7 +16,6 @@ public class NodeDoesNotExistAndRouteIsNotProxied
     private INodeService _nodeService;
     private RouteInfo _result;
 
-    [Given]
     public void GivenARequestPathDoesNotExistsAsANode()
     {
         _nodeService = Substitute.For<INodeService>();
@@ -37,19 +36,16 @@ public class NodeDoesNotExistAndRouteIsNotProxied
             logger);
     }
 
-    [When]
     public async Task WhenTheRouteIsRequested()
     {
         _result = await _sut.GetRouteForRequest(new Uri(Host + Path), new Headers());
     }
 
-    [Then]
     public void ThenTheNodeIsLookedUp()
     {
         _nodeService.Received(1).GetByPath(Path);
     }
 
-    [AndThen]
     public void AndThenNoRouteIsReturned()
     {
         Assert.That(_result.FoundRoute, Is.EqualTo(false));

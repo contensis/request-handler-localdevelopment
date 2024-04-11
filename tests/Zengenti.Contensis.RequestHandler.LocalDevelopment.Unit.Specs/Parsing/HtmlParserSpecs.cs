@@ -10,13 +10,11 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
 
-            [Given]
             public void GivenHtmlContainsSelfClosingTags()
             {
                 _sut = new HtmlParser(SpecHelper.GetFile("Parsing/Files/Self-closing-tags.html"));
             }
 
-            [When]
             public void WhenTheHtmlIsParsed()
             {
                 while (_sut.ParseNext(
@@ -30,7 +28,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
                 }
             }
 
-            [Then]
             public void ThenTheTagsAreExtracted()
             {
                 Assert.That(_tags, Has.Count.EqualTo(3));
@@ -51,13 +48,11 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
 
-            [Given]
             public void GivenHtmlContainsTagsWithEndTags()
             {
                 _sut = new HtmlParser(SpecHelper.GetFile("Parsing/Files/End-tags.html"));
             }
 
-            [When]
             public void WhenTheHtmlIsParsed()
             {
                 while (_sut.ParseNext(
@@ -71,7 +66,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
                 }
             }
 
-            [Then]
             public void ThenTheTagsAreExtracted()
             {
                 Assert.That(_tags, Has.Count.EqualTo(3));
@@ -94,13 +88,11 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
 
-            [Given]
             public void GivenHtmlContainsNonClosedTags()
             {
                 _sut = new HtmlParser(SpecHelper.GetFile("Parsing/Files/Non-closed-tags.html"));
             }
 
-            [When]
             public void WhenTheHtmlIsParsed()
             {
                 while (_sut.ParseNext(
@@ -114,7 +106,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
                 }
             }
 
-            [Then]
             public void ThenTheTagsAreExtracted()
             {
                 Assert.That(_tags, Has.Count.EqualTo(2));
@@ -134,13 +125,11 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
 
-            [Given]
             public void GivenHtmlContainsATagWithoutAClosingBracket()
             {
                 _sut = new HtmlParser(SpecHelper.GetFile("Parsing/Files/Invalid-tag-with-no-closing-bracket.html"));
             }
 
-            [When]
             public void WhenTheHtmlIsParsed()
             {
                 while (_sut.ParseNext(
@@ -154,7 +143,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
                 }
             }
 
-            [Then]
             public void ThenTheTagIsIgnored()
             {
                 Assert.That(_tags, Has.Count.EqualTo(0));
@@ -172,14 +160,12 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
 
-            [Given]
             public void GivenHtmlContainsAnEndTagWithoutAClosingBracket()
             {
                 _sut = new HtmlParser(
                     SpecHelper.GetFile("Parsing/Files/Invalid-last-tag-with-no-closing-bracket.html"));
             }
 
-            [When]
             public void WhenTheHtmlIsParsed()
             {
                 while (_sut.ParseNext(
@@ -193,7 +179,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
                 }
             }
 
-            [Then]
             public void ThenTheTagIsIgnored()
             {
                 Assert.That(_tags, Has.Count.EqualTo(0));
@@ -211,13 +196,11 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
 
-            [Given]
             public void GivenHtmlContainsATagWithInvalidAttributes()
             {
                 _sut = new HtmlParser(SpecHelper.GetFile("Parsing/Files/Tag-with-invalid-attributes.html"));
             }
 
-            [When]
             public void WhenTheHtmlIsParsed()
             {
                 while (_sut.ParseNext(
@@ -231,7 +214,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
                 }
             }
 
-            [Then]
             public void ThenTheTagIsIgnored()
             {
                 Assert.That(_tags, Has.Count.EqualTo(0));

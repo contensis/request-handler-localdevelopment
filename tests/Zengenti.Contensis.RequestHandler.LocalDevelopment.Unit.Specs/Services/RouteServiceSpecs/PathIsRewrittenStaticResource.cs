@@ -16,7 +16,6 @@ public class PathIsRewrittenStaticResource
     private RouteInfo _result;
     private readonly Guid _projectUuid = Guid.NewGuid();
 
-    [Given]
     public void GivenARequestPathIsARewrittenStaticResourcePath()
     {
         _nodeService = Substitute.For<INodeService>();
@@ -42,19 +41,16 @@ public class PathIsRewrittenStaticResource
             logger);
     }
 
-    [When]
     public async Task WhenTheRouteIsRequested()
     {
         _result = await _sut.GetRouteForRequest(new Uri("http://www.origin.com" + _requestPath), new Headers());
     }
 
-    [Then]
     public void ThenNoNodeIsLookedUp()
     {
         _nodeService.DidNotReceive().GetByPath(_requestPath);
     }
 
-    [AndThen]
     public void AndThenARouteIsReturnedWithTheInternalResourceUri()
     {
         Assert.That(_result, Is.Not.Null);
@@ -63,7 +59,6 @@ public class PathIsRewrittenStaticResource
             Is.EqualTo("http://website.com/static/images/header.png"));
     }
 
-    [AndThen]
     public void AndThenTheCorrectBlockVersionStaticPathsAreSet()
     {
         Assert.That(_result.BlockVersionInfo, Is.Not.Null);

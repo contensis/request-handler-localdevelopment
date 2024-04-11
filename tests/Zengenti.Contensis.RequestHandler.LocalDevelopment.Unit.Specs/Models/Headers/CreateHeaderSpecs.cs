@@ -11,7 +11,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
         {
             private Domain.ValueTypes.Headers _result;
 
-            [When]
             public void WhenHeadersAreCreatedFromAnIEnumerableDictionary()
             {
                 _result = new Domain.ValueTypes.Headers(
@@ -32,7 +31,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                     });
             }
 
-            [Then]
             public void ThenTheValuesAreCorrectlySet()
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(2));
@@ -51,7 +49,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
         {
             private Domain.ValueTypes.Headers _result;
 
-            [When]
             public void WhenHeadersAreCreatedFromASingleValueDictionary()
             {
                 _result = new Domain.ValueTypes.Headers(
@@ -66,7 +63,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                     });
             }
 
-            [Then]
             public void ThenTheValuesAreCorrectlySet()
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(2));
@@ -85,7 +81,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
         {
             private Domain.ValueTypes.Headers _result;
 
-            [When]
             public void WhenHeadersAreCreatedFromAnIHeaderDictionary()
             {
                 _result = new Domain.ValueTypes.Headers(
@@ -101,7 +96,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                         }));
             }
 
-            [Then]
             public void ThenTheValuesAreCorrectlySet()
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(2));
@@ -120,7 +114,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
         {
             private Domain.ValueTypes.Headers _result;
 
-            [When]
             public void WhenHeadersAreCreatedFromHttpResponseHeaders()
             {
                 var response = new HttpResponseMessage();
@@ -130,7 +123,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                 _result = new Domain.ValueTypes.Headers(response.Headers);
             }
 
-            [Then]
             public void ThenTheValuesAreCorrectlySet()
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(2));

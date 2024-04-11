@@ -16,13 +16,11 @@ public class ProxyPath
     private RouteInfo _result;
     private readonly Uri _baseUri = new("https://www.legacysite.com");
 
-    [Given]
     public void GivenAnOriginPathIsAProxyPath()
     {
         // Empty
     }
 
-    [When]
     public void WhenCreateIsInvoked()
     {
         _result = _sut.Create(
@@ -46,7 +44,6 @@ public class ProxyPath
             });
     }
 
-    [Then]
     public void ThenTheUriIsRewrittenCorrectly()
     {
         Assert.That(_result, Is.Not.Null);
@@ -54,13 +51,11 @@ public class ProxyPath
         Assert.That(_result.Uri.AbsolutePath, Is.EqualTo("/news/woman-worlds-longest-nails"));
     }
 
-    [AndThen]
     public void AndThenTheHeadersAreMapped()
     {
         Assert.That(_result.Headers.GetFirstValueIfExists(Constants.Headers.Alias) == "zenhub");
     }
 
-    [AndThen]
     public void AndThenTheQueryStringValuesAreCorrect()
     {
         var query = HttpUtility.ParseQueryString(_result.Uri.Query);

@@ -13,7 +13,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             private HtmlResponseResolver _sut;
             private string _result;
 
-            [Given]
             public void GivenTheHtmlResponseResolver()
             {
                 _sut = SpecHelper.CreateHtmlResponseResolver();
@@ -24,7 +23,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                     SpecHelper.GetFile("Resolving/Files/Pagelet1.html"));
             }
 
-            [When]
             public async Task WhenHtmlWithSinglePageletIsResolved()
             {
                 var html = SpecHelper.GetFile("Resolving/Files/Record-single-pagelet.html");
@@ -45,7 +43,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 _result = await _sut.Resolve(html, routeInfo, 0, CancellationToken.None);
             }
 
-            [Then]
             public void ThenTheResultIsCorrect()
             {
                 Assert.That(_result, Is.Not.Null.Or.Empty);
@@ -65,7 +62,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             private HtmlResponseResolver _sut;
             private string _result;
 
-            [Given]
             public void GivenTheHtmlResponseResolverWithTraceEnabled()
             {
                 _sut = SpecHelper.CreateHtmlResponseResolver(true);
@@ -96,7 +92,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                         requestMessage.Headers));
             }
 
-            [When]
             public async Task WhenHtmlWithSinglePageletIsResolved()
             {
                 var html = SpecHelper.GetFile("Resolving/Files/Record-single-pagelet.html");
@@ -119,7 +114,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 _result = await _sut.Resolve(html, routeInfo, 0, CancellationToken.None);
             }
 
-            [Then]
             public void ThenTheResultIsCorrect()
             {
                 var separator = Environment.NewLine;
@@ -147,7 +141,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
         //    private string _result;
         //    private Exception _ex;
 
-        //    [Given]
+        //    
         //    public void GivenTheHtmlResponseResolver()
         //    {
 
@@ -158,7 +152,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
 
         //    }
 
-        //    [When]
+        //    
         //    public async Task WhenHtmlWithSinglePageletIsResolved()
         //    {
         //        var html = SpecHelper.GetFile("Resolving/Files/Record-single-pagelet.html");
@@ -182,7 +176,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
         //        }
         //    }
 
-        //    [Then]
+        //    
         //    public void ThenAnEndpointExceptionIsThrown()
         //    {
         //        Assert.That(_result, Is.Null);
@@ -209,7 +203,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
         //    private string _result;
         //    private Exception _ex;
 
-        //    [Given]
+        //    
         //    public void GivenTheHtmlResponseResolver()
         //    {
 
@@ -223,7 +217,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
         //           "404 error", 404);
         //    }
 
-        //    [When]
+        //    
         //    public async Task WhenHtmlWithMultiplePageletsIsResolved()
         //    {
         //        var html = SpecHelper.GetFile("Resolving/Files/Record-multiple-pagelets.html");
@@ -248,7 +242,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
         //        }
         //    }
 
-        //    [Then]
+        //    
         //    public void ThenAnAggregateExceptionIsThrown()
         //    {
         //        Assert.That(_result, Is.Null);

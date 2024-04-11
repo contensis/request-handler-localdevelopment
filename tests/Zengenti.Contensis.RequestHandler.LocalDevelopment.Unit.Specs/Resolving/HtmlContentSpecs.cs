@@ -13,7 +13,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             private HtmlContent _sut;
             private readonly List<Guid> _tagIds = new List<Guid>();
 
-            [Given]
             public void GivenMultiplePagelets()
             {
                 var html = SpecHelper.GetFile("Resolving/Files/Record-multiple-pagelets.html");
@@ -33,7 +32,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 }
             }
 
-            [When]
             public async Task WhenThePageletsAreResolvedInOrder()
             {
                 await _sut.UpdateTag(_tagIds[0], SpecHelper.GetFile("Resolving/Files/Pagelet1.html"));
@@ -41,7 +39,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 await _sut.UpdateTag(_tagIds[2], SpecHelper.GetFile("Resolving/Files/Pagelet3.html"));
             }
 
-            [Then]
             public void ThenThePageletsAreResolvedCorrectly()
             {
                 var result = _sut.ToString().NormalizeLineEndings();
@@ -65,7 +62,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             private HtmlContent _sut;
             private readonly List<Guid> _tagIds = new List<Guid>();
 
-            [Given]
             public void GivenMultiplePagelets()
             {
                 var html = SpecHelper.GetFile("Resolving/Files/Record-multiple-pagelets.html");
@@ -85,7 +81,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 }
             }
 
-            [When]
             public async Task WhenThePageletsAreResolvedUnOrdered()
             {
                 await _sut.UpdateTag(_tagIds[2], SpecHelper.GetFile("Resolving/Files/Pagelet3.html"));
@@ -93,7 +88,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 await _sut.UpdateTag(_tagIds[0], SpecHelper.GetFile("Resolving/Files/Pagelet1.html"));
             }
 
-            [Then]
             public void ThenThePageletsAreResolvedCorrectly()
             {
                 var result = _sut.ToString().NormalizeLineEndings();
@@ -116,7 +110,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
         {
             private HtmlContent _sut;
 
-            [Given]
             public void GivenAHtmlTagIdDoesNotExist()
             {
                 var html = SpecHelper.GetFile("Resolving/Files/Record-single-pagelet.html");
@@ -135,13 +128,11 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 }
             }
 
-            [When]
             public async Task WhenTheTagUpdateIsApplied()
             {
                 await _sut.UpdateTag(new Guid(), SpecHelper.GetFile("Resolving/Files/Pagelet1.html"));
             }
 
-            [Then]
             public void ThenTheUpdateIsIgnored()
             {
                 Assert.That(_sut.ToString().NormalizeLineEndings().Length, Is.EqualTo(782));
@@ -159,7 +150,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             private HtmlContent _sut;
             private Guid _tagId;
 
-            [Given]
             public void GivenAPageletResponseIsNull()
             {
                 var html = SpecHelper.GetFile("Resolving/Files/Record-single-pagelet.html");
@@ -179,13 +169,11 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 }
             }
 
-            [When]
             public async Task WhenTheTagUpdateIsApplied()
             {
                 await _sut.UpdateTag(_tagId, null);
             }
 
-            [Then]
             public void ThenTheUpdateIsIgnored()
             {
                 Assert.That(_sut.ToString().NormalizeLineEndings().Length, Is.EqualTo(751));

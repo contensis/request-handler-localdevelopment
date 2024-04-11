@@ -14,13 +14,11 @@ public class ApiPath
 
     private RouteInfo _result;
 
-    [Given]
     public void GivenAnOriginPathIsAnApiPath()
     {
         // Empty
     }
 
-    [When]
     public void WhenCreateIsInvoked()
     {
         _result = _sut.CreateForNonNodePath(
@@ -34,7 +32,6 @@ public class ApiPath
                 }));
     }
 
-    [Then]
     public void ThenTheUriIsRewrittenCorrectly()
     {
         Assert.That(_result, Is.Not.Null);
@@ -42,13 +39,11 @@ public class ApiPath
         Assert.That(_result.Uri.AbsolutePath, Is.EqualTo("/api/delivery/projects/website/entries"));
     }
 
-    [AndThen]
     public void AndThenTheHeadersAreMapped()
     {
         Assert.That(_result.Headers.GetFirstValueIfExists(Constants.Headers.Alias) == "zenhub");
     }
 
-    [AndThen]
     public void AndThenTheQueryStringValuesAreCorrect()
     {
         var query = HttpUtility.ParseQueryString(_result.Uri.Query);

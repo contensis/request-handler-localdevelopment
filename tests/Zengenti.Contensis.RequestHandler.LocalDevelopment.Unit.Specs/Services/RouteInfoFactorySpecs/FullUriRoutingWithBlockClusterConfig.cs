@@ -22,12 +22,10 @@ public class FullUriRoutingWithBlockClusterConfig
     private readonly Guid _nodeId = Guid.NewGuid();
     private readonly Guid _entryId = Guid.NewGuid();
 
-    [Given]
     public void GivenABaseUriWithNoEndpointPath()
     {
     }
 
-    [When]
     public void WhenCreateIsInvoked()
     {
         _result = _sut.Create(
@@ -56,7 +54,6 @@ public class FullUriRoutingWithBlockClusterConfig
                 1));
     }
 
-    [Then]
     public void ThenTheUriIsRewrittenCorrectly()
     {
         Assert.That(_result, Is.Not.Null);
@@ -64,20 +61,17 @@ public class FullUriRoutingWithBlockClusterConfig
         Assert.That(_result.Uri.AbsolutePath, Is.EqualTo("/some-path/"));
     }
 
-    [AndThen]
     public void AndThenTheHeadersAreMapped()
     {
         Assert.That(_result.Headers.GetFirstValueIfExists(Constants.Headers.Alias) == "zenhub");
     }
 
-    [AndThen]
     public void AndThenTheBlockClusterDetailsAreSet()
     {
         var expectedHost = new Uri(_baseUriString).Host;
         Assert.That(_result.Headers.GetFirstValueIfExists("host"), Is.EqualTo(expectedHost));
     }
 
-    [AndThen]
     public void AndThenTheQueryStringValuesAreCorrect()
     {
         var query = HttpUtility.ParseQueryString(_result.Uri.Query);

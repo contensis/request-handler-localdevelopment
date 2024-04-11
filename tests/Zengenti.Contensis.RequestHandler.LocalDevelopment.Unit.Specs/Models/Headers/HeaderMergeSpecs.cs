@@ -10,7 +10,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             private readonly Domain.ValueTypes.Headers _sut = new();
             private Domain.ValueTypes.Headers _result;
 
-            [Given]
             public void GivenHeadersExist()
             {
                 _sut.Add(
@@ -27,7 +26,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                     });
             }
 
-            [When]
             public void WhenAMatchingHeaderValueIsMerged()
             {
                 var toMerge = new Domain.ValueTypes.Headers();
@@ -41,7 +39,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                 _result = _sut.Merge(toMerge);
             }
 
-            [Then]
             public void ThenTheMatchingHeaderValueIsOverridden()
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(2));
@@ -61,7 +58,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             private readonly Domain.ValueTypes.Headers _sut = new();
             private Domain.ValueTypes.Headers _result;
 
-            [Given]
             public void GivenHeadersExist()
             {
                 _sut.Add(
@@ -78,7 +74,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                     });
             }
 
-            [When]
             public void WhenAHeaderValueIsMergedThatDoesNotAlreadyExist()
             {
                 var toMerge = new Domain.ValueTypes.Headers();
@@ -92,7 +87,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                 _result = _sut.Merge(toMerge);
             }
 
-            [Then]
             public void ThenTheNewHeaderValueIsAdded()
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(3));
@@ -115,7 +109,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
             private readonly Domain.ValueTypes.Headers _sut = new();
             private Domain.ValueTypes.Headers _result;
 
-            [Given]
             public void GivenAHeadersExistsThatIsHandledCaseInsensitively()
             {
                 _sut.Add(
@@ -126,7 +119,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                     });
             }
 
-            [When]
             public void WhenAHeaderWithTheSameNameButDifferentCaseIsMerged()
             {
                 var toMerge = new Domain.ValueTypes.Headers();
@@ -140,7 +132,6 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Models.H
                 _result = _sut.Merge(toMerge);
             }
 
-            [Then]
             public void ThenTheHeaderValueIsOverriden()
             {
                 Assert.That(_result.Values.Count, Is.EqualTo(1));

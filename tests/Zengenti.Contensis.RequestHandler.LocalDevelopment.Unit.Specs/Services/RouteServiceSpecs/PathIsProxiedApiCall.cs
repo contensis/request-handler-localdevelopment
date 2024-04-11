@@ -20,7 +20,6 @@ public class PathIsProxiedApiCall
     private INodeService _nodeService;
     private RouteInfo _result;
 
-    [Given]
     public void GivenARequestPathIsAnApiCall()
     {
         _nodeService = Substitute.For<INodeService>();
@@ -40,19 +39,16 @@ public class PathIsProxiedApiCall
             logger);
     }
 
-    [When]
     public async Task WhenTheRouteIsRequested()
     {
         _result = await _sut.GetRouteForRequest(_originUri, _headers);
     }
 
-    [Then]
     public void ThenNoNodeLookupIsPerformed()
     {
         _nodeService.DidNotReceive().GetByPath(Path);
     }
 
-    [AndThen]
     public void AndThenTheProxiedUriIsInvoked()
     {
         Assert.That(_result.Uri.ToString(), Is.EqualTo(ApiUriString + Path));

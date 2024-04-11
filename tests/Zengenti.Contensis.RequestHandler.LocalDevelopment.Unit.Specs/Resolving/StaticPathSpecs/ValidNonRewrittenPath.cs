@@ -8,24 +8,20 @@ class ValidNonRewrittenPath
     string _path;
     StaticPath _result;
 
-    [Given]
     public void GivenANonRewrittenStaticPath()
     {
     }
 
-    [When]
     public void WhenItIsParsed()
     {
         _result = StaticPath.Parse(_path);
     }
 
-    [Then]
     public void ThenItIsUnderstoodToNotBeRewritten()
     {
         Assert.That(_result.IsRewritten, Is.False);
     }
 
-    [AndThen]
     public void AndThenThePathPropertiesAreTheSame()
     {
         Assert.That(_result.Path, Is.EqualTo(_path));

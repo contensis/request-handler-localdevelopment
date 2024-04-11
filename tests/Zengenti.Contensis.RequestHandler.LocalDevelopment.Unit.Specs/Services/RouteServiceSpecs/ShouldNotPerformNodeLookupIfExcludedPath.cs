@@ -13,7 +13,6 @@ public class ShouldNotPerformNodeLookupIfExcludedPath
     private INodeService _nodeService;
     private string _relativePathAndQuery;
 
-    [Given]
     public void GivenARequestPathIsAnExcludedPath()
     {
         _nodeService = Substitute.For<INodeService>();
@@ -33,13 +32,11 @@ public class ShouldNotPerformNodeLookupIfExcludedPath
             logger);
     }
 
-    [When]
     public async Task WhenTheRouteIsRequested()
     {
         await _sut.GetRouteForRequest(new Uri("http://www.mysite.com" + _relativePathAndQuery), new Headers());
     }
 
-    [Then]
     public void ThenANodeLookupIsNotInvoked()
     {
         var indexOfStartOfQuery = _relativePathAndQuery.IndexOf("?", StringComparison.InvariantCultureIgnoreCase);

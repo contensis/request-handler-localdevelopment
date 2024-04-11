@@ -16,12 +16,10 @@ public class IisFallback
 
     private RouteInfo _result;
 
-    [Given]
     public void GivenAnOriginPathIsAnIisFallbackUri()
     {
     }
 
-    [When]
     public void WhenCreateIsInvoked()
     {
         _result = _sut.CreateForIisFallback(
@@ -35,7 +33,6 @@ public class IisFallback
                 }));
     }
 
-    [Then]
     public void ThenTheUriIsRewrittenCorrectly()
     {
         Assert.That(_result, Is.Not.Null);
@@ -43,20 +40,17 @@ public class IisFallback
         Assert.That(_result.Uri.AbsolutePath, Is.EqualTo("/news/today-is-the-day"));
     }
 
-    [AndThen]
     public void AndThenTheHeadersAreMapped()
     {
         Assert.That(_result.Headers.Values.Count, Is.EqualTo(2));
         Assert.That(_result.Headers.GetFirstValueIfExists(Constants.Headers.Alias) == "zenhub");
     }
 
-    [AndThen]
     public void AndThenTheHostHeaderIsSetToTheOriginHeader()
     {
         Assert.That(_result.Headers.GetFirstValueIfExists("host"), Is.EqualTo("www.mysite.com"));
     }
 
-    [AndThen]
     public void AndThenTheQueryStringValuesAreCorrect()
     {
         var query = HttpUtility.ParseQueryString(_result.Uri.Query);

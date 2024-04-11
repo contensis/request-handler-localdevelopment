@@ -8,24 +8,20 @@ class InvalidRewrittenPath
     string _path;
     StaticPath _result;
 
-    [Given]
     public void GivenARewrittenStaticPath()
     {
     }
 
-    [When]
     public void WhenItIsParsed()
     {
         _result = StaticPath.Parse(_path);
     }
 
-    [Then]
     public void ThenItIsNotRewritten()
     {
         Assert.That(_result.IsRewritten, Is.False);
     }
 
-    [AndThen]
     public void AndTheTheOriginalPathIsCorrect()
     {
         Assert.That(_result.OriginalPath, Is.EqualTo(_path));

@@ -16,7 +16,6 @@ public class NodeExistsAndRendererDoesNotMatch
     private INodeService _nodeService;
     private RouteInfo _result;
 
-    [Given]
     public void GivenARequestPathExistsAsANode()
     {
         var node = new Node
@@ -45,24 +44,20 @@ public class NodeExistsAndRendererDoesNotMatch
             logger);
     }
 
-    [AndGiven]
     public void AndGivenThereIsNoMatchingRendererForTheRequest()
     {
     }
 
-    [When]
     public async Task WhenTheRouteIsRequested()
     {
         _result = await _sut.GetRouteForRequest(new Uri(Host + Path), new Headers());
     }
 
-    [Then]
     public void ThenTheNodeIsLookedUp()
     {
         _nodeService.Received(1).GetByPath(Path);
     }
 
-    [AndThen]
     public void AndThenNoRouteIsReturned()
     {
         Assert.That(_result.FoundRoute, Is.EqualTo(false));
