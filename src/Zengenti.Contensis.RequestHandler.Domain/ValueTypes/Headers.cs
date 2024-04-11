@@ -58,6 +58,8 @@ public sealed class Headers
 
     public string? HidePreviewToolbar => GetFirstValueIfExists(Constants.Headers.HidePreviewToolbar);
 
+    public string? OrigHost => GetFirstValueIfExists(Constants.Headers.OrigHost);
+
     public string? EntryVersionStatus => GetFirstValueIfExists(Constants.Headers.EntryVersionStatus);
 
     public bool Debug => GetFirstValueIfExists(Constants.Headers.Debug) == "true";

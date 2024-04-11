@@ -289,7 +289,7 @@ public class RequestHandlerMiddleware
 
         response = await GenerateFriendlyErrorResponse(context, routeInfo, initialRouteInfo, response);
 
-        FixIisStatusCode(routeInfo, response);
+        EnsureIisFallbackResponse(routeInfo, response);
 
         AddCacheHeadersFor404Errors(response, context);
 
@@ -554,21 +554,32 @@ public class RequestHandlerMiddleware
         return response;
     }
 
-    private static void FixIisStatusCode(RouteInfo routeInfo, EndpointResponse response)
+    private static void EnsureIisFallbackResponse(RouteInfo routeInfo, EndpointResponse response)
     {
-        if (routeInfo.IsIisFallback)
+        if (!routeInfo.IsIisFallback)
         {
-            // Unfortunately IIS returns an empty bodied 200 rather than a 404 when
-            // hitting the root or a directory of a site, where there is no default page or
-            // no extension in the path requested.
+            return;
+        }
 
-            if (response.StatusCode == (int)HttpStatusCode.OK)
-            {
-                if (response.StreamContent is not null && response.StreamContent.Length == 0)
+        // Unfortunately IIS returns an empty bodied 200 rather than a 404 when
+        // hitting the root or a directory of a site, where there is no default page or
+        // no extension in the path requested.
+        if (response.StatusCode == (int)HttpStatusCode.OK &&
+            response.StreamContent is not null &&
+            response.StreamContent.Length == 0)
+        {
+            response.StatusCode = 404;
+            return;
+        }
+
+        if (!response.IsErrorStatusCode() && routeInfo.Headers.OrigHost.StartsWithCaseInsensitive("preview"))
+        {
+            response.Headers.Add(
+                Constants.Headers.SurrogateControl,
+                new[]
                 {
-                    response.StatusCode = 404;
-                }
-            }
+                    "max-age=0"
+                });
         }
     }
 
