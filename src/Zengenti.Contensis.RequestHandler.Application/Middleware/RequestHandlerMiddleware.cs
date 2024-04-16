@@ -295,17 +295,12 @@ public class RequestHandlerMiddleware
 
         fallbackTimer.Stop();
         var performanceLog = GetPerformanceInfo(routeInfoTimer, responseTimer, fallbackTimer, mainRouteInfoMetrics);
-        if (response.Headers.ContainsKey("request-handler-metrics"))
-        {
-            response.Headers.Remove("request-handler-metrics");
-        }
 
-        response.Headers.Add(
-            "request-handler-metrics",
+        response.Headers["request-handler-metrics"] =
             new List<string>
             {
                 performanceLog
-            });
+            };
 
         UpdateLocationResponseHeader(context, response, routeInfo);
 
@@ -533,24 +528,17 @@ public class RequestHandlerMiddleware
             response.StatusCode,
             response.PageletPerformanceData);
         // This ensures varnish will not replace our 503 with its own.
-        if (response.Headers.ContainsKey("expose-raw-errors"))
-        {
-            response.Headers.Remove("expose-raw-errors");
-        }
-
-        response.Headers.Add(
-            "expose-raw-errors",
+        response.Headers["expose-raw-errors"] =
             new List<string>
             {
                 "True"
-            });
+            };
 
-        response.Headers.Add(
-            "content-type",
+        response.Headers["content-type"] =
             new List<string>
             {
                 "text/html; charset=utf-8"
-            });
+            };
         return response;
     }
 
@@ -574,39 +562,33 @@ public class RequestHandlerMiddleware
 
         if (!response.IsErrorStatusCode() && routeInfo.Headers.OrigHost.StartsWithCaseInsensitive("preview"))
         {
-            response.Headers.Add(
-                Constants.Headers.SurrogateControl,
-                new[]
-                {
-                    "max-age=0"
-                });
+            response.Headers[Constants.Headers.SurrogateControl] = new[]
+            {
+                "max-age=0"
+            };
         }
     }
 
     private static void AddCacheHeadersFor404Errors(EndpointResponse response, HttpContext context)
     {
-        if (response.StatusCode == 404 && !context.Response.Headers.ContainsKey("Surrogate-Control"))
+        if (response.StatusCode != 404 || context.Response.Headers.ContainsKey("Surrogate-Control")) return;
+
+        if (context.Request.Path == "/")
         {
-            if (context.Request.Path == "/")
-            {
-                response.Headers.Add(
-                    "Surrogate-Control",
-                    new List<string>
-                    {
-                        "max-age=30"
-                    });
-            }
-            else
-            {
-                //This is to prevent malicious requests bombarding the backend services.
-                response.Headers.Add(
-                    "Surrogate-Control",
-                    new List<string>
-                    {
-                        "max-age=5"
-                    });
-            }
+            response.Headers[Constants.Headers.SurrogateControl] =
+                new List<string>
+                {
+                    "max-age=30"
+                };
+            return;
         }
+
+        //This is to prevent malicious requests bombarding the backend services.
+        response.Headers[Constants.Headers.SurrogateControl] =
+            new List<string>
+            {
+                "max-age=5"
+            };
     }
 
     private static bool PotentiallyHasLocationHeader(EndpointResponse response)
