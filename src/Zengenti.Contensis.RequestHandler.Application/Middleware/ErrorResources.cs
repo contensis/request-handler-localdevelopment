@@ -36,7 +36,7 @@ public static class ErrorResources
     {
         var curlUri = new UriBuilder(routeInfo.Uri);
 
-        if(!string.IsNullOrWhiteSpace(host))
+        if (!string.IsNullOrWhiteSpace(host))
         {
             curlUri.Host = host;
         }

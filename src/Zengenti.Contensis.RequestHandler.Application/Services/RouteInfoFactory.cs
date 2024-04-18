@@ -1,5 +1,4 @@
 ﻿using System.Web;
-using Microsoft.Net.Http.Headers;
 using Zengenti.Contensis.RequestHandler.Application.Resolving;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;

@@ -190,7 +190,8 @@ public class EndpointRequestService : IEndpointRequestService
                 if (routeInfo.IsIisFallback)
                 {
                     routeInfoType = "IIS falback ";
-                } else if(routeInfo.BlockVersionInfo != null)
+                }
+                else if (routeInfo.BlockVersionInfo != null)
                 {
                     routeInfoType = "block ";
                 }
