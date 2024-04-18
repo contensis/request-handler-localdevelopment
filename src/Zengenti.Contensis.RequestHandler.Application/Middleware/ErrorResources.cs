@@ -50,7 +50,7 @@ public static class ErrorResources
                 continue;
             }
 
-            var headerValue = header.Value.Count() == 1 ?  header.Value.First() : string.Join("; ", header.Value);
+            var headerValue = header.Value.Count() == 1 ? header.Value.First() : string.Join("; ", header.Value);
             curlString += $"  -H '{header.Key}: {headerValue}' \n";
         }
 
