@@ -45,12 +45,13 @@ public static class ErrorResources
         var disallowedHeaders = EndpointRequestService.DisallowedRequestHeaders;
         foreach (var header in routeInfo.Headers.Values)
         {
-            if (disallowedHeaders.ContainsCaseInsensitive(header.Key))
+            if (disallowedHeaders.ContainsCaseInsensitive(header.Key) || !header.Value.Any())
             {
                 continue;
             }
 
-            curlString += $"  -H '{header.Key}: {header.Value}' \n";
+            var headerValue = header.Value.Count() == 1 ?  header.Value.First() : string.Join("; ", header.Value);
+            curlString += $"  -H '{header.Key}: {headerValue}' \n";
         }
 
         return curlString;
