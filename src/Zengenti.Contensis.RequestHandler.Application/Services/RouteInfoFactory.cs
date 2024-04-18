@@ -93,7 +93,7 @@ public class RouteInfoFactory : IRouteInfoFactory
             var apiUrl = $"https://{apiHost}";
             var apiUri = new Uri(apiUrl);
             var uri = BuildUri(apiUri, path, queryString);
-            headers["Host"] = apiHost;
+            headers[Constants.Headers.Host] = apiHost;
             return new RouteInfo(uri, headers, "", true);
         }
 
@@ -125,7 +125,7 @@ public class RouteInfoFactory : IRouteInfoFactory
     {
         var baseUri = new Uri($"https://{_requestContext.LoadBalancerVip}");
         var uri = BuildUri(baseUri, originUri.AbsolutePath, new QueryString(originUri.Query));
-        headers["Host"] = _requestContext.IisHostname;
+        headers[Constants.Headers.Host] = _requestContext.IisHostname;
 
         return new RouteInfo(uri, headers, "", true, isIisFallback: true);
     }
@@ -135,7 +135,7 @@ public class RouteInfoFactory : IRouteInfoFactory
         if (!string.IsNullOrWhiteSpace(_blockClusterConfig.BlockClusterIngressIp) &&
             !string.IsNullOrWhiteSpace(_blockClusterConfig.BlockAddressSuffix))
         {
-            headers[HeaderNames.Host] = baseUri.Host;
+            headers[Constants.Headers.Host] = baseUri.Host;
             baseUri = new UriBuilder(baseUri)
             {
                 Host = _blockClusterConfig.BlockClusterIngressIp

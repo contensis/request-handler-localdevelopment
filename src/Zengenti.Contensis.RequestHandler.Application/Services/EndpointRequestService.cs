@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.Net.Http.Headers;
+using Zengenti.Contensis.RequestHandler.Application.Middleware;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
@@ -185,11 +186,23 @@ public class EndpointRequestService : IEndpointRequestService
                     routeInfo = JsonSerializer.Serialize(routeInfo)
                 }))
             {
+                var routeInfoType = "";
+                if (routeInfo.IsIisFallback)
+                {
+                    routeInfoType = "IIS falback ";
+                } else if(routeInfo.BlockVersionInfo != null)
+                {
+                    routeInfoType = "block ";
+                }
+
+                var curlString = ErrorResources.CreateCurlCallString(routeInfo);
                 _logger.LogError(
                     e,
-                    "Failed to invoke endpoint {Uri} with http method {Method}",
+                    "Failed to invoke {RouteInfoType} endpoint {Uri} with http method {Method}. The equivalent curl command is: {CurlString}",
+                    routeInfoType,
                     routeInfo.Uri,
-                    httpMethod.Method);
+                    httpMethod.Method,
+                    curlString);
             }
 
             return new EndpointResponse(string.Empty, new Dictionary<string, IEnumerable<string>>(), 500);
@@ -319,7 +332,7 @@ public class EndpointRequestService : IEndpointRequestService
         }
         else
         {
-            var host = routeInfo.Headers.GetFirstValueIfExists(HeaderNames.Host);
+            var host = routeInfo.Headers.GetFirstValueIfExists(Constants.Headers.Host);
 
             requestMessage.Headers.Host = host ?? routeInfo.Uri.Host;
         }

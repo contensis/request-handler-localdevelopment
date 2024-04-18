@@ -11,21 +11,7 @@ public static class ErrorResources
         var assembly = Assembly.GetExecutingAssembly();
         var resourceName = $"Zengenti.Contensis.RequestHandler.Application.ErrorMessages.{statusCode}.html";
 
-        var curlUri = new UriBuilder(routeInfo.Uri)
-        {
-            Host = "localhost"
-        };
-        var curlString = $"curl '{curlUri}' \n";
-        var disallowedHeaders = EndpointRequestService.DisallowedRequestHeaders;
-        foreach (var header in routeInfo.Headers.Values)
-        {
-            if (disallowedHeaders.ContainsCaseInsensitive(header.Key))
-            {
-                continue;
-            }
-
-            curlString += $"  -H '{header.Key}: {header.Value}' \n";
-        }
+        var curlString = CreateCurlCallString(routeInfo, "localhost");
 
         var resourceStream = assembly.GetManifestResourceStream(resourceName);
         if (resourceStream != null)
@@ -44,6 +30,30 @@ public static class ErrorResources
         }
 
         return "";
+    }
+
+    internal static string CreateCurlCallString(RouteInfo routeInfo, string? host = "")
+    {
+        var curlUri = new UriBuilder(routeInfo.Uri);
+
+        if(!string.IsNullOrWhiteSpace(host))
+        {
+            curlUri.Host = host;
+        }
+
+        var curlString = $"curl '{curlUri}' \n";
+        var disallowedHeaders = EndpointRequestService.DisallowedRequestHeaders;
+        foreach (var header in routeInfo.Headers.Values)
+        {
+            if (disallowedHeaders.ContainsCaseInsensitive(header.Key))
+            {
+                continue;
+            }
+
+            curlString += $"  -H '{header.Key}: {header.Value}' \n";
+        }
+
+        return curlString;
     }
 
     public static string GetIisFallbackMessage(int statusCode, RouteInfo routeInfo, string nodePath)
