@@ -192,7 +192,7 @@ public class EndpointRequestService : IEndpointRequestService
                     httpMethod.Method);
             }
 
-            throw;
+            return new EndpointResponse(string.Empty, new Dictionary<string, IEnumerable<string>>(), 500);
         }
     }
 
