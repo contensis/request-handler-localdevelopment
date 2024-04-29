@@ -209,7 +209,6 @@ public class EndpointRequestService : IEndpointRequestService
 
                 var curlString = ErrorResources.CreateCurlCallString(routeInfo);
 
-
                 _logger.LogError(
                     e,
                     "Failed to invoke {RouteInfoType} endpoint {Uri} with http method {Method}. The equivalent curl command is: {CurlString}",
