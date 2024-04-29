@@ -179,6 +179,17 @@ public class EndpointRequestService : IEndpointRequestService
         }
         catch (Exception e)
         {
+            var endpointResponse = new EndpointResponse(
+                string.Empty,
+                new Dictionary<string, IEnumerable<string>>(),
+                500);
+
+            // If the request was cancelled, return the error response without logging
+            if (e is TaskCanceledException && cancellationToken.IsCancellationRequested)
+            {
+                return endpointResponse;
+            }
+
             using (_logger.BeginScope(
                 new
                 {
@@ -197,6 +208,8 @@ public class EndpointRequestService : IEndpointRequestService
                 }
 
                 var curlString = ErrorResources.CreateCurlCallString(routeInfo);
+
+
                 _logger.LogError(
                     e,
                     "Failed to invoke {RouteInfoType} endpoint {Uri} with http method {Method}. The equivalent curl command is: {CurlString}",
@@ -206,7 +219,7 @@ public class EndpointRequestService : IEndpointRequestService
                     curlString);
             }
 
-            return new EndpointResponse(string.Empty, new Dictionary<string, IEnumerable<string>>(), 500);
+            return endpointResponse;
         }
     }
 
