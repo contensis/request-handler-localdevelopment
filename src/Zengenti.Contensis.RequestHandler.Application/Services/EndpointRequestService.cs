@@ -194,7 +194,8 @@ public class EndpointRequestService : IEndpointRequestService
                 new
                 {
                     requestContext = JsonSerializer.Serialize(_requestContext),
-                    routeInfo = JsonSerializer.Serialize(routeInfo)
+                    routeInfo = JsonSerializer.Serialize(routeInfo),
+                    cancelledRequest = cancellationToken.IsCancellationRequested.ToString()
                 }))
             {
                 var routeInfoType = "";
