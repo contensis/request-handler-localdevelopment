@@ -162,12 +162,24 @@ public class EndpointRequestService : IEndpointRequestService
                 return endpointResponse;
             }
 
-            using (_logger.BeginScope(
-                new
-                {
-                    requestContext = JsonSerializer.Serialize(_requestContext),
-                    routeInfo = JsonSerializer.Serialize(routeInfo)
-                }))
+            var responseContent = "";
+            if (endpointResponse.StatusCode >= 500 &&
+                endpointResponse.StreamContent is { Length: > 0 } and MemoryStream stream)
+            {
+                stream.Position = 0;
+                using var reader = new StreamReader(stream);
+                responseContent = await reader.ReadToEndAsync();
+            }
+
+            var state = new
+            {
+                requestContext = JsonSerializer.Serialize(_requestContext),
+                routeInfo = JsonSerializer.Serialize(routeInfo),
+                responseHeaders = JsonSerializer.Serialize(endpointResponse.Headers),
+                responseContent
+            };
+
+            using (_logger.BeginScope(state))
             {
                 _logger.LogWarning(
                     "Invoking endpoint {AbsoluteUri} was not successful: {StatusCode}",
