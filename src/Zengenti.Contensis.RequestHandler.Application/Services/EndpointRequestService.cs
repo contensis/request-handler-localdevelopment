@@ -162,13 +162,18 @@ public class EndpointRequestService : IEndpointRequestService
                 return endpointResponse;
             }
 
+            // log the response content if the status code is 5xx
+            var logLevel = LogLevel.Information;
             var responseContent = "";
-            if (endpointResponse.StatusCode >= 500 &&
-                endpointResponse.StreamContent is { Length: > 0 } and MemoryStream stream)
+            if (endpointResponse.StatusCode >= 500)
             {
-                stream.Position = 0;
-                using var reader = new StreamReader(stream);
-                responseContent = await reader.ReadToEndAsync();
+                logLevel = LogLevel.Warning;
+                if (endpointResponse.StreamContent is { Length: > 0 } and MemoryStream stream)
+                {
+                    stream.Position = 0;
+                    using var reader = new StreamReader(stream);
+                    responseContent = await reader.ReadToEndAsync();
+                }
             }
 
             var state = new
@@ -181,7 +186,8 @@ public class EndpointRequestService : IEndpointRequestService
 
             using (_logger.BeginScope(state))
             {
-                _logger.LogWarning(
+                _logger.Log(
+                    logLevel,
                     "Invoking endpoint {AbsoluteUri} was not successful: {StatusCode}",
                     absoluteUri,
                     endpointResponse.StatusCode);
