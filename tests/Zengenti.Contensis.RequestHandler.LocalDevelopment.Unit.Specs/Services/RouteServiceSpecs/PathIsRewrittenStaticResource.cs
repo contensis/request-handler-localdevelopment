@@ -24,8 +24,9 @@ public class PathIsRewrittenStaticResource
         requestContext.ProjectUuid.Returns(_projectUuid);
         var cacheKeyService = Substitute.For<ICacheKeyService>();
         var logger = Substitute.For<ILogger<RouteService>>();
+        var blockClusterConfig = new BlockClusterConfig();
         var routeInfoFactory =
-            new RouteInfoFactory(requestContext, new BlockClusterConfig());
+            new RouteInfoFactory(requestContext, blockClusterConfig);
         var publishingService = SpecHelper.CreatePublishingService(routeInfoFactory);
         var block = publishingService.GetBlockById("blogs");
 
@@ -33,6 +34,7 @@ public class PathIsRewrittenStaticResource
             $"/{Constants.Paths.StaticPathUniquePrefix}{RouteInfo.GetUrlFriendlyHash(_projectUuid)}{Constants.Paths.StaticPathUniquePrefix}{block.Uuid}/static/images/header.png";
 
         _sut = new RouteService(
+            blockClusterConfig,
             _nodeService,
             publishingService,
             routeInfoFactory,

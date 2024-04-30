@@ -31,11 +31,13 @@ public class NodeExistsAndRendererDoesNotMatch
         var requestContext = Substitute.For<IRequestContext>();
         var cacheKeyService = Substitute.For<ICacheKeyService>();
         var logger = Substitute.For<ILogger<RouteService>>();
+        var blockClusterConfig = new BlockClusterConfig();
         var routeInfoFactory =
-            new RouteInfoFactory(requestContext, new BlockClusterConfig());
+            new RouteInfoFactory(requestContext, blockClusterConfig);
         var publishingService = SpecHelper.CreatePublishingService(routeInfoFactory);
 
         _sut = new RouteService(
+            blockClusterConfig,
             _nodeService,
             publishingService,
             routeInfoFactory,

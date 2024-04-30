@@ -24,10 +24,12 @@ public class NodeDoesNotExistAndRouteIsNotProxied
         var requestContext = Substitute.For<IRequestContext>();
         var cacheKeyService = Substitute.For<ICacheKeyService>();
         var logger = Substitute.For<ILogger<RouteService>>();
-        var routeInfoFactory = new RouteInfoFactory(requestContext, new BlockClusterConfig());
+        var blockClusterConfig = new BlockClusterConfig();
+        var routeInfoFactory = new RouteInfoFactory(requestContext, blockClusterConfig);
         var rendererService = SpecHelper.CreatePublishingService(routeInfoFactory);
 
         _sut = new RouteService(
+            blockClusterConfig,
             _nodeService,
             rendererService,
             routeInfoFactory,

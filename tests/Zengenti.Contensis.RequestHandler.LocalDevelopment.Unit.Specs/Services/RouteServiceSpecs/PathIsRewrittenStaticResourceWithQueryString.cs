@@ -26,7 +26,8 @@ public class PathIsRewrittenStaticResourceWithQueryString
         requestContext.ProjectUuid.Returns(_projectUuid);
         var cacheKeyService = Substitute.For<ICacheKeyService>();
         var logger = Substitute.For<ILogger<RouteService>>();
-        var routeInfoFactory = new RouteInfoFactory(requestContext, new BlockClusterConfig());
+        var blockClusterConfig = new BlockClusterConfig();
+        var routeInfoFactory = new RouteInfoFactory(requestContext, blockClusterConfig);
         var publishingService = SpecHelper.CreatePublishingService(routeInfoFactory);
         var block = publishingService.GetBlockById("blogs");
 
@@ -35,6 +36,7 @@ public class PathIsRewrittenStaticResourceWithQueryString
         _originUri = new Uri("http://www.origin.com" + _requestPath);
 
         _sut = new RouteService(
+            blockClusterConfig,
             _nodeService,
             publishingService,
             routeInfoFactory,

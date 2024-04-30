@@ -11,6 +11,7 @@ namespace Zengenti.Contensis.RequestHandler.Application.Services;
 
 public class RouteService : IRouteService
 {
+    private readonly BlockClusterConfig _blockClusterConfig;
     private readonly INodeService _nodeService;
     private readonly IPublishingService _publishingService;
     private readonly IRouteInfoFactory _routeInfoFactory;
@@ -19,6 +20,7 @@ public class RouteService : IRouteService
     private readonly ILogger _logger;
 
     public RouteService(
+        BlockClusterConfig blockClusterConfig,
         INodeService nodeService,
         IPublishingService publishingService,
         IRouteInfoFactory routeInfoFactory,
@@ -26,6 +28,7 @@ public class RouteService : IRouteService
         ICacheKeyService cacheKeyService,
         ILogger<RouteService> logger)
     {
+        _blockClusterConfig = blockClusterConfig;
         _nodeService = nodeService;
         _publishingService = publishingService;
         _routeInfoFactory = routeInfoFactory;
@@ -177,19 +180,31 @@ public class RouteService : IRouteService
         return returnInfo;
     }
 
-    private static bool ShouldPerformNodeLookup(string path)
+    private bool ShouldPerformNodeLookup(string path)
     {
         // Don't like this hard-coded path, maybe move to config?
         // We can negate anything that is a rewritten static path
-        var pathIsRewritten = StaticPath.Parse(path)?.IsRewritten;
 
-        bool doLookup = path.ToLowerInvariant() != "/favicon.ico" &&
-                        !path.StartsWithCaseInsensitive("/contensis-preview-toolbar/") &&
-                        !pathIsRewritten.GetValueOrDefault() &&
-                        !Constants.Paths.ApiPrefixes.Any(path.StartsWithCaseInsensitive) &&
-                        !Constants.Paths.PassThroughPrefixes.Any(path.StartsWithCaseInsensitive);
+        var pathIsRewritten = StaticPath.Parse(path)?.IsRewritten ?? false;
+        if (pathIsRewritten)
+        {
+            return false;
+        }
 
-        return doLookup;
+        if (path.ToLowerInvariant() == "/favicon.ico" ||
+            path.StartsWithCaseInsensitive("/contensis-preview-toolbar/") ||
+            Constants.Paths.PassThroughPrefixes.Any(path.StartsWithCaseInsensitive))
+        {
+            return false;
+        }
+
+        if (Constants.Paths.ApiPrefixes.Any(path.StartsWithCaseInsensitive) &&
+            _blockClusterConfig.AliasesWithApiRoutes?.ContainsCaseInsensitive(_requestContext.Alias) != true)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private void CheckAndSetProjectHeaders(Headers headers)

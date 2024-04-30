@@ -7,14 +7,12 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Services.RouteServiceSpecs;
 
-public class PathIsProxiedApiCall
+public class PathIsAliasWithApiRouteCall
 {
     private const string Host = "http://www.mysite.com";
     private const string Path = "/api/delivery/website/";
     private readonly Uri _originUri = new(Host + Path);
     private readonly Headers _headers = new();
-
-    const string ApiUriString = "https://api-test.cloud.contensis.com";
 
     private RouteService _sut;
     private INodeService _nodeService;
@@ -27,8 +25,14 @@ public class PathIsProxiedApiCall
         var logger = Substitute.For<ILogger<RouteService>>();
         var requestContext = SpecHelper.CreateRequestContext();
         var cacheKeyService = Substitute.For<ICacheKeyService>();
-        var blockClusterConfig = new BlockClusterConfig();
-        var routeInfoFactory = new RouteInfoFactory(requestContext, blockClusterConfig);
+        var blockClusterConfig = new BlockClusterConfig(
+            AliasesWithApiRoutes: new[]
+            {
+                "test"
+            });
+        var routeInfoFactory = new RouteInfoFactory(
+            requestContext,
+            blockClusterConfig);
         var publishingService = SpecHelper.CreatePublishingService(routeInfoFactory);
 
         _sut = new RouteService(
@@ -46,14 +50,9 @@ public class PathIsProxiedApiCall
         _result = await _sut.GetRouteForRequest(_originUri, _headers);
     }
 
-    public void ThenNoNodeLookupIsPerformed()
+    public void ThenNodeLookupIsPerformed()
     {
-        _nodeService.DidNotReceive().GetByPath(Path);
-    }
-
-    public void AndThenTheProxiedUriIsInvoked()
-    {
-        Assert.That(_result.Uri.ToString(), Is.EqualTo(ApiUriString + Path));
+        _nodeService.ReceivedWithAnyArgs().GetByPath(Path);
     }
 
     [Test]

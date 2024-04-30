@@ -83,10 +83,12 @@ public class RouteInfoFactory : IRouteInfoFactory
         var queryString = BuildQueryString(originUri);
 
         // Handle API requests
-        bool isApiRequest = Constants.Paths.ApiPrefixes.Any(prefix => path.StartsWithCaseInsensitive(prefix)) &&
-                            !path.StartsWithCaseInsensitive("/api/publishing/request-handler") &&
-                            !path.StartsWithCaseInsensitive("/api/preview-toolbar/blocks");
-        if (isApiRequest)
+        bool isContensisApiRequest =
+            Constants.Paths.ApiPrefixes.Any(prefix => path.StartsWithCaseInsensitive(prefix)) &&
+            !path.StartsWithCaseInsensitive("/api/publishing/request-handler") &&
+            !path.StartsWithCaseInsensitive("/api/preview-toolbar/blocks") &&
+            _blockClusterConfig.AliasesWithApiRoutes?.ContainsCaseInsensitive(_requestContext.Alias) != true;
+        if (isContensisApiRequest)
         {
             var apiHost = $"api-{_requestContext.Alias}.cloud.contensis.com";
             var apiUrl = $"https://{apiHost}";

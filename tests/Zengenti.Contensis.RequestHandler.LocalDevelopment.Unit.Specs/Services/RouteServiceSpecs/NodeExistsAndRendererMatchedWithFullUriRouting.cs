@@ -27,7 +27,8 @@ public class NodeExistsAndRendererMatchedWithFullUriRouting
         requestContext.ProjectUuid.Returns(_projectUuid);
         var cacheKeyService = Substitute.For<ICacheKeyService>();
         var logger = Substitute.For<ILogger<RouteService>>();
-        var routeInfoFactory = new RouteInfoFactory(requestContext, new BlockClusterConfig());
+        var blockClusterConfig = new BlockClusterConfig();
+        var routeInfoFactory = new RouteInfoFactory(requestContext, blockClusterConfig);
         _publishingService = SpecHelper.CreatePublishingService(routeInfoFactory, enableFullUriRouting: true);
 
         _node = new Node
@@ -42,6 +43,7 @@ public class NodeExistsAndRendererMatchedWithFullUriRouting
         _nodeService.GetByPath(Path).Returns(_node);
 
         _sut = new RouteService(
+            blockClusterConfig,
             _nodeService,
             _publishingService,
             routeInfoFactory,
