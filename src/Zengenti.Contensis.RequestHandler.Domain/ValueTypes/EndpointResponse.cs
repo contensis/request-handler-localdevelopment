@@ -65,9 +65,8 @@ public class EndpointResponse
         }
 
         var stream = new MemoryStream();
-
         // TODO: find a way dispose the writer without generating "Cannot access a closed Stream" ObjectDisposedException
-        var writer = new StreamWriter(stream);
+        var writer = new StreamWriter(stream, leaveOpen: true);
         writer.Write(StringContent);
         writer.Flush();
         if (resetPosition)
