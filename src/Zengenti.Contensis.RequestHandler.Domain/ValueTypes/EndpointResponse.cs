@@ -61,12 +61,10 @@ public class EndpointResponse
         }
 
         var stream = new MemoryStream();
-        using (var writer = new StreamWriter(stream, leaveOpen: true))
-        {
-            writer.Write(StringContent);
-            writer.Flush();
-        }
-
+        // TODO: find a solution to write to stream without closing it
+        var writer = new StreamWriter(stream);
+        writer.Write(StringContent);
+        writer.Flush();
         stream.Position = 0;
         return stream;
     }
