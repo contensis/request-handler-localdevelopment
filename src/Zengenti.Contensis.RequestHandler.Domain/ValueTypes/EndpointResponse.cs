@@ -43,7 +43,7 @@ public class EndpointResponse
 
     public int StatusCode { get; set; }
 
-    public Stream? StreamContent { get; }
+    private Stream? StreamContent { get; }
 
     public PageletPerformanceData? PageletPerformanceData { get; }
 
@@ -55,17 +55,20 @@ public class EndpointResponse
             return StreamContent;
         }
 
-        if (!string.IsNullOrWhiteSpace(StringContent))
+        if (string.IsNullOrWhiteSpace(StringContent))
         {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(StringContent);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
+            return null;
         }
 
-        return null;
+        var stream = new MemoryStream();
+        using (var writer = new StreamWriter(stream, leaveOpen: true))
+        {
+            writer.Write(StringContent);
+            writer.Flush();
+        }
+
+        stream.Position = 0;
+        return stream;
     }
 
     public bool IsSuccessStatusCode()

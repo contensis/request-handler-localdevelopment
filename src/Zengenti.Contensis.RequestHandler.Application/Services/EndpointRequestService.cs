@@ -168,12 +168,12 @@ public class EndpointRequestService : IEndpointRequestService
             if (endpointResponse.StatusCode >= 500)
             {
                 logLevel = LogLevel.Warning;
-                if (endpointResponse.StreamContent is { Length: > 0 } and MemoryStream stream)
+
+                var endpointResponseStream = endpointResponse.ToStream();
+                if (endpointResponseStream is { Length: > 0 } and MemoryStream stream)
                 {
-                    stream.Position = 0;
                     using var reader = new StreamReader(stream);
                     responseContent = await reader.ReadToEndAsync();
-                    stream.Position = 0;
                 }
             }
 

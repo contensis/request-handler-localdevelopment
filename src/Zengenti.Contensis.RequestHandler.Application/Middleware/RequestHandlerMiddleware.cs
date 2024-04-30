@@ -552,9 +552,10 @@ public class RequestHandlerMiddleware
         // Unfortunately IIS returns an empty bodied 200 rather than a 404 when
         // hitting the root or a directory of a site, where there is no default page or
         // no extension in the path requested.
+        var responseStream = response.ToStream();
         if (response.StatusCode == (int)HttpStatusCode.OK &&
-            response.StreamContent is not null &&
-            response.StreamContent.Length == 0)
+            responseStream is not null &&
+            responseStream.Length == 0)
         {
             response.StatusCode = 404;
             return;
@@ -634,7 +635,8 @@ public class RequestHandlerMiddleware
             // hitting the root or a directory of a site, where there is no default page or
             // no extension in the path requested.
 
-            if (response.StreamContent is not null && response.StreamContent.Length == 0)
+            var responseStream = response.ToStream();
+            if (responseStream is not null && responseStream.Length == 0)
             {
                 response.StatusCode = 404;
             }
