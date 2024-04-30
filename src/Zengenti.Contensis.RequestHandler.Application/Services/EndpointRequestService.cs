@@ -169,11 +169,18 @@ public class EndpointRequestService : IEndpointRequestService
             {
                 logLevel = LogLevel.Warning;
 
-                var endpointResponseStream = endpointResponse.ToStream(true);
-                if (endpointResponseStream is { Length: > 0 } and MemoryStream stream)
+                if (!string.IsNullOrWhiteSpace(endpointResponse.StringContent))
                 {
-                    using var reader = new StreamReader(stream);
-                    responseContent = await reader.ReadToEndAsync();
+                    responseContent = endpointResponse.StringContent;
+                }
+                else
+                {
+                    var endpointResponseStream = endpointResponse.ToStream(true);
+                    if (endpointResponseStream is { Length: > 0 } and MemoryStream stream)
+                    {
+                        using var reader = new StreamReader(stream);
+                        responseContent = await reader.ReadToEndAsync();
+                    }
                 }
             }
 
