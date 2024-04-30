@@ -173,6 +173,7 @@ public class EndpointRequestService : IEndpointRequestService
                     stream.Position = 0;
                     using var reader = new StreamReader(stream);
                     responseContent = await reader.ReadToEndAsync();
+                    stream.Position = 0;
                 }
             }
 
