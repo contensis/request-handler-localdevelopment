@@ -47,11 +47,15 @@ public class EndpointResponse
 
     public PageletPerformanceData? PageletPerformanceData { get; }
 
-    public Stream? ToStream()
+    public Stream? ToStream(bool resetPosition = false)
     {
         if (StreamContent != null)
         {
-            StreamContent.Position = 0;
+            if (resetPosition)
+            {
+                StreamContent.Position = 0;
+            }
+
             return StreamContent;
         }
 
@@ -61,11 +65,15 @@ public class EndpointResponse
         }
 
         var stream = new MemoryStream();
-        // TODO: find a solution to write to stream without closing it
-        var writer = new StreamWriter(stream);
+
+        using var writer = new StreamWriter(stream, leaveOpen: true);
         writer.Write(StringContent);
         writer.Flush();
-        stream.Position = 0;
+        if (resetPosition)
+        {
+            stream.Position = 0;
+        }
+
         return stream;
     }
 
