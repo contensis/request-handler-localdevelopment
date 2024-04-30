@@ -187,11 +187,14 @@ public class EndpointRequestService : IEndpointRequestService
 
             using (_logger.BeginScope(state))
             {
+                var curlString = ErrorResources.CreateCurlCallString(routeInfo);
+
                 _logger.Log(
                     logLevel,
-                    "Invoking endpoint {AbsoluteUri} was not successful: {StatusCode}",
+                    "Invoking endpoint {AbsoluteUri} was not successful: {StatusCode}. The equivalent curl command is: {CurlString}",
                     absoluteUri,
-                    endpointResponse.StatusCode);
+                    endpointResponse.StatusCode,
+                    curlString);
             }
 
             return endpointResponse;
