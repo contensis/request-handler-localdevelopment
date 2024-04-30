@@ -120,7 +120,7 @@ public class RouteService : IRouteService
 
             if (e.StatusCode == StatusCode.NotFound)
             {
-                logLevel = LogLevel.Warning;
+                logLevel = LogLevel.Information;
             }
 
             _logger.Log(
