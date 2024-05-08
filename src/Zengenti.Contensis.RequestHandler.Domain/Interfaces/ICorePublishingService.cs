@@ -29,5 +29,6 @@ public interface ICorePublishingService
         Uri originUri,
         Headers headers,
         Guid projectUuid,
-        Node? node = null);
+        Node? node = null,
+        Guid? proxyId = null);
 }

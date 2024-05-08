@@ -27,7 +27,8 @@ public class RouteInfoFactory : IRouteInfoFactory
         Node? node = null,
         BlockVersionInfo? blockVersionInfo = null,
         string? endpointId = null,
-        Guid? layoutRendererId = null)
+        Guid? layoutRendererId = null,
+        Guid? proxyId = null)
     {
         var path = baseUri.AbsolutePath;
         var enableFullUriRouting = blockVersionInfo?.EnableFullUriRouting ?? false;
@@ -71,7 +72,8 @@ public class RouteInfoFactory : IRouteInfoFactory
             blockVersionInfo,
             endpointId,
             layoutRendererId,
-            parseContent);
+            parseContent,
+            proxyId);
     }
 
     public RouteInfo? CreateForNonNodePath(

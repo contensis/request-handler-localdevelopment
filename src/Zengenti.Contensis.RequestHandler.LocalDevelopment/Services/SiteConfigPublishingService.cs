@@ -190,7 +190,8 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
         Uri originUri,
         Headers headers,
         Guid projectUuid,
-        Node? node = null)
+        Node? node = null,
+        Guid? proxyId = null)
     {
         throw new NotImplementedException();
     }

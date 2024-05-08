@@ -12,7 +12,8 @@ public interface IRouteInfoFactory
         Node? node = null,
         BlockVersionInfo? blockVersionInfo = null,
         string? endpointId = null,
-        Guid? layoutRendererId = null);
+        Guid? layoutRendererId = null,
+        Guid? proxyId = null);
 
     RouteInfo? CreateForNonNodePath(
         Uri originUri,

@@ -89,7 +89,7 @@ public class CorePublishingService : ICorePublishingService
                 return null;
             }
 
-            var routeInfo = BuildRouteInfoForRequest(clientResult, originUri, headers, projectUuid, node);
+            var routeInfo = BuildRouteInfoForRequest(clientResult, originUri, headers, projectUuid, node, proxyId);
 
             return routeInfo;
         }
@@ -130,7 +130,8 @@ public class CorePublishingService : ICorePublishingService
         Uri originUri,
         Headers headers,
         Guid projectUuid,
-        Node? node)
+        Node? node = null,
+        Guid? proxyId = null)
     {
         var uri = new Uri(endpointRequestInfo.Uri);
         RouteInfo routeInfo;
@@ -155,7 +156,8 @@ public class CorePublishingService : ICorePublishingService
                 node,
                 blockVersionInfo,
                 endpointRequestInfo.EndpointId,
-                endpointRequestInfo.LayoutRendererId);
+                endpointRequestInfo.LayoutRendererId,
+                proxyId);
 
             blockVersionInfo.EnsureDefaultStaticPaths();
 
@@ -168,7 +170,8 @@ public class CorePublishingService : ICorePublishingService
                 new Uri(endpointRequestInfo.Uri),
                 originUri,
                 headers,
-                node);
+                node,
+                proxyId: proxyId);
         }
 
         _cacheKeyService.AddRange(endpointRequestInfo.CacheKeys);

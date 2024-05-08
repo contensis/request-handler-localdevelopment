@@ -20,6 +20,7 @@ public class RouteInfo
         string? endpointId = null,
         Guid? layoutRendererId = null,
         bool parseContent = false,
+        Guid? proxyId = null,
         bool isIisFallback = false)
     {
         Uri = uri;
@@ -32,7 +33,7 @@ public class RouteInfo
         Metrics = new Metrics();
         NodePath = nodePath;
         FoundRoute = foundRoute;
-
+        ProxyId = proxyId;
         var hashedProjectUuid = GetUrlFriendlyHash(BlockVersionInfo?.ProjectUuid);
         RoutePrefix =
             $"{Constants.Paths.StaticPathUniquePrefix}{hashedProjectUuid}{Constants.Paths.StaticPathUniquePrefix}{BlockVersionInfo?.BlockVersionId}";
@@ -78,6 +79,11 @@ public class RouteInfo
     ///     Whether the content served by the proxy should be parsed
     /// </summary>
     public bool ParseContent { get; }
+
+    /// <summary>
+    ///     The unique identifier of the proxy
+    /// </summary>
+    public Guid? ProxyId { get; }
 
     /// <summary>
     ///     The static route prefix for a block

@@ -289,7 +289,7 @@ public class RequestHandlerMiddleware
 
         response = await GenerateFriendlyErrorResponse(context, routeInfo, initialRouteInfo, response);
 
-        EnsureIisFallbackResponse(routeInfo, response);
+        EnsureResponseHeadersAndStatusCode(routeInfo, response);
 
         AddCacheHeadersFor404Errors(response, context);
 
@@ -542,10 +542,19 @@ public class RequestHandlerMiddleware
         return response;
     }
 
-    private static void EnsureIisFallbackResponse(RouteInfo routeInfo, EndpointResponse response)
+    private static void EnsureResponseHeadersAndStatusCode(RouteInfo routeInfo, EndpointResponse response)
     {
         if (!routeInfo.IsIisFallback)
         {
+            if (routeInfo.ProxyId != null &&
+                routeInfo.ProxyId.Equals(Guid.Parse("833dd2e7-fb3b-42fc-9102-f948dd6aa914")))
+            {
+                response.Headers[Constants.Headers.SurrogateControl] = new List<string>
+                {
+                    "max-age=60"
+                };
+            }
+
             return;
         }
 

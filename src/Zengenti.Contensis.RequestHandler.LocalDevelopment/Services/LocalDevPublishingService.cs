@@ -74,7 +74,8 @@ public class LocalDevPublishingService : ILocalDevPublishingService
                 originUri,
                 headers,
                 projectUuid,
-                node);
+                node,
+                proxyId);
         }
 
         // TODO: deal with endpoints
@@ -120,14 +121,16 @@ public class LocalDevPublishingService : ILocalDevPublishingService
         Uri originUri,
         Headers headers,
         Guid projectUuid,
-        Node? node)
+        Node? node,
+        Guid? proxyId = null)
     {
         return _corePublishingService.BuildRouteInfoForRequest(
             endpointRequestInfo,
             originUri,
             headers,
             projectUuid,
-            node);
+            node,
+            proxyId);
     }
 
     public Guid? GetContentTypeUuid(string id)
