@@ -47,16 +47,20 @@ public class EndpointResponse
 
     public PageletPerformanceData? PageletPerformanceData { get; }
 
-    public Stream? ToStream(bool resetPosition = false)
+    public Stream? ToStream(bool resetPositionIfSeekable = false)
     {
         if (StreamContent != null)
         {
-            if (resetPosition)
+            if (!resetPositionIfSeekable)
             {
-                StreamContent.Position = 0;
+                return StreamContent;
             }
 
-            return StreamContent;
+            if (StreamContent.CanSeek)
+            {
+                StreamContent.Position = 0;
+                return StreamContent;
+            }
         }
 
         if (string.IsNullOrWhiteSpace(StringContent))
@@ -69,7 +73,7 @@ public class EndpointResponse
         var writer = new StreamWriter(stream, leaveOpen: true);
         writer.Write(StringContent);
         writer.Flush();
-        if (resetPosition)
+        if (resetPositionIfSeekable && stream.CanSeek)
         {
             stream.Position = 0;
         }
