@@ -51,16 +51,12 @@ public class EndpointResponse
     {
         if (StreamContent != null)
         {
-            if (!resetPositionIfSeekable)
-            {
-                return StreamContent;
-            }
-
-            if (StreamContent.CanSeek)
+            if (resetPositionIfSeekable && StreamContent.CanSeek)
             {
                 StreamContent.Position = 0;
-                return StreamContent;
             }
+
+            return StreamContent;
         }
 
         if (string.IsNullOrWhiteSpace(StringContent))
