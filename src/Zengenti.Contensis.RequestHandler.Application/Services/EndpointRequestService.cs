@@ -179,7 +179,7 @@ public class EndpointRequestService : IEndpointRequestService
                     if (endpointResponseStream is { Length: > 0 } and MemoryStream stream)
                     {
                         using var reader = new StreamReader(stream, leaveOpen: true);
-                        responseContent = await reader.ReadToEndAsync( );
+                        responseContent = await reader.ReadToEndAsync();
                     }
                 }
             }
