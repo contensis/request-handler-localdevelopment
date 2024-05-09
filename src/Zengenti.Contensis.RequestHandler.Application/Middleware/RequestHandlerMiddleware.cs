@@ -415,7 +415,7 @@ public class RequestHandlerMiddleware
 
         // The content may have changed due to resolving pagelets and re-writing static paths, so get the actual length.
         var responseContent = response.ToStream(true);
-        if (responseContent is MemoryStream)
+        if (responseContent is MemoryStream && context.Response.ContentLength != responseContent.Length)
         {
             context.Response.ContentLength = responseContent.Length;
         }
