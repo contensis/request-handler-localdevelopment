@@ -73,7 +73,7 @@ public class RouteInfoFactory : IRouteInfoFactory
             endpointId,
             layoutRendererId,
             parseContent,
-            proxyId);
+            blockVersionInfo == null ? proxyId : null);
     }
 
     public RouteInfo? CreateForNonNodePath(

@@ -89,7 +89,13 @@ public class CorePublishingService : ICorePublishingService
                 return null;
             }
 
-            var routeInfo = BuildRouteInfoForRequest(clientResult, originUri, headers, projectUuid, node, proxyId);
+            var routeInfo = BuildRouteInfoForRequest(
+                clientResult,
+                originUri,
+                headers,
+                projectUuid,
+                node,
+                proxyId);
 
             return routeInfo;
         }
