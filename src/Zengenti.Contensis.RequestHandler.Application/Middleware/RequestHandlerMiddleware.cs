@@ -547,7 +547,7 @@ public class RequestHandlerMiddleware
         if (!routeInfo.IsIisFallback)
         {
             if (routeInfo.ProxyId != null &&
-                routeInfo.ProxyId.Equals(Guid.Parse("833dd2e7-fb3b-42fc-9102-f948dd6aa914")))
+                routeInfo.ProxyId.Equals(Guid.Parse("8f2cc5be-b5dd-4e4b-b6fa-92b7fc6440e0")))
             {
                 response.Headers[Constants.Headers.SurrogateControl] = new List<string>
                 {
