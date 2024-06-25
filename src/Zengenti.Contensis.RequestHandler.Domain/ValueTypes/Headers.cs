@@ -117,9 +117,9 @@ public sealed class Headers
         }
     }
 
-    public string? GetFirstValueIfExists(string headerName)
+    public string? GetFirstValueIfExists(string headerName, bool caseInsensitive = false)
     {
-        var key = CaseInsensitiveHeaderNames.ContainsCaseInsensitive(headerName)
+        var key = caseInsensitive || CaseInsensitiveHeaderNames.ContainsCaseInsensitive(headerName)
             ? _values.Keys.SingleOrDefault(k => k.EqualsCaseInsensitive(headerName))
             : headerName;
 

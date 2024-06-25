@@ -26,6 +26,10 @@ public static class Constants
         public const string HealthCheck = "x-healthcheck";
         public const string HidePreviewToolbar = "x-hide-preview-toolbar";
 
+        public const string ProxyForwardedFor = "x-forwarded-for";
+        public const string ProxyForwardedProto = "x-forwarded-proto";
+        public const string ProxyForwardedPort = "x-forwarded-port";
+
         public const string RequiresAlias = "x-requires-alias";
         public const string RequiresProjectApiId = "x-requires-project-api-id";
         public const string RequiresNodeId = "x-requires-node-id";
@@ -55,6 +59,13 @@ public static class Constants
             BlockConfigDefault,
             ProxyConfigDefault,
             RendererConfigDefault
+        };
+
+        public static readonly string[] ProxyHeaders =
+        {
+            ProxyForwardedFor,
+            ProxyForwardedProto,
+            ProxyForwardedPort
         };
 
         public static readonly string[] RequiresHeaders =

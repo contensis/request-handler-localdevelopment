@@ -546,16 +546,30 @@ public class RequestHandlerMiddleware
     {
         if (!routeInfo.IsIisFallback)
         {
-            if (routeInfo.ProxyId != null &&
-                routeInfo.ProxyId.Equals(Guid.Parse("8f2cc5be-b5dd-4e4b-b6fa-92b7fc6440e0")))
+            if (routeInfo is { ProxyId: not null, BlockVersionInfo: null })
             {
-                response.Headers[Constants.Headers.SurrogateControl] = new List<string>
+                foreach (var proxyHeaderName in Constants.Headers.ProxyHeaders)
                 {
-                    "max-age=60"
-                };
-            }
+                    var proxyHeaderValue = routeInfo.Headers.GetFirstValueIfExists(proxyHeaderName, true);
+                    if (proxyHeaderValue != null)
+                    {
+                        response.Headers[proxyHeaderName] = new List<string>
+                        {
+                            proxyHeaderValue
+                        };
+                    }
+                }
 
-            return;
+                if (routeInfo.ProxyId.Equals(Guid.Parse("8f2cc5be-b5dd-4e4b-b6fa-92b7fc6440e0")))
+                {
+                    response.Headers[Constants.Headers.SurrogateControl] = new List<string>
+                    {
+                        "max-age=60"
+                    };
+
+                    return;
+                }
+            }
         }
 
         // Unfortunately IIS returns an empty bodied 200 rather than a 404 when
