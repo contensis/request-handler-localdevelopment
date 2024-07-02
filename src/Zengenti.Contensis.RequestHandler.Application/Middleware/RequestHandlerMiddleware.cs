@@ -548,18 +548,6 @@ public class RequestHandlerMiddleware
         {
             if (routeInfo is { ProxyId: not null, BlockVersionInfo: null })
             {
-                foreach (var proxyHeaderName in Constants.Headers.ProxyHeaders)
-                {
-                    var proxyHeaderValue = routeInfo.Headers.GetFirstValueIfExists(proxyHeaderName, true);
-                    if (proxyHeaderValue != null)
-                    {
-                        response.Headers[proxyHeaderName] = new List<string>
-                        {
-                            proxyHeaderValue
-                        };
-                    }
-                }
-
                 if (routeInfo.ProxyId.Equals(Guid.Parse("8f2cc5be-b5dd-4e4b-b6fa-92b7fc6440e0")))
                 {
                     response.Headers[Constants.Headers.SurrogateControl] = new List<string>
