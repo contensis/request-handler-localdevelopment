@@ -710,8 +710,14 @@ public class RequestHandlerMiddleware
             context.Request.Headers[Constants.Headers.AltDebug] == "true" ||
             context.Request.Headers["echo-headers"] == "true")
         {
-            // Set debug surrogate key response
-            EnsureSurrogateKey(context, Constants.Headers.DebugSurrogateKey, _cacheKeyService.GetDebugSurrogateKey());
+            if (context.Request.Headers[Constants.Headers.AltDebug] != "true")
+            {
+                // Set debug surrogate key response
+                EnsureSurrogateKey(
+                    context,
+                    Constants.Headers.DebugSurrogateKey,
+                    _cacheKeyService.GetDebugSurrogateKey());
+            }
 
             foreach (var requestHeader in context.Request.Headers)
             {
