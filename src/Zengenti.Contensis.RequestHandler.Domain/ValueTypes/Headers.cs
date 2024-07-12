@@ -62,7 +62,9 @@ public sealed class Headers
 
     public string? EntryVersionStatus => GetFirstValueIfExists(Constants.Headers.EntryVersionStatus);
 
-    public bool Debug => GetFirstValueIfExists(Constants.Headers.Debug) == "true";
+    public bool Debug =>
+        GetFirstValueIfExists(Constants.Headers.Debug) == "true" ||
+        GetFirstValueIfExists(Constants.Headers.AltDebug) == "true";
 
     public static implicit operator Headers(Dictionary<string, IEnumerable<string>> dictionary) => new(dictionary);
 

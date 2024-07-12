@@ -707,6 +707,7 @@ public class RequestHandlerMiddleware
         context.Response.Headers.Remove(Constants.Headers.TransferEncoding);
 
         if (context.Request.Headers[Constants.Headers.Debug] == "true" ||
+            context.Request.Headers[Constants.Headers.AltDebug] == "true" ||
             context.Request.Headers["echo-headers"] == "true")
         {
             // Set debug surrogate key response
