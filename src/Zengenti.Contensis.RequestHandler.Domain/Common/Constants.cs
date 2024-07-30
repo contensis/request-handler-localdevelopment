@@ -39,7 +39,6 @@ public static class Constants
         public const string RequiresEntryLanguage = "x-requires-entry-language";
         public const string RequiresBlockId = "x-requires-block-id";
 
-
         // TODO: remove when we deprecate old nodes delivery api
         public const string UseNewNodeService = "x-use-new-node-service";
 
