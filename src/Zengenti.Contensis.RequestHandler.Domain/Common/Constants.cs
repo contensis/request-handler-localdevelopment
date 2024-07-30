@@ -26,6 +26,7 @@ public static class Constants
         public const string EntryVersionStatus = "x-entry-versionstatus";
         public const string HealthCheck = "x-healthcheck";
         public const string HidePreviewToolbar = "x-hide-preview-toolbar";
+        public const string BlockVersionNo = "x-version-no";
 
         public const string ProxyForwardedFor = "x-forwarded-for";
         public const string ProxyForwardedProto = "x-forwarded-proto";
@@ -37,7 +38,7 @@ public static class Constants
         public const string RequiresEntryId = "x-requires-entry-id";
         public const string RequiresEntryLanguage = "x-requires-entry-language";
         public const string RequiresBlockId = "x-requires-block-id";
-        public const string RequiresVersionNo = "x-requires-version-no";
+
 
         // TODO: remove when we deprecate old nodes delivery api
         public const string UseNewNodeService = "x-use-new-node-service";
@@ -76,8 +77,7 @@ public static class Constants
             RequiresNodeId,
             RequiresEntryId,
             RequiresEntryLanguage,
-            RequiresBlockId,
-            RequiresVersionNo
+            RequiresBlockId
         };
     }
 

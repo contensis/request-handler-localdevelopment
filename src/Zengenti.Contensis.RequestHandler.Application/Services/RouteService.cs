@@ -245,10 +245,9 @@ public class RouteService : IRouteService
             CallContext.Current[Constants.Headers.RequiresBlockId] = blockVersionInfo.BlockId;
         }
 
-        if ((headers.Debug || headers.HasKey(Constants.Headers.RequiresVersionNo)) &&
-            blockVersionInfo.VersionNo != null)
+        if (blockVersionInfo.VersionNo != null)
         {
-            CallContext.Current[Constants.Headers.RequiresVersionNo] = blockVersionInfo.VersionNo.ToString();
+            CallContext.Current[Constants.Headers.BlockVersionNo] = blockVersionInfo.VersionNo.ToString();
         }
     }
 }
