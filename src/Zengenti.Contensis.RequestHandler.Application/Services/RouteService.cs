@@ -247,7 +247,7 @@ public class RouteService : IRouteService
 
         if (blockVersionInfo.VersionNo != null)
         {
-            CallContext.Current[Constants.Headers.BlockVersionNo] = blockVersionInfo.VersionNo.ToString();
+            CallContext.Current[Constants.Headers.RequiresVersionNo] = blockVersionInfo.VersionNo.ToString();
         }
     }
 }
