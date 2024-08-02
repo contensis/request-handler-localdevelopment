@@ -107,7 +107,7 @@ public static class Constants
 
         public static readonly string[] PassThroughPrefixes =
         {
-            "/REST/UI/FormsModule/TestAccessibility/",
+            "/REST/UI/FormsModule/TestAccessibility",
             "/REST/Contensis/content/GetFormSettings"
         };
     }
