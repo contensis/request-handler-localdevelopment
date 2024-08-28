@@ -7,11 +7,13 @@ public class EndpointResponse
 {
     public EndpointResponse(
         string? content,
+        HttpMethod httpMethod,
         Dictionary<string, IEnumerable<string>> headers,
         int statusCode,
         PageletPerformanceData? pageletPerformanceData = null)
     {
         StringContent = content;
+        HttpMethod = httpMethod;
         Headers = headers;
         StatusCode = statusCode;
 
@@ -23,11 +25,13 @@ public class EndpointResponse
 
     public EndpointResponse(
         Stream content,
+        HttpMethod httpMethod,
         Dictionary<string, IEnumerable<string>> headers,
         int statusCode,
         PageletPerformanceData? pageletPerformanceData = null)
     {
         StreamContent = content;
+        HttpMethod = httpMethod;
         Headers = headers;
         StatusCode = statusCode;
 
@@ -39,6 +43,7 @@ public class EndpointResponse
 
     public string? StringContent { get; }
 
+    public HttpMethod HttpMethod { get; }
     public Dictionary<string, IEnumerable<string>> Headers { get; }
 
     public int StatusCode { get; set; }

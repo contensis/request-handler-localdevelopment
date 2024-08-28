@@ -95,6 +95,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
                 .Returns(
                     new EndpointResponse(
                         responseContent,
+                        HttpMethod.Get,
                         new Dictionary<string, IEnumerable<string>>(),
                         statusCode,
                         pageletPerformanceData));

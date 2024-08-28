@@ -357,7 +357,7 @@ public class RequestHandlerMiddleware
             return null;
         }
 
-        var redirectResponse = new EndpointResponse("", headers, 301);
+        var redirectResponse = new EndpointResponse("", context.Request.GetHttpMethod(), headers, 301);
 
         var newQueryString = HttpUtility.ParseQueryString(context.Request.QueryString.Value ?? "");
 
@@ -524,6 +524,7 @@ public class RequestHandlerMiddleware
 
         response = new EndpointResponse(
             responseHtml,
+            response.HttpMethod,
             response.Headers,
             response.StatusCode,
             response.PageletPerformanceData);
@@ -566,7 +567,8 @@ public class RequestHandlerMiddleware
         var responseStream = response.ToStream();
         if (response.StatusCode == (int)HttpStatusCode.OK &&
             responseStream is not null &&
-            responseStream.Length == 0)
+            responseStream.Length == 0 &&
+            response.HttpMethod != HttpMethod.Options)
         {
             response.StatusCode = 404;
             return;

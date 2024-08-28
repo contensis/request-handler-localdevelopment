@@ -109,7 +109,7 @@ public class EndpointRequestService : IEndpointRequestService
             {
                 msg = "No route matched so returning a success as the Classic backend will be used"
             }.ToJsonWithLowercasePropertyNames();
-            return new EndpointResponse(responseContent, headers, (int)HttpStatusCode.OK);
+            return new EndpointResponse(responseContent, httpMethod, headers, (int)HttpStatusCode.OK);
         }
 
         RecursionChecker.Check(currentDepth, routeInfo);
@@ -210,6 +210,7 @@ public class EndpointRequestService : IEndpointRequestService
         {
             var endpointResponse = new EndpointResponse(
                 string.Empty,
+                httpMethod,
                 new Dictionary<string, IEnumerable<string>>(),
                 500);
 
@@ -277,6 +278,7 @@ public class EndpointRequestService : IEndpointRequestService
 
             return new EndpointResponse(
                 resolvedContent,
+                requestMethod,
                 responseHeaders,
                 (int)responseMessage.StatusCode,
                 _requestContext.TraceEnabled
@@ -291,6 +293,7 @@ public class EndpointRequestService : IEndpointRequestService
 
         return new EndpointResponse(
             ms,
+            requestMethod,
             responseHeaders,
             (int)responseMessage.StatusCode,
             _requestContext.TraceEnabled
