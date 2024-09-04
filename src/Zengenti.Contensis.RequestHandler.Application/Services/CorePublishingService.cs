@@ -1,4 +1,6 @@
-﻿using Grpc.Core;
+﻿using System.Runtime.ExceptionServices;
+using Grpc.Core;
+using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Extensions;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
@@ -67,21 +69,25 @@ public class CorePublishingService : ICorePublishingService
         Guid? proxyId = null,
         string? language = null)
     {
+        var requestContext = new RequestContext(projectUuid)
+        {
+            RendererId = rendererId ?? "",
+            ContentTypeId = contentTypeId,
+            ProxyId = proxyId,
+            Language = language ?? "",
+            IsPartialMatchPath = isPartialMatchPath,
+            BlockVersionConfig = _requestContext.BlockConfig,
+            ProxyVersionConfig = _requestContext.ProxyConfig,
+            RendererVersionConfig = _requestContext.RendererConfig,
+            ServerType = _serverTypeResolver.GetServerType()
+        };
+
+        var messageSuffix =
+            $"when calling IPublishingApi.GetEndpointForRequest for requestContext {requestContext.ToJson()} and originUri {originUri}.";
+
+        ExceptionDispatchInfo? exceptionDispatchInfo = null;
         try
         {
-            var requestContext = new RequestContext(projectUuid)
-            {
-                RendererId = rendererId ?? "",
-                ContentTypeId = contentTypeId,
-                ProxyId = proxyId,
-                Language = language ?? "",
-                IsPartialMatchPath = isPartialMatchPath,
-                BlockVersionConfig = _requestContext.BlockConfig,
-                ProxyVersionConfig = _requestContext.ProxyConfig,
-                RendererVersionConfig = _requestContext.RendererConfig,
-                ServerType = _serverTypeResolver.GetServerType()
-            };
-
             var clientResult = await _publishingApi.GetEndpointForRequest(requestContext);
 
             if (clientResult == null)
@@ -99,31 +105,28 @@ public class CorePublishingService : ICorePublishingService
 
             return routeInfo;
         }
-        catch (RpcException e)
+        catch (RpcException rpcException)
         {
-            var logLevel = LogLevel.Error;
-            if (e.StatusCode == StatusCode.NotFound)
+            var message = $"Rpc exception {messageSuffix}";
+            if (rpcException.StatusCode == StatusCode.NotFound)
             {
-                logLevel = LogLevel.Warning;
+                message = $"Could not resolve a block version or a proxy {messageSuffix}";
             }
 
-            _logger.Log(
-                logLevel,
-                e,
-                "GetEndpointForRequest failed with RpcException.Message {Message} for Uri {Uri}",
-                e.Message,
-                originUri);
-            throw;
+            rpcException.Data.Add(Constants.Exceptions.DataKeyForOriginalMessage, message);
+
+            exceptionDispatchInfo = ExceptionDispatchInfo.Capture(rpcException);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _logger.LogError(
-                e,
-                "GetEndpointForRequest failed with RpcException.Message {Message} for Uri {Uri}",
-                e.Message,
-                originUri);
-            throw;
+            var message = $"Exception {messageSuffix}";
+
+            ex.Data.Add(Constants.Exceptions.DataKeyForOriginalMessage, message);
+            exceptionDispatchInfo = ExceptionDispatchInfo.Capture(ex);
         }
+
+        exceptionDispatchInfo.Throw();
+        return null;
     }
 
     public Task<RouteInfo?> GetRouteInfoForRequest(Guid projectUuid, Headers headers, string rendererId, Uri originUri)

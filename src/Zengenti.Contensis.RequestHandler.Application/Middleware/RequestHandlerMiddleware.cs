@@ -81,6 +81,7 @@ public class RequestHandlerMiddleware
             {
                 var isExceptionHandled =
                     await ExceptionHandler.HandlePageletExceptions(context, aggregateException);
+
                 if (isExceptionHandled)
                 {
                     return;
@@ -99,11 +100,23 @@ public class RequestHandlerMiddleware
                     nodeConfig = CallContext.Current[Constants.Headers.NodeVersionStatus] ?? ""
                 }))
             {
-                _logger.LogError(
-                    e,
-                    "Unhandled error caught in middleware with exception message {Message} and request url {Url}",
-                    e.Message,
-                    context.Request.GetDisplayUrl());
+                if (e.Data.Contains(Constants.Exceptions.DataKeyForOriginalMessage))
+                {
+                    _logger.LogError(
+                        e,
+                        "Unhandled error caught in middleware with exception message {Message} and request url {Url}. Initial message: {InitialMessage}",
+                        e.Message,
+                        context.Request.GetDisplayUrl(),
+                        e.Data[Constants.Exceptions.DataKeyForOriginalMessage]);
+                }
+                else
+                {
+                    _logger.LogError(
+                        e,
+                        "Unhandled error caught in middleware with exception message {Message} and request url {Url}",
+                        e.Message,
+                        context.Request.GetDisplayUrl());
+                }
             }
 
             throw;

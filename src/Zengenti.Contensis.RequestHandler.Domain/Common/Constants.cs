@@ -125,4 +125,9 @@ public static class Constants
         public const string DefaultPageletReplacement = "<!--pagelet-not-resolved-->";
         public const string RendererId = "renderer";
     }
+
+    public static class Exceptions
+    {
+        public const string DataKeyForOriginalMessage = "OriginalMessage";
+    }
 }

@@ -185,7 +185,7 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
             int currentDepth,
             CancellationToken ct)
         {
-            string messageSuffix = $" for alias {_requestContext.Alias} and project {_requestContext.ProjectApiId}.";
+            var messageSuffix = $" for alias {_requestContext.Alias} and project {_requestContext.ProjectApiId}.";
             try
             {
                 var routeInfo =

@@ -120,26 +120,54 @@ public class RouteService : IRouteService
         catch (RpcException e)
         {
             var logLevel = LogLevel.Error;
-
+            var logMessagePrefix = "GetRouteForRequest RpcException";
             if (e.StatusCode == StatusCode.NotFound)
             {
                 logLevel = LogLevel.Information;
+                logMessagePrefix = "GetRouteForRequest could not resolve route";
             }
 
-            _logger.Log(
-                logLevel,
-                e,
-                "Failed to GetRouteForRequest with RpcException.Message {Message} for url {Uri}",
-                e.Message,
-                originUri);
+            if (e.Data.Contains(Constants.Exceptions.DataKeyForOriginalMessage))
+            {
+                _logger.Log(
+                    logLevel,
+                    e,
+                    "{LogMessagePrefix} with message {Message} for path {Path} . Initial message: {InitialMessage}",
+                    logMessagePrefix,
+                    e.Message,
+                    originPath,
+                    e.Data[Constants.Exceptions.DataKeyForOriginalMessage]);
+            }
+            else
+            {
+                _logger.Log(
+                    logLevel,
+                    e,
+                    "{LogMessagePrefix} with message {Message} for path {Path}",
+                    logMessagePrefix,
+                    e.Message,
+                    originPath);
+            }
         }
         catch (Exception e)
         {
-            _logger.LogError(
-                e,
-                "Failed to GetRouteForRequest with Exception.Message {Message} for url {Uri}",
-                e.Message,
-                originUri);
+            if (e.Data.Contains(Constants.Exceptions.DataKeyForOriginalMessage))
+            {
+                _logger.LogError(
+                    e,
+                    "GetRouteForRequest Exception with message {Message} for path {Path} . Initial message: {InitialMessage}",
+                    e.Message,
+                    originPath,
+                    e.Data[Constants.Exceptions.DataKeyForOriginalMessage]);
+            }
+            else
+            {
+                _logger.LogError(
+                    e,
+                    "GetRouteForRequest Exception with message {Message} for path {Path}",
+                    e.Message,
+                    originPath);
+            }
         }
 
         var nodePath = "";

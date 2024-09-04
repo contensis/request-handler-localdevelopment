@@ -94,12 +94,13 @@ public class EndpointRequestService : IEndpointRequestService
         int currentDepth,
         CancellationToken cancellationToken)
     {
-        if (routeInfo.IsIisFallback &&
-            headers != null &&
-            headers.ContainsKey(Constants.Headers.HealthCheck) &&
-            headers[Constants.Headers.HealthCheck].ContainsCaseInsensitive("true"))
+        var isHealthCheck = headers != null &&
+                            headers.ContainsKey(Constants.Headers.HealthCheck) &&
+                            headers[Constants.Headers.HealthCheck].ContainsCaseInsensitive("true");
+
+        if (routeInfo.IsIisFallback && isHealthCheck)
         {
-            headers.Add(
+            headers!.Add(
                 HeaderNames.ContentType,
                 new[]
                 {
@@ -118,10 +119,10 @@ public class EndpointRequestService : IEndpointRequestService
 
         _logger.LogInformation("Making request to {Uri}", routeInfo.Uri);
 
-        bool isStreamingRequestMessage = routeInfo.BlockVersionInfo != null &&
-                                         (httpMethod == HttpMethod.Post ||
-                                          httpMethod == HttpMethod.Put ||
-                                          httpMethod == HttpMethod.Patch);
+        var isStreamingRequestMessage = routeInfo.BlockVersionInfo != null &&
+                                        (httpMethod == HttpMethod.Post ||
+                                         httpMethod == HttpMethod.Put ||
+                                         httpMethod == HttpMethod.Patch);
         using var targetRequestMessage =
             await CreateRequestMessage(httpMethod, content, headers, routeInfo, isStreamingRequestMessage);
 
