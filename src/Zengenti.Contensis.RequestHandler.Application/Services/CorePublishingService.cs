@@ -83,7 +83,7 @@ public class CorePublishingService : ICorePublishingService
         };
 
         var messageSuffix =
-            $"when calling IPublishingApi.GetEndpointForRequest for requestContext {requestContext.ToJson()} and originUri {originUri}.";
+            $"when calling IPublishingApi.GetEndpointForRequest for requestContext {requestContext.ToJson()} and path {originUri.AbsolutePath}.";
 
         ExceptionDispatchInfo? exceptionDispatchInfo = null;
         try
