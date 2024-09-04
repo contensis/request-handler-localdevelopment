@@ -117,7 +117,7 @@ public class EndpointRequestService : IEndpointRequestService
 
         var measurer = new PageletPerformanceMeasurer(_requestContext.TraceEnabled, autoStart: true);
 
-        _logger.LogInformation("Making request to {Uri}", routeInfo.Uri);
+        _logger.LogDebug("Making request to {Uri}", routeInfo.Uri);
 
         var isStreamingRequestMessage = routeInfo.BlockVersionInfo != null &&
                                         (httpMethod == HttpMethod.Post ||
