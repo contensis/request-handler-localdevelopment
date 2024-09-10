@@ -55,7 +55,7 @@ public class CallContextService
         SetCallContextValueFromRequest(Constants.Headers.LoadBalancerVip, "");
 
         // TODO: remove when we deprecate old nodes delivery api
-        SetCallContextValueFromRequest(Constants.Headers.UseNewNodeService, "false");
+        SetCallContextValueFromRequest(Constants.Headers.UseNewNodeService, "");
 
         void SetCallContextValueFromRequest(string key, string? alternative)
         {
