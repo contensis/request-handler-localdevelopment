@@ -1,9 +1,9 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0-bookwork-slim AS base
+FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim AS base
 
 WORKDIR /app
 EXPOSE 5000
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-bookwork-slim AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim AS build
 WORKDIR /src
 
 COPY ["src/Zengenti.Contensis.RequestHandler.Domain/", "src/Zengenti.Contensis.RequestHandler.Domain/"]
