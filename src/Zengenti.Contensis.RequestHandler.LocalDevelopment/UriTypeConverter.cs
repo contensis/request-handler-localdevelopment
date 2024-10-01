@@ -13,14 +13,13 @@ public sealed class UriTypeConverter : IYamlTypeConverter
         return type == UriType;
     }
 
-    // ReSharper disable once ReturnTypeCanBeNotNullable
-    public object? ReadYaml(IParser parser, Type type)
+    public object? ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
     {
         var uri = parser.Consume<Scalar>();
         return new Uri(uri.Value);
     }
 
-    public void WriteYaml(IEmitter emitter, object? value, Type type)
+    public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
     {
         // NOTE: Not needed for us, but leaving this as an example
         //var uri = (Uri)value;
