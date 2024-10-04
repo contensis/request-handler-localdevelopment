@@ -153,6 +153,17 @@ public class EndpointRequestService : IEndpointRequestService
 
             if (!endpointResponse.IsErrorStatusCode())
             {
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    var curlString = ErrorResources.CreateCurlCallString(routeInfo);
+
+                    _logger.LogDebug(
+                        "Invoking endpoint {Uri} was successful with status code {StatusCode}. The equivalent curl command is: {CurlString}",
+                        routeInfo.Uri,
+                        endpointResponse.StatusCode,
+                        curlString);
+                }
+
                 return endpointResponse;
             }
 
