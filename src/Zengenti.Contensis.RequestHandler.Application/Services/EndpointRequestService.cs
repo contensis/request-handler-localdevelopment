@@ -273,7 +273,7 @@ public class EndpointRequestService : IEndpointRequestService
             return true;
         }
 
-        if (routeInfo.IsIisFallback && routeInfo.Uri.AbsolutePath.EndsWithCaseInsensitive(".mp4"))
+        if (routeInfo.IsIisFallback && httpMethod == HttpMethod.Get && routeInfo.Uri.AbsolutePath.EndsWithCaseInsensitive(".mp4"))
         {
             return true;
         }
