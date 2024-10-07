@@ -10,7 +10,7 @@
         <PackageId>Zengenti.Contensis.RequestHandler.Application</PackageId>
         <Company>Zengenti Ltd</Company>
         <OutputType>Library</OutputType>        
-        <LangVersion>12</LangVersion>        
+        <LangVersion>default</LangVersion>        
     </PropertyGroup>
 
     <ItemGroup>

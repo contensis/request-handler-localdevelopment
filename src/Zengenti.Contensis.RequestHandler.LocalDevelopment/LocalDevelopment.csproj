@@ -9,7 +9,7 @@
         <OutputType>Exe</OutputType>
         <PackageId>Zengenti.Contensis.RequestHandler.LocalDevelopment</PackageId>
         <Authors>Zengenti</Authors>
-        <LangVersion>12</LangVersion>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

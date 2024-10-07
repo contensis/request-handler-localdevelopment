@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <LangVersion>12</LangVersion>
+        <LangVersion>default</LangVersion>
         <ImplicitUsings>true</ImplicitUsings>
         <RootNamespace>Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs</RootNamespace>
         <AssemblyName>Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs</AssemblyName>

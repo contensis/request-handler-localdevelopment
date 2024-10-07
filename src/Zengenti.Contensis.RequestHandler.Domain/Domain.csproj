@@ -7,7 +7,7 @@
         <RootNamespace>Zengenti.Contensis.RequestHandler.Domain</RootNamespace>
         <AssemblyName>Zengenti.Contensis.RequestHandler.Domain</AssemblyName>
         <OutputType>Library</OutputType>
-        <LangVersion>12</LangVersion>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
