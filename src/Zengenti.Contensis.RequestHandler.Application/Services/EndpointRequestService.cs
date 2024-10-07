@@ -119,10 +119,8 @@ public class EndpointRequestService : IEndpointRequestService
 
         _logger.LogDebug("Making request to {Uri}", routeInfo.Uri);
 
-        var isStreamingRequestMessage = routeInfo.BlockVersionInfo != null &&
-                                        (httpMethod == HttpMethod.Post ||
-                                         httpMethod == HttpMethod.Put ||
-                                         httpMethod == HttpMethod.Patch);
+        var isStreamingRequestMessage = IsStreamingRequestMessage(httpMethod, routeInfo);
+
         using var targetRequestMessage =
             await CreateRequestMessage(httpMethod, content, headers, routeInfo, isStreamingRequestMessage);
 
@@ -263,6 +261,24 @@ public class EndpointRequestService : IEndpointRequestService
 
             return endpointResponse;
         }
+    }
+
+    private bool IsStreamingRequestMessage(HttpMethod httpMethod, RouteInfo routeInfo)
+    {
+        if (routeInfo.BlockVersionInfo != null &&
+            (httpMethod == HttpMethod.Post ||
+             httpMethod == HttpMethod.Put ||
+             httpMethod == HttpMethod.Patch))
+        {
+            return true;
+        }
+
+        if (routeInfo.IsIisFallback && routeInfo.Uri.AbsolutePath.EndsWithCaseInsensitive(".mp4"))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private async Task<EndpointResponse> GetContent(
