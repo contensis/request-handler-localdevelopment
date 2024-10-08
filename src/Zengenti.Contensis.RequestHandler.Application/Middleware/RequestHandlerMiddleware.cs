@@ -579,9 +579,9 @@ public class RequestHandlerMiddleware
         // no extension in the path requested.
         var responseStream = response.ToStream();
         if (response.StatusCode == (int)HttpStatusCode.OK &&
-            responseStream is not null &&
-            responseStream.Length == 0 &&
-            response.HttpMethod != HttpMethod.Options)
+            response.HttpMethod != HttpMethod.Options &&
+            responseStream is { CanSeek: true, Length: 0 }
+        )
         {
             response.StatusCode = 404;
             return;

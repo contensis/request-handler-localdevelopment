@@ -119,102 +119,115 @@ public class EndpointRequestService : IEndpointRequestService
 
         _logger.LogDebug("Making request to {Uri}", routeInfo.Uri);
 
-        var isStreamingRequestMessage = IsStreamingRequestMessage(httpMethod, routeInfo);
+        var isStreamingRequest = IsStreamingRequestMessage(httpMethod, routeInfo);
 
         using var targetRequestMessage =
-            await CreateRequestMessage(httpMethod, content, headers, routeInfo, isStreamingRequestMessage);
+            await CreateRequestMessage(httpMethod, content, headers, routeInfo, isStreamingRequest);
 
         try
         {
             var httpClient = _clientFactory.CreateClient("no-auto-redirect");
             var requestTimeoutInMinutes = 6 * 10;
-            if (isStreamingRequestMessage && httpClient.Timeout.TotalMinutes < requestTimeoutInMinutes)
+            if (isStreamingRequest && httpClient.Timeout.TotalMinutes < requestTimeoutInMinutes)
             {
                 httpClient.Timeout = new TimeSpan(0, requestTimeoutInMinutes, 0);
             }
 
-            using var responseMessage = await httpClient.SendAsync(
+            var responseMessage = await httpClient.SendAsync(
                 targetRequestMessage,
                 HttpCompletionOption.ResponseHeadersRead,
                 cancellationToken);
-            measurer.EndOfRequest();
-
-            var endpointResponse = await GetContent(
-                routeInfo,
-                responseMessage,
-                currentDepth,
-                cancellationToken,
-                measurer,
-                targetRequestMessage.RequestUri,
-                targetRequestMessage.Method,
-                targetRequestMessage.Headers);
-
-            if (!endpointResponse.IsErrorStatusCode())
+            var shouldParseContent = false;
+            try
             {
-                if (_logger.IsEnabled(LogLevel.Debug))
+                measurer.EndOfRequest();
+
+                shouldParseContent = ShouldParseContent(routeInfo, responseMessage);
+                var endpointResponse = await GetContent(
+                    routeInfo,
+                    responseMessage,
+                    currentDepth,
+                    cancellationToken,
+                    measurer,
+                    targetRequestMessage.RequestUri,
+                    targetRequestMessage.Method,
+                    targetRequestMessage.Headers,
+                    shouldParseContent);
+
+                if (!endpointResponse.IsErrorStatusCode())
+                {
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        var curlString = ErrorResources.CreateCurlCallString(routeInfo);
+
+                        _logger.LogDebug(
+                            "Invoking endpoint {Uri} was successful with status code {StatusCode}. The equivalent curl command is: {CurlString}",
+                            routeInfo.Uri,
+                            endpointResponse.StatusCode,
+                            curlString);
+                    }
+
+                    return endpointResponse;
+                }
+
+                var absoluteUri = routeInfo.Uri.AbsoluteUri;
+
+                if (absoluteUri.EndsWithCaseInsensitive("/favicon.ico"))
+                {
+                    return endpointResponse;
+                }
+
+                // log the response content if the status code is 5xx
+                var logLevel = LogLevel.Information;
+                var responseContent = "";
+                if (endpointResponse.StatusCode >= 500)
+                {
+                    logLevel = LogLevel.Warning;
+
+                    if (!string.IsNullOrWhiteSpace(endpointResponse.StringContent))
+                    {
+                        responseContent = endpointResponse.StringContent;
+                    }
+                    else
+                    {
+                        var endpointResponseStream = endpointResponse.ToStream(true);
+                        if (endpointResponseStream is { Length: > 0 } and MemoryStream stream)
+                        {
+                            using var reader = new StreamReader(stream, leaveOpen: true);
+                            responseContent = await reader.ReadToEndAsync(cancellationToken);
+                        }
+                    }
+                }
+
+                var state = new
+                {
+                    requestContext = JsonSerializer.Serialize(_requestContext),
+                    routeInfo = JsonSerializer.Serialize(routeInfo),
+                    responseHeaders = JsonSerializer.Serialize(endpointResponse.Headers),
+                    responseContent
+                };
+
+                using (_logger.BeginScope(state))
                 {
                     var curlString = ErrorResources.CreateCurlCallString(routeInfo);
 
-                    _logger.LogDebug(
-                        "Invoking endpoint {Uri} was successful with status code {StatusCode}. The equivalent curl command is: {CurlString}",
-                        routeInfo.Uri,
+                    _logger.Log(
+                        logLevel,
+                        "Invoking endpoint {AbsoluteUri} was not successful: {StatusCode}. The equivalent curl command is: {CurlString}",
+                        absoluteUri,
                         endpointResponse.StatusCode,
                         curlString);
                 }
 
                 return endpointResponse;
             }
-
-            var absoluteUri = routeInfo.Uri.AbsoluteUri;
-
-            if (absoluteUri.EndsWithCaseInsensitive("/favicon.ico"))
+            finally
             {
-                return endpointResponse;
-            }
-
-            // log the response content if the status code is 5xx
-            var logLevel = LogLevel.Information;
-            var responseContent = "";
-            if (endpointResponse.StatusCode >= 500)
-            {
-                logLevel = LogLevel.Warning;
-
-                if (!string.IsNullOrWhiteSpace(endpointResponse.StringContent))
+                if (shouldParseContent)
                 {
-                    responseContent = endpointResponse.StringContent;
-                }
-                else
-                {
-                    var endpointResponseStream = endpointResponse.ToStream(true);
-                    if (endpointResponseStream is { Length: > 0 } and MemoryStream stream)
-                    {
-                        using var reader = new StreamReader(stream, leaveOpen: true);
-                        responseContent = await reader.ReadToEndAsync();
-                    }
+                    responseMessage.Dispose();
                 }
             }
-
-            var state = new
-            {
-                requestContext = JsonSerializer.Serialize(_requestContext),
-                routeInfo = JsonSerializer.Serialize(routeInfo),
-                responseHeaders = JsonSerializer.Serialize(endpointResponse.Headers),
-                responseContent
-            };
-
-            using (_logger.BeginScope(state))
-            {
-                var curlString = ErrorResources.CreateCurlCallString(routeInfo);
-
-                _logger.Log(
-                    logLevel,
-                    "Invoking endpoint {AbsoluteUri} was not successful: {StatusCode}. The equivalent curl command is: {CurlString}",
-                    absoluteUri,
-                    endpointResponse.StatusCode,
-                    curlString);
-            }
-
-            return endpointResponse;
         }
         catch (Exception e)
         {
@@ -265,22 +278,10 @@ public class EndpointRequestService : IEndpointRequestService
 
     private bool IsStreamingRequestMessage(HttpMethod httpMethod, RouteInfo routeInfo)
     {
-        if (routeInfo.BlockVersionInfo != null &&
-            (httpMethod == HttpMethod.Post ||
-             httpMethod == HttpMethod.Put ||
-             httpMethod == HttpMethod.Patch))
-        {
-            return true;
-        }
-
-        if (routeInfo.IsIisFallback &&
-            httpMethod == HttpMethod.Get &&
-            routeInfo.Uri.AbsolutePath.EndsWithCaseInsensitive(".mp4"))
-        {
-            return true;
-        }
-
-        return false;
+        return routeInfo.BlockVersionInfo != null &&
+               (httpMethod == HttpMethod.Post ||
+                httpMethod == HttpMethod.Put ||
+                httpMethod == HttpMethod.Patch);
     }
 
     private async Task<EndpointResponse> GetContent(
@@ -291,14 +292,14 @@ public class EndpointRequestService : IEndpointRequestService
         PageletPerformanceMeasurer measurer,
         Uri? requestUri,
         HttpMethod requestMethod,
-        HttpRequestHeaders requestMessageHeaders)
+        HttpRequestHeaders requestMessageHeaders,
+        bool doParseContent)
     {
         var responseHeaders = GetResponseHeaders(responseMessage);
 
         _cacheKeyService.Add(responseHeaders);
 
-        if (responseMessage.IsResponseResolvable() &&
-            (routeInfo.ParseContent || routeInfo.BlockVersionInfo?.BlockVersionId != null))
+        if (doParseContent)
         {
             var resolvedContent =
                 await _responseResolverService.Resolve(responseMessage, routeInfo, currentDepth, ct);
@@ -316,13 +317,13 @@ public class EndpointRequestService : IEndpointRequestService
                     : null);
         }
 
-        var ms = new MemoryStream();
-        await responseMessage.Content.CopyToAsync(ms, ct);
+        var responseStream = await responseMessage.Content.ReadAsStreamAsync(ct);
+
         measurer.EndOfParsing();
         measurer.End();
 
         return new EndpointResponse(
-            ms,
+            responseStream,
             requestMethod,
             responseHeaders,
             (int)responseMessage.StatusCode,
@@ -331,12 +332,18 @@ public class EndpointRequestService : IEndpointRequestService
                 : null);
     }
 
+    private bool ShouldParseContent(RouteInfo routeInfo, HttpResponseMessage responseMessage)
+    {
+        return responseMessage.IsResponseResolvable() &&
+               (routeInfo.ParseContent || routeInfo.BlockVersionInfo?.BlockVersionId != null);
+    }
+
     private async Task<HttpRequestMessage> CreateRequestMessage(
         HttpMethod httpMethod,
         Stream? content,
         Dictionary<string, IEnumerable<string>>? headers,
         RouteInfo routeInfo,
-        bool isStreamingRequestMessage)
+        bool isStreamingRequest)
     {
         var requestMessage = new HttpRequestMessage
         {
@@ -346,7 +353,7 @@ public class EndpointRequestService : IEndpointRequestService
 
         if (content != null)
         {
-            if (isStreamingRequestMessage)
+            if (isStreamingRequest)
             {
                 requestMessage.Content = new StreamContent(content);
             }
