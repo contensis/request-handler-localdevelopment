@@ -191,7 +191,7 @@ public class EndpointRequestService : IEndpointRequestService
                     else
                     {
                         var endpointResponseStream = endpointResponse.ToStream(true);
-                        if (endpointResponseStream is { Length: > 0 } and MemoryStream stream)
+                        if (endpointResponseStream is MemoryStream stream and { CanSeek: true, Length: > 0 } and)
                         {
                             using var reader = new StreamReader(stream, leaveOpen: true);
                             responseContent = await reader.ReadToEndAsync(cancellationToken);
