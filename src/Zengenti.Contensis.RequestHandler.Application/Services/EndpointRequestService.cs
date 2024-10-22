@@ -161,7 +161,7 @@ public class EndpointRequestService : IEndpointRequestService
                         var curlString = ErrorResources.CreateCurlCallString(routeInfo);
 
                         _logger.LogDebug(
-                            "Invoking endpoint {Uri} was successful with status code {StatusCode}. The equivalent curl command is: {CurlString}",
+                            "Invoking endpoint {Uri} was successful with status code {StatusCode}. The equivalent curl command in PowerShell is: {CurlString}",
                             routeInfo.Uri,
                             endpointResponse.StatusCode,
                             curlString);
@@ -213,7 +213,7 @@ public class EndpointRequestService : IEndpointRequestService
 
                     _logger.Log(
                         logLevel,
-                        "Invoking endpoint {AbsoluteUri} was not successful: {StatusCode}. The equivalent curl command is: {CurlString}",
+                        "Invoking endpoint {AbsoluteUri} was not successful: {StatusCode}. The equivalent curl command in PowerShell is: {CurlString}",
                         absoluteUri,
                         endpointResponse.StatusCode,
                         curlString);
@@ -265,7 +265,7 @@ public class EndpointRequestService : IEndpointRequestService
 
                 _logger.LogError(
                     e,
-                    "Failed to invoke {RouteInfoType} endpoint {Uri} with http method {Method}. The equivalent curl command is: {CurlString}",
+                    "Failed to invoke {RouteInfoType} endpoint {Uri} with http method {Method}. The equivalent curl command in PowerShell is: {CurlString}",
                     routeInfoType,
                     routeInfo.Uri,
                     httpMethod.Method,
