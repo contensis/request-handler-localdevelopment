@@ -41,7 +41,7 @@ public static class ErrorResources
             curlUri.Host = host;
         }
 
-        var curlString = $"curl -k '{curlUri}' `\n";
+        var curlString = $"curl -k '{curlUri}'";
         var disallowedHeaders = EndpointRequestService.DisallowedRequestHeaders;
         foreach (var header in routeInfo.Headers.Values)
         {
@@ -51,7 +51,7 @@ public static class ErrorResources
             }
 
             var headerValue = header.Value.Count() == 1 ? header.Value.First() : string.Join("; ", header.Value);
-            curlString += $"  -H '{header.Key}: {headerValue}' `\n";
+            curlString += $" `\n  -H '{header.Key}: {headerValue}'";
         }
 
         return curlString;
