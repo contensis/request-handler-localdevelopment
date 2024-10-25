@@ -49,6 +49,8 @@ public static class Constants
         public const string IisHostname = "x-iis-hostname";
         public const string OrigHost = "x-orig-host";
 
+        public const string IsIisFallback = "x-is-iis-fallback";
+
         public static readonly string[] ConfigHeaders =
         {
             BlockConfig,

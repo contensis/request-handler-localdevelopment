@@ -558,6 +558,13 @@ public class RequestHandlerMiddleware
 
     private static void EnsureResponseHeadersAndStatusCode(RouteInfo routeInfo, EndpointResponse response)
     {
+
+        response.Headers[Constants.Headers.IsIisFallback] = new List<string>
+                    {
+                        routeInfo.IsIisFallback.ToString().ToLower()
+                    };
+
+
         if (!routeInfo.IsIisFallback)
         {
             if (routeInfo is { ProxyId: not null, BlockVersionInfo: null })
