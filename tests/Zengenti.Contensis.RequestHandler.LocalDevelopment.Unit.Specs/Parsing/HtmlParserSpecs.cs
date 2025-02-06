@@ -5,7 +5,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
 {
     namespace HtmlParserSpecs
     {
-        class SelfClosingTags
+        internal class SelfClosingTags
         {
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
@@ -43,7 +43,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             }
         }
 
-        class EndTags
+        internal class EndTags
         {
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
@@ -83,7 +83,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             }
         }
 
-        class NonClosedTags
+        internal class NonClosedTags
         {
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
@@ -120,7 +120,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             }
         }
 
-        class NoClosingBracket
+        internal class NoClosingBracket
         {
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
@@ -155,7 +155,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             }
         }
 
-        class LastTagWithNoClosingBracket
+        internal class LastTagWithNoClosingBracket
         {
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
@@ -191,7 +191,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Parsing
             }
         }
 
-        class InvalidAttributes
+        internal class InvalidAttributes
         {
             private HtmlParser _sut;
             private readonly List<HtmlTag> _tags = new List<HtmlTag>();
