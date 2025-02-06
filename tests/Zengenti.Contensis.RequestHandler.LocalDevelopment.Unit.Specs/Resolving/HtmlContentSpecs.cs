@@ -8,7 +8,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
 {
     namespace HtmlContentSpecs
     {
-        class MultiplePageletsResolvedInOrder
+        internal class MultiplePageletsResolvedInOrder
         {
             private HtmlContent _sut;
             private readonly List<Guid> _tagIds = new List<Guid>();
@@ -57,7 +57,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             }
         }
 
-        class MultiplePageletsResolvedUnordered
+        internal class MultiplePageletsResolvedUnordered
         {
             private HtmlContent _sut;
             private readonly List<Guid> _tagIds = new List<Guid>();
@@ -106,7 +106,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             }
         }
 
-        class HtmlTagIdDoesNotExist
+        internal class HtmlTagIdDoesNotExist
         {
             private HtmlContent _sut;
 
@@ -145,7 +145,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             }
         }
 
-        class HtmlTagContentUpdateIsNull
+        internal class HtmlTagContentUpdateIsNull
         {
             private HtmlContent _sut;
             private Guid _tagId;

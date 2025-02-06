@@ -8,7 +8,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
 {
     namespace HtmlResponseResolverSpecs
     {
-        class ResolvePagelets
+        internal class ResolvePagelets
         {
             private HtmlResponseResolver _sut;
             private string _result;
@@ -57,7 +57,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
             }
         }
 
-        class ResolvePageletsWithTraceEnabled
+        internal class ResolvePageletsWithTraceEnabled
         {
             private HtmlResponseResolver _sut;
             private string _result;

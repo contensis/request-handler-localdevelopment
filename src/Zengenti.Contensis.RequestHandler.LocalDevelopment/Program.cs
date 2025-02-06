@@ -4,7 +4,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment;
 
 public class Program
 {
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
         var parser = new Parser(with => { with.IgnoreUnknownArguments = true; });
 

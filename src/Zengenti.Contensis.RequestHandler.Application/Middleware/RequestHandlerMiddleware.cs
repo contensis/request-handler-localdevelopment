@@ -302,7 +302,7 @@ public class RequestHandlerMiddleware
 
         response = await GenerateFriendlyErrorResponse(context, routeInfo, initialRouteInfo, response);
 
-        EnsureResponseHeadersAndStatusCode(routeInfo, response);
+        FixResponseHeadersAndStatusCodes(routeInfo, response);
 
         AddCacheHeadersFor404Errors(response, context);
 
@@ -556,48 +556,62 @@ public class RequestHandlerMiddleware
         return response;
     }
 
-    private static void EnsureResponseHeadersAndStatusCode(RouteInfo routeInfo, EndpointResponse response)
+    private static void FixResponseHeadersAndStatusCodes(RouteInfo routeInfo, EndpointResponse response)
     {
-        response.Headers[Constants.Headers.IsIisFallback] = new List<string>
-        {
+        response.Headers[Constants.Headers.IsIisFallback] =
+        [
             routeInfo.IsIisFallback.ToString().ToLower()
-        };
+        ];
 
         if (!routeInfo.IsIisFallback)
         {
             if (routeInfo is { ProxyId: not null, BlockVersionInfo: null })
             {
+                // TODO: when we introduce cache settings on proxies this is where it needs to be implemented
+                // we need to check if it is an error or not
                 if (routeInfo.ProxyId.Equals(Guid.Parse("8f2cc5be-b5dd-4e4b-b6fa-92b7fc6440e0")))
                 {
-                    response.Headers[Constants.Headers.SurrogateControl] = new List<string>
-                    {
+                    response.Headers[Constants.Headers.SurrogateControl] =
+                    [
                         "max-age=60"
-                    };
+                    ];
 
                     return;
                 }
             }
         }
 
-        // Unfortunately IIS returns an empty bodied 200 rather than a 404 when
-        // hitting the root or a directory of a site, where there is no default page or
-        // no extension in the path requested.
-        var responseStream = response.ToStream();
-        if (response.StatusCode == (int)HttpStatusCode.OK &&
-            response.HttpMethod != HttpMethod.Options &&
-            responseStream is { CanSeek: true, Length: 0 }
-        )
+        if (routeInfo.IsIisFallback)
         {
-            response.StatusCode = 404;
-            return;
+            // Unfortunately IIS returns an empty bodied 200 rather than a 404 when
+            // hitting the root or a directory of a site, where there is no default page or
+            // no extension in the path requested.
+            var responseStream = response.ToStream();
+            if (response.StatusCode == (int)HttpStatusCode.OK &&
+                response.HttpMethod != HttpMethod.Options &&
+                responseStream is { CanSeek: true, Length: 0 }
+            )
+            {
+                response.StatusCode = 404;
+                return;
+            }
+
+            // if not a 404 error and is an error code of 400 or greater than 404 then we need to set the surrogate control to 5 seconds
+            if (response.StatusCode == 400 || response.StatusCode > 404)
+            {
+                response.Headers[Constants.Headers.SurrogateControl] =
+                [
+                    "max-age=5"
+                ];
+            }
         }
 
         if (!response.IsErrorStatusCode() && routeInfo.Headers.OrigHost.StartsWithCaseInsensitive("preview"))
         {
-            response.Headers[Constants.Headers.SurrogateControl] = new[]
-            {
+            response.Headers[Constants.Headers.SurrogateControl] =
+            [
                 "max-age=0"
-            };
+            ];
         }
     }
 
@@ -608,19 +622,17 @@ public class RequestHandlerMiddleware
         if (context.Request.Path == "/")
         {
             response.Headers[Constants.Headers.SurrogateControl] =
-                new List<string>
-                {
-                    "max-age=30"
-                };
+            [
+                "max-age=30"
+            ];
             return;
         }
 
         //This is to prevent malicious requests bombarding the backend services.
         response.Headers[Constants.Headers.SurrogateControl] =
-            new List<string>
-            {
-                "max-age=5"
-            };
+        [
+            "max-age=5"
+        ];
     }
 
     private static bool PotentiallyHasLocationHeader(EndpointResponse response)

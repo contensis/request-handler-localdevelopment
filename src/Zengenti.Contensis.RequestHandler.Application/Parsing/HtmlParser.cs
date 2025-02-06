@@ -158,7 +158,7 @@ public class HtmlParser : TextParser
             else
             {
                 // Parse attribute name
-                name = (!doctype) ? ParseAttributeName() : ParseAttributeValue();
+                name = !doctype ? ParseAttributeName() : ParseAttributeValue();
                 MovePastWhitespace();
 
                 // Parse attribute value

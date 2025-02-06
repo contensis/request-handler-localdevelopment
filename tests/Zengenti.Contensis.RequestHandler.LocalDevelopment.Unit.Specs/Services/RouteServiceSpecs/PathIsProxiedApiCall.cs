@@ -14,7 +14,7 @@ public class PathIsProxiedApiCall
     private readonly Uri _originUri = new(Host + Path);
     private readonly Headers _headers = new();
 
-    const string ApiUriString = "https://api-test.cloud.contensis.com";
+    private const string ApiUriString = "https://api-test.cloud.contensis.com";
 
     private RouteService _sut;
     private INodeService _nodeService;

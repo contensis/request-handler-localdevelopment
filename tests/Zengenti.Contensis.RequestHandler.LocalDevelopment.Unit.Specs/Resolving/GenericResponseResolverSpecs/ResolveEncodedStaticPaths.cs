@@ -6,9 +6,9 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolving.GenericResponseResolverSpecs;
 
-class ResolveEncodedStaticPaths
+internal class ResolveEncodedStaticPaths
 {
-    IResponseResolver _sut;
+    private IResponseResolver _sut;
     private string _result;
     private readonly Guid _blockVersionId = Guid.NewGuid();
     private readonly Guid _projectUuid = Guid.NewGuid();

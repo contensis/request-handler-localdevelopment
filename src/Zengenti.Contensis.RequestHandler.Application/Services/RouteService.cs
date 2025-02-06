@@ -9,33 +9,17 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.Application.Services;
 
-public class RouteService : IRouteService
+public class RouteService(
+    BlockClusterConfig blockClusterConfig,
+    INodeService nodeService,
+    IPublishingService publishingService,
+    IRouteInfoFactory routeInfoFactory,
+    IRequestContext requestContext,
+    ICacheKeyService cacheKeyService,
+    ILogger<RouteService> logger)
+    : IRouteService
 {
-    private readonly BlockClusterConfig _blockClusterConfig;
-    private readonly INodeService _nodeService;
-    private readonly IPublishingService _publishingService;
-    private readonly IRouteInfoFactory _routeInfoFactory;
-    private readonly IRequestContext _requestContext;
-    private readonly ICacheKeyService _cacheKeyService;
-    private readonly ILogger _logger;
-
-    public RouteService(
-        BlockClusterConfig blockClusterConfig,
-        INodeService nodeService,
-        IPublishingService publishingService,
-        IRouteInfoFactory routeInfoFactory,
-        IRequestContext requestContext,
-        ICacheKeyService cacheKeyService,
-        ILogger<RouteService> logger)
-    {
-        _blockClusterConfig = blockClusterConfig;
-        _nodeService = nodeService;
-        _publishingService = publishingService;
-        _routeInfoFactory = routeInfoFactory;
-        _requestContext = requestContext;
-        _cacheKeyService = cacheKeyService;
-        _logger = logger;
-    }
+    private readonly ILogger _logger = logger;
 
     public async Task<RouteInfo> GetRouteForRequest(HttpRequest request, Headers headers)
     {
@@ -54,9 +38,10 @@ public class RouteService : IRouteService
 
         nodeLookupTimer.Start();
         Node? node = null;
-        if (ShouldPerformNodeLookup(originPath))
+        var shouldGetNode = ShouldGetNode(originPath);
+        if (shouldGetNode)
         {
-            node = await _nodeService.GetByPath(originPath);
+            node = await nodeService.GetByPath(originPath);
         }
 
         nodeLookupTimer.Stop();
@@ -86,8 +71,8 @@ public class RouteService : IRouteService
             }
 
             // We have a node so need to understand what to invoke (block or proxy)
-            routeInfo = await _publishingService.GetRouteInfoForRequest(
-                _requestContext.ProjectUuid,
+            routeInfo = await publishingService.GetRouteInfoForRequest(
+                requestContext.ProjectUuid,
                 isPartialMatchPath: isPartialMatchPath,
                 originUri,
                 headers,
@@ -104,7 +89,7 @@ public class RouteService : IRouteService
             if (routeInfo != null)
             {
                 // Ensure the node cache keys are included in the final response
-                _cacheKeyService.AddRange(node.CacheKeys);
+                cacheKeyService.AddRange(node.CacheKeys);
 
                 routeInfo.Metrics.Add("nodeLookup", nodeLookupTimer.ElapsedMilliseconds);
                 routeInfo.Metrics.Add("getRouteInfoFetch", routeInfoRequestTimer.ElapsedMilliseconds);
@@ -190,12 +175,12 @@ public class RouteService : IRouteService
         {
             var staticBlockVersionInfoFetch = new Stopwatch();
             staticBlockVersionInfoFetch.Start();
-            blockVersionInfo = await _publishingService.GetBlockVersionInfo(staticPath.BlockVersionId);
+            blockVersionInfo = await publishingService.GetBlockVersionInfo(staticPath.BlockVersionId);
             staticBlockVersionInfoFetch.Stop();
             staticBlockVersionInfoFetchMs = staticBlockVersionInfoFetch.ElapsedMilliseconds;
         }
 
-        var returnInfo = _routeInfoFactory.CreateForNonNodePath(
+        var returnInfo = routeInfoFactory.CreateForNonNodePath(
             originUri,
             headers,
             blockVersionInfo);
@@ -208,7 +193,7 @@ public class RouteService : IRouteService
         return returnInfo;
     }
 
-    private bool ShouldPerformNodeLookup(string path)
+    private bool ShouldGetNode(string path)
     {
         // Don't like this hard-coded path, maybe move to config?
         // We can negate anything that is a rewritten static path
@@ -227,7 +212,7 @@ public class RouteService : IRouteService
         }
 
         if (Constants.Paths.ApiPrefixes.Any(path.StartsWithCaseInsensitive) &&
-            _blockClusterConfig.AliasesWithApiRoutes?.ContainsCaseInsensitive(_requestContext.Alias) != true)
+            blockClusterConfig.AliasesWithApiRoutes?.ContainsCaseInsensitive(requestContext.Alias) != true)
         {
             return false;
         }
@@ -239,12 +224,12 @@ public class RouteService : IRouteService
     {
         if (headers.Debug || headers.HasKey(Constants.Headers.RequiresAlias))
         {
-            CallContext.Current[Constants.Headers.RequiresAlias] = _requestContext.Alias;
+            CallContext.Current[Constants.Headers.RequiresAlias] = requestContext.Alias;
         }
 
         if (headers.Debug || headers.HasKey(Constants.Headers.RequiresProjectApiId))
         {
-            CallContext.Current[Constants.Headers.RequiresProjectApiId] = _requestContext.ProjectApiId;
+            CallContext.Current[Constants.Headers.RequiresProjectApiId] = requestContext.ProjectApiId;
         }
     }
 

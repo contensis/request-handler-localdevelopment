@@ -3,10 +3,10 @@ using Zengenti.Contensis.RequestHandler.Application.Resolving;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolving.StaticPathSpecs;
 
-class InvalidRewrittenPath
+internal class InvalidRewrittenPath
 {
-    string _path;
-    StaticPath _result;
+    private string _path;
+    private StaticPath _result;
 
     public void GivenARewrittenStaticPath()
     {

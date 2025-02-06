@@ -18,7 +18,7 @@ public class TextParser
     /// <summary>
     ///     Indicates if the current position is at the end of the current document
     /// </summary>
-    protected bool EndOfText => (Position >= _text.Length);
+    protected bool EndOfText => Position >= _text.Length;
 
     /// <summary>
     ///     Returns the character at the specified number of characters beyond the current
@@ -29,7 +29,7 @@ public class TextParser
     /// <returns>The character at the specified position</returns>
     protected char Peek(int ahead = 0)
     {
-        var pos = (Position + ahead);
+        var pos = Position + ahead;
 
         if (pos < _text.Length)
         {
