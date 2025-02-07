@@ -603,7 +603,8 @@ public class RequestHandlerMiddleware
                 [
                     "max-age=5"
                 ];
-            } else if( response.StatusCode is > 400 and < 404)
+            }
+            else if (response.StatusCode is > 400 and < 404)
             {
                 response.Headers[Constants.Headers.SurrogateControl] =
                 [
