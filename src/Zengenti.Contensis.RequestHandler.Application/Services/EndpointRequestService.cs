@@ -180,7 +180,7 @@ public class EndpointRequestService : IEndpointRequestService
                 // log the response content if the status code is 400 or 5xx
                 var logLevel = LogLevel.Information;
                 var responseContent = "";
-                if (endpointResponse.StatusCode == 400 || endpointResponse.StatusCode > 404)
+                if (endpointResponse.StatusCode != 404 && endpointResponse.StatusCode is >= 400 and < 600)
                 {
                     logLevel = LogLevel.Warning;
 

@@ -597,11 +597,17 @@ public class RequestHandlerMiddleware
             }
 
             // if not a 404 error and is an error code of 400 or greater than 404 then we need to set the surrogate control to 5 seconds
-            if (response.StatusCode == 400 || response.StatusCode > 404)
+            if (response.StatusCode is 400 or > 404)
             {
                 response.Headers[Constants.Headers.SurrogateControl] =
                 [
                     "max-age=5"
+                ];
+            } else if( response.StatusCode is > 400 and < 404)
+            {
+                response.Headers[Constants.Headers.SurrogateControl] =
+                [
+                    "max-age=0"
                 ];
             }
         }
