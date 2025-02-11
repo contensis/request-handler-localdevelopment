@@ -10,15 +10,16 @@ using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace Zengenti.Contensis.RequestHandler.Application.Services;
 
-public class EndpointRequestService : IEndpointRequestService
+public class EndpointRequestService(
+    IHttpClientFactory clientFactory,
+    IResponseResolverService responseResolverService,
+    IRequestContext requestContext,
+    ICacheKeyService cacheKeyService,
+    ILogger<EndpointRequestService> logger)
+    : IEndpointRequestService
 {
-    private readonly IResponseResolverService _responseResolverService;
-    private readonly IRequestContext _requestContext;
-    private readonly ICacheKeyService _cacheKeyService;
-    private readonly ILogger<EndpointRequestService> _logger;
-
     public static readonly string[] DisallowedRequestHeaderMappings =
-    {
+    [
         "Host", // Will be explicitly set
         "Accept-Encoding", // Don't compress endpoint traffic as compression will be done in Varnish
         "version", // Don't pass on a version header because we have to set a version header to blocks them selves
@@ -43,10 +44,10 @@ public class EndpointRequestService : IEndpointRequestService
         "version",
         "traceparent",
         "x-forwarded-proto"
-    };
+    ];
 
     public static readonly string[] DisallowedRequestHeaders =
-    {
+    [
         "x-requires-depends",
         "x-ssl",
         "x-internal-host",
@@ -68,23 +69,7 @@ public class EndpointRequestService : IEndpointRequestService
         "version",
         "traceparent",
         "x-forwarded-proto"
-    };
-
-    private readonly IHttpClientFactory _clientFactory;
-
-    public EndpointRequestService(
-        IHttpClientFactory clientFactory,
-        IResponseResolverService responseResolverService,
-        IRequestContext requestContext,
-        ICacheKeyService cacheKeyService,
-        ILogger<EndpointRequestService> logger)
-    {
-        _clientFactory = clientFactory;
-        _responseResolverService = responseResolverService;
-        _requestContext = requestContext;
-        _cacheKeyService = cacheKeyService;
-        _logger = logger;
-    }
+    ];
 
     public async Task<EndpointResponse> Invoke(
         HttpMethod httpMethod,
@@ -98,14 +83,19 @@ public class EndpointRequestService : IEndpointRequestService
                             headers.ContainsKey(Constants.Headers.HealthCheck) &&
                             headers[Constants.Headers.HealthCheck].ContainsCaseInsensitive("true");
 
+        var isDevCms = headers != null &&
+                       headers.ContainsKey(Constants.Headers.Alias) &&
+                       headers[Constants.Headers.Alias].Any() &&
+                       (headers[Constants.Headers.Alias].First().EndsWithCaseInsensitive("-dev") ||
+                        headers[Constants.Headers.Alias].First().EndsWithCaseInsensitive("-deva") ||
+                        headers[Constants.Headers.Alias].First().EndsWithCaseInsensitive("-devb"));
         if (routeInfo.IsIisFallback && isHealthCheck)
         {
             headers!.Add(
                 HeaderNames.ContentType,
-                new[]
-                {
+                [
                     "application/json"
-                });
+                ]);
             var responseContent = new
             {
                 msg = "No route matched so returning a success as the Classic backend will be used"
@@ -115,9 +105,9 @@ public class EndpointRequestService : IEndpointRequestService
 
         RecursionChecker.Check(currentDepth, routeInfo);
 
-        var measurer = new PageletPerformanceMeasurer(_requestContext.TraceEnabled, autoStart: true);
+        var measurer = new PageletPerformanceMeasurer(requestContext.TraceEnabled, autoStart: true);
 
-        _logger.LogDebug("Making request to {Uri}", routeInfo.Uri);
+        logger.LogDebug("Making request to {Uri}", routeInfo.Uri);
 
         var isStreamingRequest = IsStreamingRequestMessage(httpMethod, routeInfo);
 
@@ -126,7 +116,7 @@ public class EndpointRequestService : IEndpointRequestService
 
         try
         {
-            var httpClient = _clientFactory.CreateClient("no-auto-redirect");
+            var httpClient = clientFactory.CreateClient("no-auto-redirect");
             var requestTimeoutInMinutes = 6 * 10;
             if (isStreamingRequest && httpClient.Timeout.TotalMinutes < requestTimeoutInMinutes)
             {
@@ -156,11 +146,11 @@ public class EndpointRequestService : IEndpointRequestService
 
                 if (!endpointResponse.IsErrorStatusCode())
                 {
-                    if (_logger.IsEnabled(LogLevel.Debug))
+                    if (logger.IsEnabled(LogLevel.Debug))
                     {
                         var curlString = ErrorResources.CreateCurlCallString(routeInfo);
 
-                        _logger.LogDebug(
+                        logger.LogDebug(
                             "Invoking endpoint {Uri} was successful with status code {StatusCode}. The equivalent curl command in PowerShell is: {CurlString}",
                             routeInfo.Uri,
                             endpointResponse.StatusCode,
@@ -182,7 +172,7 @@ public class EndpointRequestService : IEndpointRequestService
                 var responseContent = "";
                 if (endpointResponse.StatusCode != 404 && endpointResponse.StatusCode is >= 400 and < 600)
                 {
-                    logLevel = LogLevel.Warning;
+                    logLevel = isDevCms ? LogLevel.Information : LogLevel.Warning;
 
                     if (!string.IsNullOrWhiteSpace(endpointResponse.StringContent))
                     {
@@ -201,17 +191,17 @@ public class EndpointRequestService : IEndpointRequestService
 
                 var state = new
                 {
-                    requestContext = JsonSerializer.Serialize(_requestContext),
+                    requestContext = JsonSerializer.Serialize(requestContext),
                     routeInfo = JsonSerializer.Serialize(routeInfo),
                     responseHeaders = JsonSerializer.Serialize(endpointResponse.Headers),
                     responseContent
                 };
 
-                using (_logger.BeginScope(state))
+                using (logger.BeginScope(state))
                 {
                     var curlString = ErrorResources.CreateCurlCallString(routeInfo);
 
-                    _logger.Log(
+                    logger.Log(
                         logLevel,
                         "Invoking endpoint {AbsoluteUri} was not successful: {StatusCode}. The equivalent curl command in PowerShell is: {CurlString}",
                         absoluteUri,
@@ -243,10 +233,10 @@ public class EndpointRequestService : IEndpointRequestService
                 return endpointResponse;
             }
 
-            using (_logger.BeginScope(
+            using (logger.BeginScope(
                 new
                 {
-                    requestContext = JsonSerializer.Serialize(_requestContext),
+                    requestContext = JsonSerializer.Serialize(requestContext),
                     routeInfo = JsonSerializer.Serialize(routeInfo),
                     cancelledRequest = cancellationToken.IsCancellationRequested.ToString()
                 }))
@@ -263,7 +253,7 @@ public class EndpointRequestService : IEndpointRequestService
 
                 var curlString = ErrorResources.CreateCurlCallString(routeInfo);
 
-                _logger.LogError(
+                logger.LogError(
                     e,
                     "Failed to invoke {RouteInfoType} endpoint {Uri} with http method {Method}. The equivalent curl command in PowerShell is: {CurlString}",
                     routeInfoType,
@@ -297,12 +287,12 @@ public class EndpointRequestService : IEndpointRequestService
     {
         var responseHeaders = GetResponseHeaders(responseMessage);
 
-        _cacheKeyService.Add(responseHeaders);
+        cacheKeyService.Add(responseHeaders);
 
         if (doParseContent)
         {
             var resolvedContent =
-                await _responseResolverService.Resolve(responseMessage, routeInfo, currentDepth, ct);
+                await responseResolverService.Resolve(responseMessage, routeInfo, currentDepth, ct);
 
             measurer.EndOfParsing();
             measurer.End();
@@ -312,7 +302,7 @@ public class EndpointRequestService : IEndpointRequestService
                 requestMethod,
                 responseHeaders,
                 (int)responseMessage.StatusCode,
-                _requestContext.TraceEnabled
+                requestContext.TraceEnabled
                     ? new PageletPerformanceData(measurer, requestUri, requestMethod, requestMessageHeaders)
                     : null);
         }
@@ -327,7 +317,7 @@ public class EndpointRequestService : IEndpointRequestService
             requestMethod,
             responseHeaders,
             (int)responseMessage.StatusCode,
-            _requestContext.TraceEnabled
+            requestContext.TraceEnabled
                 ? new PageletPerformanceData(measurer, requestUri, requestMethod, requestMessageHeaders)
                 : null);
     }
@@ -388,11 +378,6 @@ public class EndpointRequestService : IEndpointRequestService
 
         foreach (var (key, value) in headers)
         {
-            if ("key" == "x-requires-depends" && routeInfo.IsIisFallback)
-            {
-                requestMessage.Headers.TryAddWithoutValidation(key, value);
-            }
-
             if (!DisallowedRequestHeaderMappings.ContainsCaseInsensitive(key))
             {
                 requestMessage.Headers.TryAddWithoutValidation(key, value);
@@ -408,10 +393,10 @@ public class EndpointRequestService : IEndpointRequestService
             }
         }
 
-        if (routeInfo.IsIisFallback && !string.IsNullOrWhiteSpace(_requestContext.IisHostname))
+        if (routeInfo.IsIisFallback && !string.IsNullOrWhiteSpace(requestContext.IisHostname))
         {
             // Override host header with IIS fallback host
-            requestMessage.Headers.Host = _requestContext.IisHostname;
+            requestMessage.Headers.Host = requestContext.IisHostname;
         }
         else
         {
