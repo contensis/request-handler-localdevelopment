@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -179,7 +180,7 @@ public class EndpointRequestService(
                 var responseContent = "";
                 if (endpointResponse.StatusCode != 404 && endpointResponse.StatusCode is >= 400 and < 600)
                 {
-                    var isDevCmsRequest = IsDevCms(headers);
+                    var isDevCmsRequest = IsDevCmsRequest(headers);
 
                     var isBotRequest = IsBotRequest(headers);
 
@@ -277,14 +278,19 @@ public class EndpointRequestService(
         }
     }
 
+    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     private static bool IsBotRequest(Dictionary<string, IEnumerable<string>>? headers)
     {
-        var isBotRequest = false;
-        if (headers != null &&
-            headers.ContainsKey(HeaderNames.UserAgent) &&
-            headers[HeaderNames.UserAgent].Any())
+        if (headers == null || headers.Count == 0)
         {
-            var userAgentValue = headers[HeaderNames.UserAgent].First();
+            return false;
+        }
+
+        var isBotRequest = false;
+        if (headers.TryGetValue(HeaderNames.UserAgent, out var userAgentValues) &&
+            userAgentValues.Any())
+        {
+            var userAgentValue = userAgentValues.First();
             isBotRequest = userAgentValue.Contains("bot", StringComparison.InvariantCultureIgnoreCase) &&
                            UserAgentBots.Any(
                                bot => userAgentValue.Contains(
@@ -292,10 +298,22 @@ public class EndpointRequestService(
                                    StringComparison.InvariantCultureIgnoreCase));
         }
 
+        if (!isBotRequest &&
+            headers.TryGetValue(HeaderNames.From, out var fromValues) &&
+            fromValues.Any())
+        {
+            var fromValue = fromValues.First();
+            isBotRequest = fromValue.Contains("bot", StringComparison.InvariantCultureIgnoreCase) &&
+                           UserAgentBots.Any(
+                               bot => fromValue.Contains(
+                                   bot,
+                                   StringComparison.InvariantCultureIgnoreCase));
+        }
+
         return isBotRequest;
     }
 
-    private static bool IsDevCms(Dictionary<string, IEnumerable<string>>? headers)
+    private static bool IsDevCmsRequest(Dictionary<string, IEnumerable<string>>? headers)
     {
         var isDevCms = headers != null &&
                        headers.ContainsKey(Constants.Headers.Alias) &&
