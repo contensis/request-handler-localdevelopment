@@ -80,7 +80,8 @@ public class EndpointRequestService(
         "Googlebot",
         "InsytfulBot",
         "Sidetrade indexer bot",
-        "Snap URL Preview Service"
+        "Snap URL Preview Service",
+        "YandexBot"
     ];
 
     public async Task<EndpointResponse> Invoke(
