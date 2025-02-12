@@ -73,6 +73,7 @@ public class EndpointRequestService(
 
     public static readonly string[] UserAgentBots =
     [
+        "bingbot",
         "(bot@ecotrek.tech)",
         "ChatGPT-User",
         "DataForSeoBot",
