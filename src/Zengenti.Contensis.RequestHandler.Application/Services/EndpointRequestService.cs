@@ -80,6 +80,7 @@ public class EndpointRequestService(
         "DataForSeoBot",
         "Googlebot",
         "InsytfulBot",
+        "PetalBot",
         "Sidetrade indexer bot",
         "Snap URL Preview Service",
         "YandexBot"
@@ -265,7 +266,10 @@ public class EndpointRequestService(
 
                 var curlString = ErrorResources.CreateCurlCallString(routeInfo);
 
-                logger.LogError(
+                var logLevel = IsBotRequest(headers) ? LogLevel.Information : LogLevel.Error;
+
+                logger.Log(
+                    logLevel,
                     e,
                     "Failed to invoke {RouteInfoType} endpoint {Uri} with http method {Method}. The equivalent curl command in PowerShell is: {CurlString}",
                     routeInfoType,
