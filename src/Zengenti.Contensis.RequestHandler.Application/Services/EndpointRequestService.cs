@@ -71,6 +71,17 @@ public class EndpointRequestService(
         "x-forwarded-proto"
     ];
 
+    public static readonly string[] UserAgentBots =
+    [
+        "(bot@ecotrek.tech)",
+        "ChatGPT-User",
+        "DataForSeoBot",
+        "Googlebot",
+        "InsytfulBot",
+        "Sidetrade indexer bot",
+        "Snap URL Preview Service"
+    ];
+
     public async Task<EndpointResponse> Invoke(
         HttpMethod httpMethod,
         Stream? content,
@@ -83,12 +94,6 @@ public class EndpointRequestService(
                             headers.ContainsKey(Constants.Headers.HealthCheck) &&
                             headers[Constants.Headers.HealthCheck].ContainsCaseInsensitive("true");
 
-        var isDevCms = headers != null &&
-                       headers.ContainsKey(Constants.Headers.Alias) &&
-                       headers[Constants.Headers.Alias].Any() &&
-                       (headers[Constants.Headers.Alias].First().EndsWithCaseInsensitive("-dev") ||
-                        headers[Constants.Headers.Alias].First().EndsWithCaseInsensitive("-deva") ||
-                        headers[Constants.Headers.Alias].First().EndsWithCaseInsensitive("-devb"));
         if (routeInfo.IsIisFallback && isHealthCheck)
         {
             headers!.Add(
@@ -172,7 +177,11 @@ public class EndpointRequestService(
                 var responseContent = "";
                 if (endpointResponse.StatusCode != 404 && endpointResponse.StatusCode is >= 400 and < 600)
                 {
-                    logLevel = isDevCms ? LogLevel.Information : LogLevel.Warning;
+                    var isDevCmsRequest = IsDevCms(headers);
+
+                    var isBotRequest = IsBotRequest(headers);
+
+                    logLevel = isDevCmsRequest || isBotRequest ? LogLevel.Information : LogLevel.Warning;
 
                     if (!string.IsNullOrWhiteSpace(endpointResponse.StringContent))
                     {
@@ -264,6 +273,35 @@ public class EndpointRequestService(
 
             return endpointResponse;
         }
+    }
+
+    private static bool IsBotRequest(Dictionary<string, IEnumerable<string>>? headers)
+    {
+        var isBotRequest = false;
+        if (headers != null &&
+            headers.ContainsKey(HeaderNames.UserAgent) &&
+            headers[HeaderNames.UserAgent].Any())
+        {
+            var userAgentValue = headers[HeaderNames.UserAgent].First();
+            isBotRequest = userAgentValue.Contains("bot", StringComparison.InvariantCultureIgnoreCase) &&
+                           UserAgentBots.Any(
+                               bot => userAgentValue.Contains(
+                                   bot,
+                                   StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        return isBotRequest;
+    }
+
+    private static bool IsDevCms(Dictionary<string, IEnumerable<string>>? headers)
+    {
+        var isDevCms = headers != null &&
+                       headers.ContainsKey(Constants.Headers.Alias) &&
+                       headers[Constants.Headers.Alias].Any() &&
+                       (headers[Constants.Headers.Alias].First().EndsWithCaseInsensitive("-dev") ||
+                        headers[Constants.Headers.Alias].First().EndsWithCaseInsensitive("-deva") ||
+                        headers[Constants.Headers.Alias].First().EndsWithCaseInsensitive("-devb"));
+        return isDevCms;
     }
 
     private bool IsStreamingRequestMessage(HttpMethod httpMethod, RouteInfo routeInfo)
