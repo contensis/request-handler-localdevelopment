@@ -80,7 +80,9 @@ public class EndpointRequestService(
         "DataForSeoBot",
         "Googlebot",
         "InsytfulBot",
+        "Mastodon",
         "PetalBot",
+        "Qwantbot",
         "Sidetrade indexer bot",
         "Snap URL Preview Service",
         "YandexBot"
