@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using System.Web;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
@@ -31,6 +32,7 @@ public class RouteInfo
         ParseContent = parseContent;
         IsIisFallback = isIisFallback;
         Metrics = new Metrics();
+        DebugData = new DebugData(this);
         NodePath = nodePath;
         FoundRoute = foundRoute;
         ProxyId = proxyId;
@@ -98,7 +100,14 @@ public class RouteInfo
     /// <summary>
     ///     Metrics collected along the pipeline.
     /// </summary>
+    [JsonIgnore]
     public Metrics Metrics { get; }
+
+    /// <summary>
+    ///     Debug data collected along the pipeline.
+    /// </summary>
+    [JsonIgnore]
+    public DebugData DebugData { get; }
 
     /// <summary>
     ///     Maintained to enable friendly error messages.

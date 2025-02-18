@@ -27,7 +27,7 @@ public class NodeExistsAndRendererMatched
         requestContext.ProjectUuid.Returns(_projectUuid);
         var cacheKeyService = Substitute.For<ICacheKeyService>();
         var logger = Substitute.For<ILogger<RouteService>>();
-        var blockClusterConfig = new BlockClusterConfig();
+        var blockClusterConfig = new AppConfiguration();
         var routeInfoFactory = new RouteInfoFactory(requestContext, blockClusterConfig);
         _publishingService = SpecHelper.CreatePublishingService(routeInfoFactory);
 

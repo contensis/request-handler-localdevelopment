@@ -9,14 +9,14 @@ namespace Zengenti.Contensis.RequestHandler.Application.Services;
 
 public class RouteInfoFactory : IRouteInfoFactory
 {
-    private readonly BlockClusterConfig _blockClusterConfig;
+    private readonly AppConfiguration _appConfiguration;
     private readonly IRequestContext _requestContext;
 
     public RouteInfoFactory(
         IRequestContext requestContext,
-        BlockClusterConfig blockClusterConfig)
+        AppConfiguration appConfiguration)
     {
-        _blockClusterConfig = blockClusterConfig;
+        _appConfiguration = appConfiguration;
         _requestContext = requestContext;
     }
 
@@ -89,7 +89,7 @@ public class RouteInfoFactory : IRouteInfoFactory
             Constants.Paths.ApiPrefixes.Any(prefix => path.StartsWithCaseInsensitive(prefix)) &&
             !path.StartsWithCaseInsensitive("/api/publishing/request-handler") &&
             !path.StartsWithCaseInsensitive("/api/preview-toolbar/blocks") &&
-            _blockClusterConfig.AliasesWithApiRoutes?.ContainsCaseInsensitive(_requestContext.Alias) != true;
+            _appConfiguration.AliasesWithApiRoutes?.ContainsCaseInsensitive(_requestContext.Alias) != true;
         if (isContensisApiRequest)
         {
             var apiHost = $"api-{_requestContext.Alias}.cloud.contensis.com";
@@ -135,13 +135,13 @@ public class RouteInfoFactory : IRouteInfoFactory
 
     private void ApplyBlockClusterRouteDetails(ref Uri baseUri, Headers headers)
     {
-        if (!string.IsNullOrWhiteSpace(_blockClusterConfig.BlockClusterIngressIp) &&
-            !string.IsNullOrWhiteSpace(_blockClusterConfig.BlockAddressSuffix))
+        if (!string.IsNullOrWhiteSpace(_appConfiguration.BlockClusterIngressIp) &&
+            !string.IsNullOrWhiteSpace(_appConfiguration.BlockAddressSuffix))
         {
             headers[Constants.Headers.Host] = baseUri.Host;
             baseUri = new UriBuilder(baseUri)
             {
-                Host = _blockClusterConfig.BlockClusterIngressIp
+                Host = _appConfiguration.BlockClusterIngressIp
             }.Uri;
         }
     }

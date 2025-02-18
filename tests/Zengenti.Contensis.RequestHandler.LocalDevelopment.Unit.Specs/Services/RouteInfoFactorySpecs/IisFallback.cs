@@ -12,7 +12,7 @@ public class IisFallback
     private readonly IRouteInfoFactory _sut =
         new RouteInfoFactory(
             SpecHelper.CreateRequestContext(),
-            new BlockClusterConfig("10.0.1.2", "suffix"));
+            new AppConfiguration("10.0.1.2", "suffix"));
 
     private RouteInfo _result;
 

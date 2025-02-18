@@ -10,7 +10,7 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 namespace Zengenti.Contensis.RequestHandler.Application.Services;
 
 public class RouteService(
-    BlockClusterConfig blockClusterConfig,
+    AppConfiguration appConfiguration,
     INodeService nodeService,
     IPublishingService publishingService,
     IRouteInfoFactory routeInfoFactory,
@@ -93,6 +93,8 @@ public class RouteService(
 
                 routeInfo.Metrics.Add("nodeLookup", nodeLookupTimer.ElapsedMilliseconds);
                 routeInfo.Metrics.Add("getRouteInfoFetch", routeInfoRequestTimer.ElapsedMilliseconds);
+                routeInfo.DebugData.AppConfiguration = appConfiguration;
+                routeInfo.DebugData.Node = node;
 
                 if (routeInfo.BlockVersionInfo != null)
                 {
@@ -161,7 +163,13 @@ public class RouteService(
             nodePath = node.Path;
         }
 
-        var emptyRouteInfo = new RouteInfo(null, headers, nodePath, false);
+        var emptyRouteInfo = new RouteInfo(null, headers, nodePath, false)
+        {
+            DebugData =
+            {
+                AppConfiguration = appConfiguration
+            }
+        };
         return emptyRouteInfo;
     }
 
@@ -212,7 +220,7 @@ public class RouteService(
         }
 
         if (Constants.Paths.ApiPrefixes.Any(path.StartsWithCaseInsensitive) &&
-            blockClusterConfig.AliasesWithApiRoutes?.ContainsCaseInsensitive(requestContext.Alias) != true)
+            appConfiguration.AliasesWithApiRoutes?.ContainsCaseInsensitive(requestContext.Alias) != true)
         {
             return false;
         }

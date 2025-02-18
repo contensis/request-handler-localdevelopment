@@ -27,7 +27,7 @@ public class PathIsProxiedApiCall
         var logger = Substitute.For<ILogger<RouteService>>();
         var requestContext = SpecHelper.CreateRequestContext();
         var cacheKeyService = Substitute.For<ICacheKeyService>();
-        var blockClusterConfig = new BlockClusterConfig();
+        var blockClusterConfig = new AppConfiguration();
         var routeInfoFactory = new RouteInfoFactory(requestContext, blockClusterConfig);
         var publishingService = SpecHelper.CreatePublishingService(routeInfoFactory);
 
