@@ -19,11 +19,11 @@ public class EndpointRequestService(
     ILogger<EndpointRequestService> logger)
     : IEndpointRequestService
 {
-    public static readonly string[] DisallowedRequestHeaderMappings =
+    private static readonly string[] DisallowedRequestHeaderMappings =
     [
         "Host", // Will be explicitly set
         "Accept-Encoding", // Don't compress endpoint traffic as compression will be done in Varnish
-        "version", // Don't pass on a version header because we have to set a version header to blocks them selves
+        "version", // Don't pass on a version header because we have to set a version header to blocks themselves
         "x-requires-depends",
         "x-ssl",
         "x-internal-host",
@@ -72,7 +72,7 @@ public class EndpointRequestService(
         "x-forwarded-proto"
     ];
 
-    public static readonly string[] UserAgentBots =
+    private static readonly string[] UserAgentBots =
     [
         "bingbot",
         "(bot@ecotrek.tech)",
@@ -222,6 +222,9 @@ public class EndpointRequestService(
                         absoluteUri,
                         endpointResponse.StatusCode,
                         curlString);
+
+                    routeInfo.DebugData.EndpointError = $"{endpointResponse.StatusCode}";
+                    routeInfo.DebugData.EndpointErrorCurl = curlString.Replace(" `\n ","");
                 }
 
                 return endpointResponse;
@@ -278,6 +281,10 @@ public class EndpointRequestService(
                     routeInfo.Uri,
                     httpMethod.Method,
                     curlString);
+
+                routeInfo.DebugData.EndpointError =
+                    $"Failed to invoke {routeInfoType} endpoint with http method {httpMethod.Method}";
+                routeInfo.DebugData.EndpointErrorCurl = curlString.Replace(" `\n ","");;
             }
 
             return endpointResponse;

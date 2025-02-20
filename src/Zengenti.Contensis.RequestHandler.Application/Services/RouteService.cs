@@ -93,8 +93,6 @@ public class RouteService(
 
                 routeInfo.Metrics.Add("nodeLookup", nodeLookupTimer.ElapsedMilliseconds);
                 routeInfo.Metrics.Add("getRouteInfoFetch", routeInfoRequestTimer.ElapsedMilliseconds);
-                routeInfo.DebugData.AppConfiguration = appConfiguration;
-                routeInfo.DebugData.Node = node;
 
                 if (routeInfo.BlockVersionInfo != null)
                 {
@@ -157,20 +155,12 @@ public class RouteService(
             }
         }
 
-        var nodePath = "";
-        if (node != null)
-        {
-            nodePath = node.Path;
-        }
+        var nodePath = node != null ? node.Path : "";
 
-        var emptyRouteInfo = new RouteInfo(null, headers, nodePath, false)
-        {
-            DebugData =
-            {
-                AppConfiguration = appConfiguration
-            }
-        };
-        return emptyRouteInfo;
+        // return empty route
+        var notFoundRoute = routeInfoFactory.CreateNotFoundRoute(headers, nodePath);
+        notFoundRoute.DebugData.Node = node;
+        return notFoundRoute;
     }
 
     private async Task<RouteInfo?> GetRouteInfoForNonNodePath(Uri originUri, Headers headers, string originPath)

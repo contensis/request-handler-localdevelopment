@@ -15,12 +15,15 @@ public interface IRouteInfoFactory
         Guid? layoutRendererId = null,
         Guid? proxyId = null);
 
-    RouteInfo? CreateForNonNodePath(
+    RouteInfo CreateForNonNodePath(
         Uri originUri,
         Headers headers,
         BlockVersionInfo? blockVersionInfo = null);
 
     RouteInfo CreateForIisFallback(
         Uri originUri,
-        Headers headers);
+        Headers headers,
+        RouteInfo? originalRouteInfo);
+
+    RouteInfo CreateNotFoundRoute(Headers headers, string nodePath = "");
 }

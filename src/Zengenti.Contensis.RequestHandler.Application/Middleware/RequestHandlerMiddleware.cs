@@ -138,19 +138,23 @@ public class RequestHandlerMiddleware(
         activity?.SetTag("nodeConfig", CallContext.Current[Constants.Headers.NodeVersionStatus]);
     }
 
-    private RouteInfo TryToCreateIisFallbackRouteInfo(HttpContext context, Headers headers)
+    private RouteInfo TryToCreateIisFallbackRouteInfo(
+        HttpContext context,
+        Headers headers,
+        RouteInfo? originalRouteInfo)
     {
         if (!string.IsNullOrWhiteSpace(requestContext.IisHostname) &&
             !string.IsNullOrWhiteSpace(requestContext.LoadBalancerVip))
         {
             return routeInfoFactory.CreateForIisFallback(
                 context.Request.GetOriginUri(),
-                headers);
+                headers,
+                originalRouteInfo);
         }
 
         // TODO: the Uri property is expected to be null - we need to change it to be nullable
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        return new RouteInfo(null, headers, "", false);
+        return routeInfoFactory.CreateNotFoundRoute(headers);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
     }
 
@@ -234,7 +238,7 @@ public class RequestHandlerMiddleware(
         if (routeInfo.FoundRoute == false)
         {
             // No route info returned (No node/block/renderer/proxy found) so try and fallback to the IIS site if specified
-            routeInfo = TryToCreateIisFallbackRouteInfo(context, headers);
+            routeInfo = TryToCreateIisFallbackRouteInfo(context, headers, routeInfo);
             if (routeInfo.FoundRoute == false)
             {
                 return null;
@@ -265,7 +269,7 @@ public class RequestHandlerMiddleware(
         if (!routeInfo.IsIisFallback && response.StatusCode == (int)HttpStatusCode.NotFound)
         {
             // Block/proxy request returned 404 so try and fallback to the IIS site if specified
-            var fallbackRouteInfo = TryToCreateIisFallbackRouteInfo(context, headers);
+            var fallbackRouteInfo = TryToCreateIisFallbackRouteInfo(context, headers, routeInfo);
             if (fallbackRouteInfo.FoundRoute)
             {
                 routeInfo = fallbackRouteInfo;
@@ -314,6 +318,14 @@ public class RequestHandlerMiddleware(
             {
                 routeInfo.DebugData.ToString()
             };
+
+            if (routeInfo.DebugData.InitialDebugData != null)
+            {
+                response.Headers["request-handler-initial-debug-data"] = new List<string>
+                {
+                    routeInfo.DebugData.InitialDebugData.ToString()
+                };
+            }
         }
     }
 

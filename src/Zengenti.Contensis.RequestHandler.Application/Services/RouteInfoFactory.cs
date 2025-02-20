@@ -7,19 +7,11 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.Application.Services;
 
-public class RouteInfoFactory : IRouteInfoFactory
+public class RouteInfoFactory(
+    IRequestContext requestContext,
+    AppConfiguration appConfiguration)
+    : IRouteInfoFactory
 {
-    private readonly AppConfiguration _appConfiguration;
-    private readonly IRequestContext _requestContext;
-
-    public RouteInfoFactory(
-        IRequestContext requestContext,
-        AppConfiguration appConfiguration)
-    {
-        _appConfiguration = appConfiguration;
-        _requestContext = requestContext;
-    }
-
     public RouteInfo Create(
         Uri baseUri,
         Uri? originUri,
@@ -73,10 +65,17 @@ public class RouteInfoFactory : IRouteInfoFactory
             endpointId,
             layoutRendererId,
             parseContent,
-            blockVersionInfo == null ? proxyId : null);
+            blockVersionInfo == null ? proxyId : null)
+        {
+            DebugData =
+            {
+                AppConfiguration = appConfiguration,
+                Node = node
+            }
+        };
     }
 
-    public RouteInfo? CreateForNonNodePath(
+    public RouteInfo CreateForNonNodePath(
         Uri originUri,
         Headers headers,
         BlockVersionInfo? blockVersionInfo = null)
@@ -85,19 +84,25 @@ public class RouteInfoFactory : IRouteInfoFactory
         var queryString = BuildQueryString(originUri);
 
         // Handle API requests
-        bool isContensisApiRequest =
+        var isContensisApiRequest =
             Constants.Paths.ApiPrefixes.Any(prefix => path.StartsWithCaseInsensitive(prefix)) &&
             !path.StartsWithCaseInsensitive("/api/publishing/request-handler") &&
             !path.StartsWithCaseInsensitive("/api/preview-toolbar/blocks") &&
-            _appConfiguration.AliasesWithApiRoutes?.ContainsCaseInsensitive(_requestContext.Alias) != true;
+            appConfiguration.AliasesWithApiRoutes?.ContainsCaseInsensitive(requestContext.Alias) != true;
         if (isContensisApiRequest)
         {
-            var apiHost = $"api-{_requestContext.Alias}.cloud.contensis.com";
+            var apiHost = $"api-{requestContext.Alias}.cloud.contensis.com";
             var apiUrl = $"https://{apiHost}";
             var apiUri = new Uri(apiUrl);
             var uri = BuildUri(apiUri, path, queryString);
             headers[Constants.Headers.Host] = apiHost;
-            return new RouteInfo(uri, headers, "", true);
+            return new RouteInfo(uri, headers, "", true)
+            {
+                DebugData =
+                {
+                    AppConfiguration = appConfiguration
+                }
+            };
         }
 
         // Handle static paths
@@ -114,34 +119,58 @@ public class RouteInfoFactory : IRouteInfoFactory
                 headers,
                 "",
                 true,
-                blockVersionInfo);
+                blockVersionInfo)
+            {
+                DebugData =
+                {
+                    AppConfiguration = appConfiguration
+                }
+            };
         }
 
+        return CreateNotFoundRoute(headers);
+    }
+
+    public RouteInfo CreateNotFoundRoute(Headers headers, string nodePath = "")
+    {
         return new RouteInfo(
             null,
             headers,
-            "",
-            false);
+            nodePath,
+            false)
+        {
+            DebugData =
+            {
+                AppConfiguration = appConfiguration
+            }
+        };
     }
 
-    public RouteInfo CreateForIisFallback(Uri originUri, Headers headers)
+    public RouteInfo CreateForIisFallback(Uri originUri, Headers headers, RouteInfo? originalRouteInfo)
     {
-        var baseUri = new Uri($"https://{_requestContext.LoadBalancerVip}");
+        var baseUri = new Uri($"https://{requestContext.LoadBalancerVip}");
         var uri = BuildUri(baseUri, originUri.AbsolutePath, new QueryString(originUri.Query));
-        headers[Constants.Headers.Host] = _requestContext.IisHostname;
+        headers[Constants.Headers.Host] = requestContext.IisHostname;
 
-        return new RouteInfo(uri, headers, "", true, isIisFallback: true);
+        return new RouteInfo(uri, headers, "", true, isIisFallback: true)
+        {
+            DebugData =
+            {
+                AppConfiguration = appConfiguration,
+                InitialDebugData = originalRouteInfo?.DebugData
+            }
+        };
     }
 
     private void ApplyBlockClusterRouteDetails(ref Uri baseUri, Headers headers)
     {
-        if (!string.IsNullOrWhiteSpace(_appConfiguration.BlockClusterIngressIp) &&
-            !string.IsNullOrWhiteSpace(_appConfiguration.BlockAddressSuffix))
+        if (!string.IsNullOrWhiteSpace(appConfiguration.BlockClusterIngressIp) &&
+            !string.IsNullOrWhiteSpace(appConfiguration.BlockAddressSuffix))
         {
             headers[Constants.Headers.Host] = baseUri.Host;
             baseUri = new UriBuilder(baseUri)
             {
-                Host = _appConfiguration.BlockClusterIngressIp
+                Host = appConfiguration.BlockClusterIngressIp
             }.Uri;
         }
     }

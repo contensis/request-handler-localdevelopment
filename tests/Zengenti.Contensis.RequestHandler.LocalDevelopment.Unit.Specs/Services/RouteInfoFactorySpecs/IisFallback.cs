@@ -30,7 +30,8 @@ public class IisFallback
                     {
                         Constants.Headers.Alias, "zenhub"
                     }
-                }));
+                }),
+            null);
     }
 
     public void ThenTheUriIsRewrittenCorrectly()
