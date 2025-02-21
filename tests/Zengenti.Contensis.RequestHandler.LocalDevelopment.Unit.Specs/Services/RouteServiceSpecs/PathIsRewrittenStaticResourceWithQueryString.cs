@@ -26,7 +26,7 @@ public class PathIsRewrittenStaticResourceWithQueryString
         requestContext.ProjectUuid.Returns(_projectUuid);
         var cacheKeyService = Substitute.For<ICacheKeyService>();
         var logger = Substitute.For<ILogger<RouteService>>();
-        var blockClusterConfig = new BlockClusterConfig();
+        var blockClusterConfig = new AppConfiguration();
         var routeInfoFactory = new RouteInfoFactory(requestContext, blockClusterConfig);
         var publishingService = SpecHelper.CreatePublishingService(routeInfoFactory);
         var block = publishingService.GetBlockById("blogs");

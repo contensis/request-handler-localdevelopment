@@ -10,7 +10,7 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 namespace Zengenti.Contensis.RequestHandler.Application.Services;
 
 public class RouteService(
-    BlockClusterConfig blockClusterConfig,
+    AppConfiguration appConfiguration,
     INodeService nodeService,
     IPublishingService publishingService,
     IRouteInfoFactory routeInfoFactory,
@@ -53,7 +53,11 @@ public class RouteService(
             if (node == null)
             {
                 routeInfo = await GetRouteInfoForNonNodePath(originUri, headers, originPath);
-                routeInfo?.Metrics.Add("nodeLookup", nodeLookupTimer.ElapsedMilliseconds);
+                routeInfo.Metrics.Add("nodeLookup", nodeLookupTimer.ElapsedMilliseconds);
+
+                routeInfo.DebugData.NodeCheckResult = shouldGetNode
+                    ? $"A node was not found for path {originPath}"
+                    : $"Path {originPath} is excluded from node checks";
 
                 return routeInfo;
             }
@@ -155,14 +159,12 @@ public class RouteService(
             }
         }
 
-        var nodePath = "";
-        if (node != null)
-        {
-            nodePath = node.Path;
-        }
+        var nodePath = node != null ? node.Path : "";
 
-        var emptyRouteInfo = new RouteInfo(null, headers, nodePath, false);
-        return emptyRouteInfo;
+        // return empty route
+        var notFoundRoute = routeInfoFactory.CreateNotFoundRoute(headers, nodePath);
+        notFoundRoute.DebugData.Node = node;
+        return notFoundRoute;
     }
 
     private async Task<RouteInfo?> GetRouteInfoForNonNodePath(Uri originUri, Headers headers, string originPath)
@@ -212,7 +214,7 @@ public class RouteService(
         }
 
         if (Constants.Paths.ApiPrefixes.Any(path.StartsWithCaseInsensitive) &&
-            blockClusterConfig.AliasesWithApiRoutes?.ContainsCaseInsensitive(requestContext.Alias) != true)
+            appConfiguration.AliasesWithApiRoutes?.ContainsCaseInsensitive(requestContext.Alias) != true)
         {
             return false;
         }

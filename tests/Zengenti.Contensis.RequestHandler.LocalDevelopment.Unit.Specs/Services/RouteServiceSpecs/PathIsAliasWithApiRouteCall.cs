@@ -25,7 +25,7 @@ public class PathIsAliasWithApiRouteCall
         var logger = Substitute.For<ILogger<RouteService>>();
         var requestContext = SpecHelper.CreateRequestContext();
         var cacheKeyService = Substitute.For<ICacheKeyService>();
-        var blockClusterConfig = new BlockClusterConfig(
+        var blockClusterConfig = new AppConfiguration(
             AliasesWithApiRoutes: new[]
             {
                 "test"

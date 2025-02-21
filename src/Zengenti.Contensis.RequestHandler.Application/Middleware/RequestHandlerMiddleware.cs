@@ -12,52 +12,31 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.Application.Middleware;
 
-public class RequestHandlerMiddleware
+public class RequestHandlerMiddleware(
+    RequestDelegate nextMiddleware,
+    IRequestContext requestContext,
+    IRouteService routeService,
+    IRouteInfoFactory routeInfoFactory,
+    ICacheKeyService cacheKeyService,
+    IEndpointRequestService endpointRequestService,
+    IGlobalApi globalApi,
+    CallContextService callContextService,
+    ILogger<RequestHandlerMiddleware> logger)
 {
-    private readonly RequestDelegate _nextMiddleware;
-    private readonly IRouteInfoFactory _routeInfoFactory;
-    private readonly ILogger<RequestHandlerMiddleware> _logger;
-    private readonly ICacheKeyService _cacheKeyService;
-    private readonly IGlobalApi _globalApi;
-    private readonly CallContextService _callContextService;
     private static readonly ActivitySource ActivitySource = new("Zengenti.Contensis.RequestHandler.Middleware");
 
     private static readonly string[] ExcludedPaths =
-    {
+    [
         "/api/preview-toolbar/blocks",
         "/pingz",
         "/healthz",
         "/infoz",
         "/livez"
-    };
+    ];
 
-    private readonly IRequestContext _requestContext;
+    public IEndpointRequestService RequestService { get; } = endpointRequestService;
 
-    public IEndpointRequestService RequestService { get; }
-
-    internal IRouteService RouteService { get; }
-
-    public RequestHandlerMiddleware(
-        RequestDelegate nextMiddleware,
-        IRequestContext requestContext,
-        IRouteService routeService,
-        IRouteInfoFactory routeInfoFactory,
-        ICacheKeyService cacheKeyService,
-        IEndpointRequestService endpointRequestService,
-        IGlobalApi globalApi,
-        CallContextService callContextService,
-        ILogger<RequestHandlerMiddleware> logger)
-    {
-        _nextMiddleware = nextMiddleware;
-        _requestContext = requestContext;
-        RouteService = routeService;
-        _routeInfoFactory = routeInfoFactory;
-        _cacheKeyService = cacheKeyService;
-        RequestService = endpointRequestService;
-        _globalApi = globalApi;
-        _callContextService = callContextService;
-        _logger = logger;
-    }
+    internal IRouteService RouteService { get; } = routeService;
 
     public async Task Invoke(HttpContext context)
     {
@@ -73,7 +52,7 @@ public class RequestHandlerMiddleware
                 return;
             }
 
-            await _nextMiddleware(context);
+            await nextMiddleware(context);
         }
         catch (Exception e)
         {
@@ -88,7 +67,7 @@ public class RequestHandlerMiddleware
                 }
             }
 
-            using (_logger.BeginScope(
+            using (logger.BeginScope(
                 new
                 {
                     alias = CallContext.Current[Constants.Headers.Alias] ?? "",
@@ -102,7 +81,7 @@ public class RequestHandlerMiddleware
             {
                 if (e.Data.Contains(Constants.Exceptions.DataKeyForOriginalMessage))
                 {
-                    _logger.LogError(
+                    logger.LogError(
                         e,
                         "Unhandled error caught in middleware with exception message {Message} and request url {Url}. Initial message: {InitialMessage}",
                         e.Message,
@@ -111,7 +90,7 @@ public class RequestHandlerMiddleware
                 }
                 else
                 {
-                    _logger.LogError(
+                    logger.LogError(
                         e,
                         "Unhandled error caught in middleware with exception message {Message} and request url {Url}",
                         e.Message,
@@ -134,7 +113,7 @@ public class RequestHandlerMiddleware
         foreach (var query in request.Query)
         {
             var key = query.Key.ToLowerInvariant();
-            if (query.Value.Count > 0 && _callContextService.IsVersionConfigKey(key))
+            if (query.Value.Count > 0 && callContextService.IsVersionConfigKey(key))
             {
                 var value = query.Value.First();
                 if (value != null)
@@ -149,7 +128,7 @@ public class RequestHandlerMiddleware
 
     private void SetContextValues(HttpRequest request, Activity? activity)
     {
-        _callContextService.SetCallContextData(request);
+        callContextService.SetCallContextData(request);
         activity?.SetTag("alias", CallContext.Current[Constants.Headers.Alias]);
         activity?.SetTag("projectUuid", CallContext.Current[Constants.Headers.ProjectUuid]);
         activity?.SetTag("projectApiId", CallContext.Current[Constants.Headers.ProjectApiId]);
@@ -159,19 +138,23 @@ public class RequestHandlerMiddleware
         activity?.SetTag("nodeConfig", CallContext.Current[Constants.Headers.NodeVersionStatus]);
     }
 
-    private RouteInfo TryToCreateIisFallbackRouteInfo(HttpContext context, Headers headers)
+    private RouteInfo TryToCreateIisFallbackRouteInfo(
+        HttpContext context,
+        Headers headers,
+        RouteInfo? originalRouteInfo)
     {
-        if (!string.IsNullOrWhiteSpace(_requestContext.IisHostname) &&
-            !string.IsNullOrWhiteSpace(_requestContext.LoadBalancerVip))
+        if (!string.IsNullOrWhiteSpace(requestContext.IisHostname) &&
+            !string.IsNullOrWhiteSpace(requestContext.LoadBalancerVip))
         {
-            return _routeInfoFactory.CreateForIisFallback(
+            return routeInfoFactory.CreateForIisFallback(
                 context.Request.GetOriginUri(),
-                headers);
+                headers,
+                originalRouteInfo);
         }
 
         // TODO: the Uri property is expected to be null - we need to change it to be nullable
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        return new RouteInfo(null, headers, "", false);
+        return routeInfoFactory.CreateNotFoundRoute(headers);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
     }
 
@@ -255,7 +238,7 @@ public class RequestHandlerMiddleware
         if (routeInfo.FoundRoute == false)
         {
             // No route info returned (No node/block/renderer/proxy found) so try and fallback to the IIS site if specified
-            routeInfo = TryToCreateIisFallbackRouteInfo(context, headers);
+            routeInfo = TryToCreateIisFallbackRouteInfo(context, headers, routeInfo);
             if (routeInfo.FoundRoute == false)
             {
                 return null;
@@ -286,7 +269,7 @@ public class RequestHandlerMiddleware
         if (!routeInfo.IsIisFallback && response.StatusCode == (int)HttpStatusCode.NotFound)
         {
             // Block/proxy request returned 404 so try and fallback to the IIS site if specified
-            var fallbackRouteInfo = TryToCreateIisFallbackRouteInfo(context, headers);
+            var fallbackRouteInfo = TryToCreateIisFallbackRouteInfo(context, headers, routeInfo);
             if (fallbackRouteInfo.FoundRoute)
             {
                 routeInfo = fallbackRouteInfo;
@@ -309,15 +292,41 @@ public class RequestHandlerMiddleware
         fallbackTimer.Stop();
         var performanceLog = GetPerformanceInfo(routeInfoTimer, responseTimer, fallbackTimer, mainRouteInfoMetrics);
 
+        EnsureMetricsAndDebugDataHeaders(context, response, routeInfo, performanceLog);
+
+        UpdateLocationResponseHeader(context, response, routeInfo);
+
+        return response;
+    }
+
+    private void EnsureMetricsAndDebugDataHeaders(
+        HttpContext context,
+        EndpointResponse response,
+        RouteInfo routeInfo,
+        string performanceLog)
+    {
         response.Headers["request-handler-metrics"] =
             new List<string>
             {
                 performanceLog
             };
 
-        UpdateLocationResponseHeader(context, response, routeInfo);
+        if (context.Request.Headers[Constants.Headers.Debug] == "true" ||
+            context.Request.Headers[Constants.Headers.AltDebug] == "true")
+        {
+            response.Headers["request-handler-debug-data"] = new List<string>
+            {
+                routeInfo.DebugData.ToString()
+            };
 
-        return response;
+            if (routeInfo.DebugData.InitialDebugData != null)
+            {
+                response.Headers["request-handler-initial-debug-data"] = new List<string>
+                {
+                    routeInfo.DebugData.InitialDebugData.ToString()
+                };
+            }
+        }
     }
 
     private EndpointResponse? GetRedirectResponseIfRequired(HttpContext context, Headers headers)
@@ -329,9 +338,9 @@ public class RequestHandlerMiddleware
             return null;
         }
 
-        string blockConfigCookie = string.Empty;
-        string rendererConfigCookie = string.Empty;
-        string proxyConfigCookie = string.Empty;
+        var blockConfigCookie = string.Empty;
+        var rendererConfigCookie = string.Empty;
+        var proxyConfigCookie = string.Empty;
         foreach (var (key, value) in queryStringBlockConfigData)
         {
             if (key.StartsWith("block-"))
@@ -377,13 +386,13 @@ public class RequestHandlerMiddleware
         var keysToRemove = new List<string>();
         foreach (string queryKey in newQueryString.Keys)
         {
-            if (_callContextService.IsVersionConfigKey(queryKey))
+            if (callContextService.IsVersionConfigKey(queryKey))
             {
                 keysToRemove.Add(queryKey);
             }
         }
 
-        foreach (string keyToRemove in keysToRemove)
+        foreach (var keyToRemove in keysToRemove)
         {
             newQueryString.Remove(keyToRemove);
         }
@@ -525,7 +534,7 @@ public class RequestHandlerMiddleware
                 Constants.Headers.EntryVersionStatus,
                 out var entryVersionStatus))
         {
-            var isContensisSingleSignOn = await _globalApi.IsContensisSingleSignOn();
+            var isContensisSingleSignOn = await globalApi.IsContensisSingleSignOn();
             HtmlResponseResolver.SetPreviewToolbar(
                 ref responseHtml,
                 alias[0]!,
@@ -540,19 +549,22 @@ public class RequestHandlerMiddleware
             response.HttpMethod,
             response.Headers,
             response.StatusCode,
-            response.PageletPerformanceData);
-        // This ensures varnish will not replace our 503 with its own.
-        response.Headers["expose-raw-errors"] =
-            new List<string>
+            response.PageletPerformanceData)
+        {
+            Headers =
             {
-                "True"
-            };
+                // This ensures varnish will not replace our 503 with its own.
+                ["expose-raw-errors"] = new List<string>
+                {
+                    "True"
+                },
+                ["content-type"] = new List<string>
+                {
+                    "text/html; charset=utf-8"
+                }
+            }
+        };
 
-        response.Headers["content-type"] =
-            new List<string>
-            {
-                "text/html; charset=utf-8"
-            };
         return response;
     }
 
@@ -679,7 +691,7 @@ public class RequestHandlerMiddleware
             return;
         }
 
-        if (!response.Headers.ContainsKey("Location"))
+        if (!response.Headers.TryGetValue("Location", out var location))
         {
             // Unfortunately IIS returns an empty bodied 301 sometimes rather than a 404 when
             // hitting the root or a directory of a site, where there is no default page or
@@ -694,7 +706,6 @@ public class RequestHandlerMiddleware
             return;
         }
 
-        var location = response.Headers["Location"];
         foreach (var locationHeader in location)
         {
             if (string.IsNullOrWhiteSpace(locationHeader))
@@ -740,7 +751,7 @@ public class RequestHandlerMiddleware
         }
 
         // Set surrogate key response
-        EnsureSurrogateKey(context, Constants.Headers.SurrogateKey, _cacheKeyService.GetSurrogateKey());
+        EnsureSurrogateKey(context, Constants.Headers.SurrogateKey, cacheKeyService.GetSurrogateKey());
         EnsureRequiresHeaders(context);
 
         context.Response.Headers.Remove(Constants.Headers.TransferEncoding);
@@ -755,7 +766,7 @@ public class RequestHandlerMiddleware
                 EnsureSurrogateKey(
                     context,
                     Constants.Headers.DebugSurrogateKey,
-                    _cacheKeyService.GetDebugSurrogateKey());
+                    cacheKeyService.GetDebugSurrogateKey());
             }
 
             foreach (var requestHeader in context.Request.Headers)
@@ -769,7 +780,7 @@ public class RequestHandlerMiddleware
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error encountered while reading headers");
+                    logger.LogError(e, "Error encountered while reading headers");
                 }
             }
         }

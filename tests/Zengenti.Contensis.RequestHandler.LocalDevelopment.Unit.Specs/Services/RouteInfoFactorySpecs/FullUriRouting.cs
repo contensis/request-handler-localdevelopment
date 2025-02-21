@@ -13,7 +13,7 @@ public class FullUriRouting
     private readonly IRouteInfoFactory _sut =
         new RouteInfoFactory(
             SpecHelper.CreateRequestContext(),
-            new BlockClusterConfig());
+            new AppConfiguration());
 
     private RouteInfo _result;
     private string _baseUriString;

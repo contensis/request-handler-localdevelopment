@@ -24,7 +24,7 @@ public class NodeDoesNotExistAndRouteIsNotProxied
         var requestContext = Substitute.For<IRequestContext>();
         var cacheKeyService = Substitute.For<ICacheKeyService>();
         var logger = Substitute.For<ILogger<RouteService>>();
-        var blockClusterConfig = new BlockClusterConfig();
+        var blockClusterConfig = new AppConfiguration();
         var routeInfoFactory = new RouteInfoFactory(requestContext, blockClusterConfig);
         var rendererService = SpecHelper.CreatePublishingService(routeInfoFactory);
 

@@ -10,7 +10,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Services
 public class ApiPath
 {
     private readonly IRouteInfoFactory _sut =
-        new RouteInfoFactory(SpecHelper.CreateRequestContext(), new BlockClusterConfig());
+        new RouteInfoFactory(SpecHelper.CreateRequestContext(), new AppConfiguration());
 
     private RouteInfo _result;
 

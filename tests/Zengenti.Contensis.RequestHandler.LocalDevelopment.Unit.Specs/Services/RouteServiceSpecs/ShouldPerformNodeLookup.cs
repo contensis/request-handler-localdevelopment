@@ -25,7 +25,7 @@ public class ShouldPerformNodeLookup
         var routeInfoFactory = Substitute.For<IRouteInfoFactory>();
 
         _sut = new RouteService(
-            new BlockClusterConfig(),
+            new AppConfiguration(),
             _nodeService,
             publishingService,
             routeInfoFactory,

@@ -69,7 +69,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
             var requestContext = CreateRequestContext(traceEnabled);
             return new HtmlResponseResolver(
                 requestContext,
-                CreatePublishingService(new RouteInfoFactory(requestContext, new BlockClusterConfig())),
+                CreatePublishingService(new RouteInfoFactory(requestContext, new AppConfiguration())),
                 Substitute.For<IGlobalApi>(),
                 Substitute.For<ILogger<HtmlResponseResolver>>())
             {

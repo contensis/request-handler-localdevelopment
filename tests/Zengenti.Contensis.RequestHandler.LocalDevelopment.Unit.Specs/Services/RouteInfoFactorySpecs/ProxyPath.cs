@@ -11,7 +11,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Services
 public class ProxyPath
 {
     private readonly IRouteInfoFactory _sut =
-        new RouteInfoFactory(SpecHelper.CreateRequestContext(), new BlockClusterConfig());
+        new RouteInfoFactory(SpecHelper.CreateRequestContext(), new AppConfiguration());
 
     private RouteInfo _result;
     private readonly Uri _baseUri = new("https://www.legacysite.com");

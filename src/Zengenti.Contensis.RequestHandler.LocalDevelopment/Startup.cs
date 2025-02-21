@@ -37,7 +37,7 @@ public class Startup
             .AddSingleton<ICacheKeyService, NullCacheKeyService>()
             //     .AddSingleton<IDiagnosticsCheckData>(_ => diagnosticsCheckData)
             .AddSingleton(
-                new BlockClusterConfig(
+                new AppConfiguration(
                     ProgramOptions.Current.BlockClusterIngressIp,
                     ProgramOptions.Current.BlockAddressSuffix))
             .AddSingleton<IRouteInfoFactory, RouteInfoFactory>();
