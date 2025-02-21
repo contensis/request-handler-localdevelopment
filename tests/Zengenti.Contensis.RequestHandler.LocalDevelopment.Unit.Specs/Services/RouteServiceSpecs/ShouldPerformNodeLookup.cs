@@ -2,6 +2,7 @@
 using NSubstitute;
 using TestStack.BDDfy;
 using Zengenti.Contensis.RequestHandler.Application.Services;
+using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
@@ -23,6 +24,8 @@ public class ShouldPerformNodeLookup
         requestContext.Alias.Returns("test");
         var logger = Substitute.For<ILogger<RouteService>>();
         var routeInfoFactory = Substitute.For<IRouteInfoFactory>();
+        routeInfoFactory.CreateForNonNodePath(Arg.Any<Uri>(), Arg.Any<Headers>(), Arg.Any<BlockVersionInfo?>())
+            .Returns(new RouteInfo(new Uri("http://www.mysite.com"), new Headers(), "nodePath", true));
 
         _sut = new RouteService(
             new AppConfiguration(),
