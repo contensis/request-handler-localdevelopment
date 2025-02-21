@@ -224,7 +224,7 @@ public class EndpointRequestService(
                         curlString);
 
                     routeInfo.DebugData.EndpointError = $"{endpointResponse.StatusCode}";
-                    routeInfo.DebugData.EndpointErrorCurl = curlString.Replace(" `\n ","");
+                    routeInfo.DebugData.EndpointErrorCurl = curlString.Replace(" `\n ", "");
                 }
 
                 return endpointResponse;
@@ -284,7 +284,8 @@ public class EndpointRequestService(
 
                 routeInfo.DebugData.EndpointError =
                     $"Failed to invoke {routeInfoType} endpoint with http method {httpMethod.Method}";
-                routeInfo.DebugData.EndpointErrorCurl = curlString.Replace(" `\n ","");;
+                routeInfo.DebugData.EndpointErrorCurl = curlString.Replace(" `\n ", "");
+                ;
             }
 
             return endpointResponse;

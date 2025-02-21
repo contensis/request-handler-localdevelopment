@@ -10,6 +10,8 @@ public class DebugData(RouteInfo routeInfo)
     public AppConfiguration? AppConfiguration { get; set; }
     public Node? Node { get; set; }
 
+    public string NodeCheckResult { get; set; } = "";
+
     public string EndpointError { get; set; } = "";
     public string EndpointErrorCurl { get; set; } = "";
 
@@ -29,14 +31,20 @@ public class DebugData(RouteInfo routeInfo)
     public override string ToString()
     {
         _debugData.Add("Node", Node);
-        _debugData.Add("FoundRoute", routeInfo.FoundRoute);
-        _debugData.Add("IsIisFallback", routeInfo.IsIisFallback);
-        _debugData.Add("BlockVersionInfo", routeInfo.BlockVersionInfo);
+        if (!string.IsNullOrWhiteSpace(NodeCheckResult))
+        {
+            _debugData.Add("NodeCheckResult", NodeCheckResult);
+        }
+
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         _debugData.Add("Uri", routeInfo.Uri?.ToString() ?? "");
+        _debugData.Add("FoundRoute", routeInfo.FoundRoute);
+        _debugData.Add("BlockVersionInfo", routeInfo.BlockVersionInfo);
+        _debugData.Add("IsIisFallback", routeInfo.IsIisFallback);
+
         if (!string.IsNullOrWhiteSpace(EndpointError))
         {
-            _debugData.Add("EndpointErrorCode", EndpointError);
+            _debugData.Add("EndpointError", EndpointError);
         }
 
         if (!string.IsNullOrWhiteSpace(EndpointErrorCurl))

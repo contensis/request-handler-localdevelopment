@@ -53,7 +53,11 @@ public class RouteService(
             if (node == null)
             {
                 routeInfo = await GetRouteInfoForNonNodePath(originUri, headers, originPath);
-                routeInfo?.Metrics.Add("nodeLookup", nodeLookupTimer.ElapsedMilliseconds);
+                routeInfo.Metrics.Add("nodeLookup", nodeLookupTimer.ElapsedMilliseconds);
+
+                routeInfo.DebugData.NodeCheckResult = shouldGetNode
+                    ? $"A node was not found for path {originPath}"
+                    : $"Path {originPath} is excluded from node checks";
 
                 return routeInfo;
             }
