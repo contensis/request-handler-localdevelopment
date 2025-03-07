@@ -13,7 +13,7 @@ public class FullUriRoutingWithBlockClusterConfig
     private readonly IRouteInfoFactory _sut =
         new RouteInfoFactory(
             SpecHelper.CreateRequestContext(),
-            new AppConfiguration("10.0.0.1", "block_suffix"));
+            new AppConfiguration("block-cluster", "10.0.0.1", "block_suffix"));
 
     private RouteInfo _result;
     private string _baseUriString;

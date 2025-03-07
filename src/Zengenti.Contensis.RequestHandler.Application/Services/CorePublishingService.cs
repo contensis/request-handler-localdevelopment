@@ -9,43 +9,27 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.Application.Services;
 
-public class CorePublishingService : ICorePublishingService
+public class CorePublishingService(
+    IRequestContext context,
+    IPublishingServiceCache cache,
+    ICacheKeyService cacheKeyService,
+    IServerTypeResolver serverTypeResolver,
+    IPublishingApi publishingApi,
+    IRouteInfoFactory routeInfoFactory,
+    ILogger<CorePublishingService> logger)
+    : ICorePublishingService
 {
-    private readonly IRequestContext _requestContext;
-    private readonly IPublishingServiceCache _cache;
-    private readonly IPublishingApi _publishingApi;
-    private readonly IRouteInfoFactory _routeInfoFactory;
-    private readonly ICacheKeyService _cacheKeyService;
-    private readonly ILogger<CorePublishingService> _logger;
-    private readonly IServerTypeResolver _serverTypeResolver;
-
-    public CorePublishingService(
-        IRequestContext requestContext,
-        IPublishingServiceCache cache,
-        ICacheKeyService cacheKeyService,
-        IServerTypeResolver serverTypeResolver,
-        IPublishingApi publishingApi,
-        IRouteInfoFactory routeInfoFactory,
-        ILogger<CorePublishingService> logger)
-    {
-        _serverTypeResolver = serverTypeResolver;
-        _requestContext = requestContext;
-        _cache = cache;
-        _cacheKeyService = cacheKeyService;
-        _publishingApi = publishingApi;
-        _routeInfoFactory = routeInfoFactory;
-        _logger = logger;
-    }
+    private readonly ILogger<CorePublishingService> _logger = logger;
 
     public async Task<BlockVersionInfo?> GetBlockVersionInfo(Guid blockVersionId)
     {
-        var blockVersionInfo = _cache.GetBlockVersionInfo(blockVersionId);
+        var blockVersionInfo = cache.GetBlockVersionInfo(blockVersionId);
         if (blockVersionInfo != null)
         {
             return blockVersionInfo;
         }
 
-        blockVersionInfo = await _publishingApi.GetBlockVersionInfo(blockVersionId);
+        blockVersionInfo = await publishingApi.GetBlockVersionInfo(blockVersionId);
         if (blockVersionInfo == null)
         {
             return null;
@@ -53,7 +37,7 @@ public class CorePublishingService : ICorePublishingService
 
         blockVersionInfo.EnsureDefaultStaticPaths();
 
-        _cache.SetBlockVersionInfo(blockVersionInfo);
+        cache.SetBlockVersionInfo(blockVersionInfo);
 
         return blockVersionInfo;
     }
@@ -76,10 +60,10 @@ public class CorePublishingService : ICorePublishingService
             ProxyId = proxyId,
             Language = language ?? "",
             IsPartialMatchPath = isPartialMatchPath,
-            BlockVersionConfig = _requestContext.BlockConfig,
-            ProxyVersionConfig = _requestContext.ProxyConfig,
-            RendererVersionConfig = _requestContext.RendererConfig,
-            ServerType = _serverTypeResolver.GetServerType()
+            BlockVersionConfig = context.BlockConfig,
+            ProxyVersionConfig = context.ProxyConfig,
+            RendererVersionConfig = context.RendererConfig,
+            ServerType = serverTypeResolver.GetServerType()
         };
 
         var messageSuffix =
@@ -92,7 +76,7 @@ public class CorePublishingService : ICorePublishingService
         ExceptionDispatchInfo? exceptionDispatchInfo = null;
         try
         {
-            var clientResult = await _publishingApi.GetEndpointForRequest(requestContext);
+            var clientResult = await publishingApi.GetEndpointForRequest(requestContext);
 
             if (clientResult == null)
             {
@@ -162,7 +146,7 @@ public class CorePublishingService : ICorePublishingService
                 endpointRequestInfo.StaticPaths,
                 endpointRequestInfo.BlockVersionNo);
 
-            routeInfo = _routeInfoFactory.Create(
+            routeInfo = routeInfoFactory.Create(
                 uri,
                 originUri,
                 headers,
@@ -175,11 +159,11 @@ public class CorePublishingService : ICorePublishingService
             blockVersionInfo.EnsureDefaultStaticPaths();
 
             // Cache the blockVersionInfo to allow quick lookups for paths re-written within static files (e.g. js, css).
-            _cache.SetBlockVersionInfo(blockVersionInfo);
+            cache.SetBlockVersionInfo(blockVersionInfo);
         }
         else
         {
-            routeInfo = _routeInfoFactory.Create(
+            routeInfo = routeInfoFactory.Create(
                 new Uri(endpointRequestInfo.Uri),
                 originUri,
                 headers,
@@ -187,7 +171,7 @@ public class CorePublishingService : ICorePublishingService
                 proxyId: proxyId);
         }
 
-        _cacheKeyService.AddRange(endpointRequestInfo.CacheKeys);
+        cacheKeyService.AddRange(endpointRequestInfo.CacheKeys);
 
         return routeInfo;
     }

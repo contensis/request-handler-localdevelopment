@@ -38,6 +38,7 @@ public class Startup
             //     .AddSingleton<IDiagnosticsCheckData>(_ => diagnosticsCheckData)
             .AddSingleton(
                 new AppConfiguration(
+                    ProgramOptions.Current.PodClusterId,
                     ProgramOptions.Current.BlockClusterIngressIp,
                     ProgramOptions.Current.BlockAddressSuffix))
             .AddSingleton<IRouteInfoFactory, RouteInfoFactory>();

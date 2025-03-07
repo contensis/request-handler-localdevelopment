@@ -2,11 +2,9 @@ using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Renderers;
 
 namespace Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
-public class RequestContext
+public class RequestContext(Guid projectUuid)
 {
-    public RequestContext(Guid projectUuid) => ProjectUuid = projectUuid;
-
-    public Guid ProjectUuid { get; set; }
+    public Guid ProjectUuid { get; set; } = projectUuid;
 
     public Guid? ContentTypeId { get; set; }
 
