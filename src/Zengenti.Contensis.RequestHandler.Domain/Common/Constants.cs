@@ -37,11 +37,7 @@ public static class Constants
         public const string RequiresEntryId = "x-requires-entry-id";
         public const string RequiresEntryLanguage = "x-requires-entry-language";
         public const string RequiresBlockId = "x-requires-block-id";
-
         public const string RequiresVersionNo = "x-requires-version-no";
-
-        // TODO: remove when we deprecate old nodes delivery api
-        public const string UseNewNodeService = "x-use-new-node-service";
 
         public const string IsLocalRequestHandler = "x-is-local-request-handler";
         public const string ServerType = "x-site-type";

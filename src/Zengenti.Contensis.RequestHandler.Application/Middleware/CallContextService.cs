@@ -54,12 +54,9 @@ public class CallContextService
         SetCallContextValueFromRequest(Constants.Headers.IisHostname, "");
         SetCallContextValueFromRequest(Constants.Headers.LoadBalancerVip, "");
 
-        // TODO: remove when we deprecate old nodes delivery api
-        SetCallContextValueFromRequest(Constants.Headers.UseNewNodeService, "");
-
         void SetCallContextValueFromRequest(string key, string? alternative)
         {
-            bool hasKey = false;
+            var hasKey = false;
             var isActiveConfigKey = Constants.Headers.ConfigHeaders.Contains(key);
             var isDefaultConfigKey = Constants.Headers.ConfigHeadersWithDefaults.Contains(key);
             if (isActiveConfigKey || isDefaultConfigKey)

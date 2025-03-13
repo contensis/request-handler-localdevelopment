@@ -12,6 +12,7 @@ public class RouteInfoFactory(
     AppConfiguration appConfiguration)
     : IRouteInfoFactory
 {
+    // TODO: refactor to remove the node parameter
     public RouteInfo Create(
         Uri baseUri,
         Uri? originUri,
@@ -198,6 +199,7 @@ public class RouteInfoFactory(
         }.Uri;
     }
 
+    // TODO: refactor to remove the node parameter
     private static QueryString AppendNodeQuerystringValues(QueryString originQueryString, Node node)
     {
         var newOriginQueryString = HttpUtility.ParseQueryString(originQueryString.ToString());

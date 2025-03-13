@@ -70,7 +70,7 @@ public class CorePublishingService(
             $"when calling IPublishingApi.GetEndpointForRequest for requestContext {requestContext.ToJson()}";
         if (originUri != null)
         {
-            messageSuffix = messageSuffix += $" and path {originUri.AbsolutePath}.";
+            messageSuffix += $" and path {originUri.AbsolutePath}.";
         }
 
         ExceptionDispatchInfo? exceptionDispatchInfo = null;
