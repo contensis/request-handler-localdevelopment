@@ -44,8 +44,8 @@ public static class Constants
         public const string LoadBalancerVip = "x-loadbalancer-vip";
         public const string IisHostname = "x-iis-hostname";
         public const string OrigHost = "x-orig-host";
-
         public const string IsIisFallback = "x-is-iis-fallback";
+        public const string PublishingApiVersion = "x-publishing-api-version";
 
         public static readonly string[] ConfigHeaders =
         {
