@@ -100,7 +100,7 @@ public class EndpointRequestService(
                             headers.ContainsKey(Constants.Headers.HealthCheck) &&
                             headers[Constants.Headers.HealthCheck].ContainsCaseInsensitive("true");
 
-        if (routeInfo.IsIisFallback && isHealthCheck)
+        if (routeInfo.RouteType == RouteType.IisFallback && isHealthCheck)
         {
             headers!.Add(
                 HeaderNames.ContentType,
@@ -260,7 +260,7 @@ public class EndpointRequestService(
                 }))
             {
                 var routeInfoType = "";
-                if (routeInfo.IsIisFallback)
+                if (routeInfo.RouteType == RouteType.IisFallback)
                 {
                     routeInfoType = "IIS falback ";
                 }
@@ -465,7 +465,7 @@ public class EndpointRequestService(
             }
         }
 
-        if (routeInfo.IsIisFallback && !string.IsNullOrWhiteSpace(requestContext.IisHostname))
+        if (routeInfo.RouteType == RouteType.IisFallback && !string.IsNullOrWhiteSpace(requestContext.IisHostname))
         {
             // Override host header with IIS fallback host
             requestMessage.Headers.Host = requestContext.IisHostname;

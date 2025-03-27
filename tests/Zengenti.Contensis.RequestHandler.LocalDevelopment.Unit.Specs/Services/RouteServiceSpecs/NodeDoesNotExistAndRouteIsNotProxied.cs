@@ -50,7 +50,7 @@ public class NodeDoesNotExistAndRouteIsNotProxied
 
     public void AndThenNoRouteIsReturned()
     {
-        Assert.That(_result.FoundRoute, Is.EqualTo(false));
+        Assert.That(_result.RouteType, Is.EqualTo(RouteType.NotFound));
     }
 
     [Test]

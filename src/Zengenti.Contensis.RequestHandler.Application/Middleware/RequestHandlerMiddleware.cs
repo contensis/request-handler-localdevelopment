@@ -138,7 +138,7 @@ public class RequestHandlerMiddleware(
         activity?.SetTag("nodeConfig", CallContext.Current[Constants.Headers.NodeVersionStatus]);
     }
 
-    private RouteInfo TryToCreateIisFallbackRouteInfo(
+    private RouteInfo CreateIisFallbackRouteInfo(
         HttpContext context,
         Headers headers,
         RouteInfo? originalRouteInfo)
@@ -235,11 +235,11 @@ public class RequestHandlerMiddleware(
         var initialRouteInfo = routeInfo;
 
         var mainRouteInfoMetrics = "";
-        if (routeInfo.FoundRoute == false)
+        if (routeInfo.RouteType == RouteType.NotFound)
         {
             // No route info returned (No node/block/renderer/proxy found) so try and fallback to the IIS site if specified
-            routeInfo = TryToCreateIisFallbackRouteInfo(context, headers, routeInfo);
-            if (routeInfo.FoundRoute == false)
+            routeInfo = CreateIisFallbackRouteInfo(context, headers, routeInfo);
+            if (routeInfo.RouteType == RouteType.NotFound)
             {
                 return null;
             }
@@ -253,24 +253,51 @@ public class RequestHandlerMiddleware(
 
         var responseTimer = new Stopwatch();
         responseTimer.Start();
+        EndpointResponse response = null!;
 
-        var response = await RequestService.Invoke(
-            context.Request.GetHttpMethod(),
-            context.Request.Body,
-            headers,
-            routeInfo,
-            0,
-            context.RequestAborted);
+        var hasValidResponse = false;
+        // if it is a proxy route make an IIS fallback request first
+        if (routeInfo.RouteType == RouteType.Proxy)
+        {
+            var proxyFallbackRouteInfo = CreateIisFallbackRouteInfo(context, headers, routeInfo);
+            if (proxyFallbackRouteInfo.RouteType != RouteType.NotFound)
+            {
+                response = await RequestService.Invoke(
+                    context.Request.GetHttpMethod(),
+                    context.Request.Body,
+                    headers,
+                    proxyFallbackRouteInfo,
+                    0,
+                    context.RequestAborted);
+                if (!response.IsErrorStatusCode())
+                {
+                    hasValidResponse = true;
+                }
+            }
+        }
+
+        if (!hasValidResponse)
+        {
+            response = await RequestService.Invoke(
+                context.Request.GetHttpMethod(),
+                context.Request.Body,
+                headers,
+                routeInfo,
+                0,
+                context.RequestAborted);
+        }
 
         responseTimer.Stop();
 
         var fallbackTimer = new Stopwatch();
         fallbackTimer.Start();
-        if (!routeInfo.IsIisFallback && response.StatusCode == (int)HttpStatusCode.NotFound)
+        if (response.StatusCode == (int)HttpStatusCode.NotFound &&
+            routeInfo.RouteType != RouteType.IisFallback &&
+            routeInfo.RouteType != RouteType.Proxy)
         {
             // Block/proxy request returned 404 so try and fallback to the IIS site if specified
-            var fallbackRouteInfo = TryToCreateIisFallbackRouteInfo(context, headers, routeInfo);
-            if (fallbackRouteInfo.FoundRoute)
+            var fallbackRouteInfo = CreateIisFallbackRouteInfo(context, headers, routeInfo);
+            if (fallbackRouteInfo.RouteType != RouteType.NotFound)
             {
                 routeInfo = fallbackRouteInfo;
                 response = await RequestService.Invoke(
@@ -459,7 +486,7 @@ public class RequestHandlerMiddleware(
             return response;
         }
 
-        if (routeInfo.IsIisFallback)
+        if (routeInfo.RouteType == RouteType.IisFallback)
         {
             if (initialRouteInfo == null)
             {
@@ -572,10 +599,10 @@ public class RequestHandlerMiddleware(
     {
         response.Headers[Constants.Headers.IsIisFallback] =
         [
-            routeInfo.IsIisFallback.ToString().ToLower()
+            (routeInfo.RouteType == RouteType.IisFallback).ToString().ToLower()
         ];
 
-        if (!routeInfo.IsIisFallback)
+        if (routeInfo.RouteType != RouteType.IisFallback)
         {
             if (routeInfo is { ProxyId: not null, BlockVersionInfo: null })
             {
@@ -593,7 +620,7 @@ public class RequestHandlerMiddleware(
             }
         }
 
-        if (routeInfo.IsIisFallback)
+        if (routeInfo.RouteType == RouteType.IisFallback)
         {
             // Unfortunately IIS returns an empty bodied 200 rather than a 404 when
             // hitting the root or a directory of a site, where there is no default page or

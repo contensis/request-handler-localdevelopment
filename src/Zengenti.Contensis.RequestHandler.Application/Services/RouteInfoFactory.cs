@@ -26,7 +26,7 @@ public class RouteInfoFactory(
         var path = baseUri.AbsolutePath;
         var enableFullUriRouting = blockVersionInfo?.EnableFullUriRouting ?? false;
         var parseContent = false;
-        var queryString = BuildQueryString(originUri, node);
+        var queryString = BuildQueryString(originUri, node?.Id, node?.EntryId);
 
         if (blockVersionInfo is not null)
         {
@@ -49,24 +49,24 @@ public class RouteInfoFactory(
             parseContent = node.ProxyRef.ParseContent;
         }
 
+        var routeType = blockVersionInfo != null
+            ? RouteType.Block
+            : proxyId != null
+                ? RouteType.Proxy
+                : RouteType.Direct;
+
         var uri = BuildUri(baseUri, path, queryString);
 
-        var nodePath = "";
-        if (node != null)
-        {
-            nodePath = node.Path;
-        }
-
         return new RouteInfo(
+            routeType,
             uri,
             headers,
-            nodePath,
-            true,
+            node?.Path ?? "",
             blockVersionInfo,
             endpointId,
             layoutRendererId,
             parseContent,
-            blockVersionInfo == null ? proxyId : null)
+            routeType == RouteType.Proxy ? proxyId : null)
         {
             DebugData =
             {
@@ -82,7 +82,7 @@ public class RouteInfoFactory(
         BlockVersionInfo? blockVersionInfo = null)
     {
         var path = originUri.AbsolutePath;
-        var queryString = BuildQueryString(originUri);
+        var queryString = BuildQueryString(originUri, null, null);
 
         // Handle API requests
         var isContensisApiRequest =
@@ -97,7 +97,7 @@ public class RouteInfoFactory(
             var apiUri = new Uri(apiUrl);
             var uri = BuildUri(apiUri, path, queryString);
             headers[Constants.Headers.Host] = apiHost;
-            return new RouteInfo(uri, headers, "", true)
+            return new RouteInfo(RouteType.Direct, uri, headers, "")
             {
                 DebugData =
                 {
@@ -116,10 +116,10 @@ public class RouteInfoFactory(
             var uri = BuildUri(baseUri, staticPath.OriginalPath, queryString);
 
             return new RouteInfo(
+                RouteType.Block,
                 uri,
                 headers,
                 "",
-                true,
                 blockVersionInfo)
             {
                 DebugData =
@@ -135,10 +135,10 @@ public class RouteInfoFactory(
     public RouteInfo CreateNotFoundRoute(Headers headers, string nodePath = "")
     {
         return new RouteInfo(
+            RouteType.NotFound,
             null,
             headers,
-            nodePath,
-            false)
+            nodePath)
         {
             DebugData =
             {
@@ -153,7 +153,7 @@ public class RouteInfoFactory(
         var uri = BuildUri(baseUri, originUri.AbsolutePath, new QueryString(originUri.Query));
         headers[Constants.Headers.Host] = requestContext.IisHostname;
 
-        return new RouteInfo(uri, headers, "", true, isIisFallback: true)
+        return new RouteInfo(RouteType.IisFallback, uri, headers, "")
         {
             DebugData =
             {
@@ -176,15 +176,15 @@ public class RouteInfoFactory(
         }
     }
 
-    private static QueryString BuildQueryString(Uri? originUri, Node? node = null)
+    private static QueryString BuildQueryString(Uri? originUri, Guid? nodeId, Guid? entryId)
     {
         var queryString = originUri is not null
             ? new QueryString(originUri.Query)
             : new QueryString();
 
-        if (node is not null)
+        if (nodeId.HasValue)
         {
-            queryString = AppendNodeQuerystringValues(queryString, node);
+            queryString = AppendNodeQuerystringValues(queryString, nodeId.Value, entryId);
         }
 
         return queryString;
@@ -199,19 +199,18 @@ public class RouteInfoFactory(
         }.Uri;
     }
 
-    // TODO: refactor to remove the node parameter
-    private static QueryString AppendNodeQuerystringValues(QueryString originQueryString, Node node)
+    private static QueryString AppendNodeQuerystringValues(QueryString originQueryString, Guid nodeId, Guid? entryId)
     {
         var newOriginQueryString = HttpUtility.ParseQueryString(originQueryString.ToString());
 
         newOriginQueryString.Remove("nodeId"); //prevent injection
         newOriginQueryString.Remove("entryId"); //prevent injection
 
-        newOriginQueryString.Add("nodeId", node.Id.ToString());
+        newOriginQueryString.Add("nodeId", nodeId.ToString());
 
-        if (node.EntryId.HasValue)
+        if (entryId.HasValue)
         {
-            newOriginQueryString.Add("entryId", node.EntryId.ToString());
+            newOriginQueryString.Add("entryId", entryId.ToString());
         }
 
         return QueryString.FromUriComponent("?" + newOriginQueryString);

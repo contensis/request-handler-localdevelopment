@@ -117,10 +117,10 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
                 1);
             blockVersionInfo.EnsureDefaultStaticPaths();
             return new RouteInfo(
+                RouteType.Block,
                 new Uri("http://website.com"),
                 new Headers(),
                 "",
-                true,
                 blockVersionInfo);
         }
     }
