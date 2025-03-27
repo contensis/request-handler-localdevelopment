@@ -271,6 +271,7 @@ public class RequestHandlerMiddleware(
                     context.RequestAborted);
                 if (!response.IsErrorStatusCode())
                 {
+                    routeInfo = proxyFallbackRouteInfo;
                     hasValidResponse = true;
                 }
             }
