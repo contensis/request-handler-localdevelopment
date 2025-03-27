@@ -38,7 +38,12 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                         null,
                         1);
 
-                var routeInfo = new RouteInfo(new Uri("http://website.com"), new Headers(), "", true, blockVersionInfo);
+                var routeInfo = new RouteInfo(
+                    RouteType.Block,
+                    new Uri("http://website.com"),
+                    new Headers(),
+                    "",
+                    blockVersionInfo);
 
                 _result = await _sut.Resolve(html, routeInfo, 0, CancellationToken.None);
             }
@@ -97,10 +102,10 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                 var html = SpecHelper.GetFile("Resolving/Files/Record-single-pagelet.html");
 
                 var routeInfo = new RouteInfo(
+                    RouteType.Block,
                     new Uri("http://website.com"),
                     new Headers(),
                     "",
-                    true,
                     new BlockVersionInfo(
                         Guid.NewGuid(),
                         "",

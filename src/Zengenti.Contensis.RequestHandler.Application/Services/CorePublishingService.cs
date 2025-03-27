@@ -153,8 +153,7 @@ public class CorePublishingService(
                 node,
                 blockVersionInfo,
                 endpointRequestInfo.EndpointId,
-                endpointRequestInfo.LayoutRendererId,
-                proxyId);
+                endpointRequestInfo.LayoutRendererId);
 
             blockVersionInfo.EnsureDefaultStaticPaths();
 

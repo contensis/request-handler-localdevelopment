@@ -13,28 +13,27 @@ namespace Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 public class RouteInfo
 {
     public RouteInfo(
+        RouteType routeType,
         Uri uri,
         Headers headers,
         string nodePath,
-        bool foundRoute,
         BlockVersionInfo? blockVersionInfo = null,
         string? endpointId = null,
         Guid? layoutRendererId = null,
         bool parseContent = false,
-        Guid? proxyId = null,
-        bool isIisFallback = false)
+        Guid? proxyId = null)
     {
+        RouteType = routeType;
         Uri = uri;
         Headers = headers;
         BlockVersionInfo = blockVersionInfo;
         EndpointId = endpointId;
         LayoutRendererId = layoutRendererId;
         ParseContent = parseContent;
-        IsIisFallback = isIisFallback;
+
         Metrics = new Metrics();
         DebugData = new DebugData(this);
         NodePath = nodePath;
-        FoundRoute = foundRoute;
         ProxyId = proxyId;
         var hashedProjectUuid = GetUrlFriendlyHash(BlockVersionInfo?.ProjectUuid);
         RoutePrefix =
@@ -93,9 +92,9 @@ public class RouteInfo
     public string RoutePrefix { get; init; }
 
     /// <summary>
-    ///     Whether the route is falling back and reverse proxying to an IIS site
+    ///     The route type
     /// </summary>
-    public bool IsIisFallback { get; }
+    public RouteType RouteType { get; }
 
     /// <summary>
     ///     Metrics collected along the pipeline.
@@ -113,9 +112,4 @@ public class RouteInfo
     ///     Maintained to enable friendly error messages.
     /// </summary>
     public string? NodePath { get; }
-
-    /// <summary>
-    ///     Maintained to enable friendly error messages.
-    /// </summary>
-    public bool FoundRoute { get; }
 }

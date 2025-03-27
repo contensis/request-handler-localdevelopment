@@ -36,11 +36,10 @@ public class DebugData(RouteInfo routeInfo)
             _debugData.Add("NodeCheckResult", NodeCheckResult);
         }
 
+        _debugData.Add("RouteType", routeInfo.RouteType.ToString());
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         _debugData.Add("Uri", routeInfo.Uri?.ToString() ?? "");
-        _debugData.Add("FoundRoute", routeInfo.FoundRoute);
         _debugData.Add("BlockVersionInfo", routeInfo.BlockVersionInfo);
-        _debugData.Add("IsIisFallback", routeInfo.IsIisFallback);
 
         if (!string.IsNullOrWhiteSpace(EndpointError))
         {
