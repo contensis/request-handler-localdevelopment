@@ -24,7 +24,7 @@ public class ShouldNotPerformNodeLookupIfExcludedPath
         var logger = Substitute.For<ILogger<RouteService>>();
         var routeInfoFactory = Substitute.For<IRouteInfoFactory>();
         routeInfoFactory.CreateForNonNodePath(Arg.Any<Uri>(), Arg.Any<Headers>(), Arg.Any<BlockVersionInfo?>())
-            .Returns(new RouteInfo(RouteType.Direct, new Uri("http://www.mysite.com"), new Headers(), "nodePath"));
+            .Returns(new RouteInfo(RouteType.Url, new Uri("http://www.mysite.com"), new Headers(), "nodePath"));
 
         _sut = new RouteService(
             new AppConfiguration(),

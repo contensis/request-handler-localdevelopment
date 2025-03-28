@@ -36,11 +36,7 @@ public class FullUriRouting
                         Constants.Headers.Alias, "zenhub"
                     }
                 }),
-            new Node
-            {
-                Id = _nodeId,
-                EntryId = _entryId
-            },
+            new NodeInfo(_nodeId, _entryId, ""),
             new BlockVersionInfo(
                 Guid.NewGuid(),
                 "",

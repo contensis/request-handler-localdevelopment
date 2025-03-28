@@ -397,7 +397,7 @@ public class EndpointRequestService(
     private bool ShouldParseContent(RouteInfo routeInfo, HttpResponseMessage responseMessage)
     {
         return responseMessage.IsResponseResolvable() &&
-               (routeInfo.ParseContent || routeInfo.BlockVersionInfo?.BlockVersionId != null);
+               (routeInfo.ProxyInfo?.ParseContent == true || routeInfo.BlockVersionInfo?.BlockVersionId != null);
     }
 
     private async Task<HttpRequestMessage> CreateRequestMessage(

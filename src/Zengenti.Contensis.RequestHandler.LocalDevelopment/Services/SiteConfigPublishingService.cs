@@ -14,64 +14,50 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 ///     This is the initial version of request handler standalone (configuration file based) service.
 /// </summary>
 [Obsolete("Use LocalDevPublishingService instead")]
-public class SiteConfigPublishingService : ILocalDevPublishingService
+public class SiteConfigPublishingService(
+    ISiteConfigLoader siteConfigLoader,
+    IRouteInfoFactory routeInfoFactory,
+    ICacheKeyService cacheKeyService,
+    bool enableFullUriRouting = false)
+    : ILocalDevPublishingService
 {
-    private readonly ISiteConfigLoader _siteConfigLoader;
-    private readonly IRouteInfoFactory _routeInfoFactory;
-    private readonly ICacheKeyService _cacheKeyService;
-    private readonly bool _enableFullUriRouting;
-
-    public SiteConfigPublishingService(
-        ISiteConfigLoader siteConfigLoader,
-        IRouteInfoFactory routeInfoFactory,
-        ICacheKeyService cacheKeyService,
-        bool enableFullUriRouting = false)
-    {
-        _enableFullUriRouting = enableFullUriRouting;
-        _siteConfigLoader = siteConfigLoader;
-        _routeInfoFactory = routeInfoFactory;
-        _cacheKeyService = cacheKeyService;
-    }
-
     public Task<RouteInfo?> GetRouteInfoForRequest(
         Guid projectUuid,
-        bool isPartialMatchPath,
         Uri originUri,
         Headers headers,
-        Node? node,
+        NodeInfo? nodeInfo,
         Guid? contentTypeId = null,
         string? rendererId = null,
-        Guid? proxyId = null,
+        ProxyInfo? proxyInfo = null,
         string? language = null)
     {
         Renderer? renderer = null;
         Proxy? proxy = null;
-        var hasProxyIdSet = proxyId.HasValue && proxyId != Guid.Empty;
 
         // Mimic execution performed in Renderer service
-        if (isPartialMatchPath && hasProxyIdSet)
+        if (proxyInfo?.IsPartialMatchPath == true)
         {
-            proxy = _siteConfigLoader.SiteConfig.GetProxyByUuid(proxyId!.Value);
+            proxy = siteConfigLoader.SiteConfig.GetProxyByUuid(proxyInfo.ProxyId);
         }
         else if (!string.IsNullOrWhiteSpace(rendererId) &&
                  (!Guid.TryParse(rendererId, out var rendererUuid) || rendererUuid != Guid.Empty))
         {
             if (rendererUuid != Guid.Empty)
             {
-                renderer = _siteConfigLoader.SiteConfig.GetRendererByUuid(rendererUuid);
+                renderer = siteConfigLoader.SiteConfig.GetRendererByUuid(rendererUuid);
             }
             else
             {
-                renderer = _siteConfigLoader.SiteConfig.GetRendererById(rendererId);
+                renderer = siteConfigLoader.SiteConfig.GetRendererById(rendererId);
             }
         }
         else if (contentTypeId.HasValue)
         {
-            renderer = _siteConfigLoader.SiteConfig.GetRendererByContentTypeUuid(contentTypeId);
+            renderer = siteConfigLoader.SiteConfig.GetRendererByContentTypeUuid(contentTypeId);
         }
-        else if (hasProxyIdSet)
+        else if (proxyInfo != null)
         {
-            proxy = _siteConfigLoader.SiteConfig.GetProxyByUuid(proxyId!.Value);
+            proxy = siteConfigLoader.SiteConfig.GetProxyByUuid(proxyInfo.ProxyId);
         }
 
         if (renderer != null)
@@ -79,7 +65,7 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
             var endpointRef = renderer.ExecuteRules();
             if (endpointRef != null)
             {
-                var block = _siteConfigLoader.SiteConfig.GetBlockByUuid(endpointRef.BlockUuid);
+                var block = siteConfigLoader.SiteConfig.GetBlockByUuid(endpointRef.BlockUuid);
 
                 var endpoint = block?.Endpoints.SingleOrDefault(
                     e =>
@@ -90,15 +76,15 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
                     block?.Uuid ?? Guid.Empty,
                     block?.BaseUri!,
                     block?.Branch ?? "",
-                    _enableFullUriRouting,
+                    enableFullUriRouting,
                     block?.StaticPaths,
                     block?.VersionNo);
 
-                var routeInfo = _routeInfoFactory.Create(
+                var routeInfo = routeInfoFactory.Create(
                     endpoint!.Uri,
                     originUri,
                     headers,
-                    node,
+                    nodeInfo,
                     blockVersionInfo,
                     endpointRef.EndpointId,
                     renderer.LayoutRendererId);
@@ -116,7 +102,7 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
                     Query = originUri.Query
                 }
                 .Uri;
-            var routeInfo = _routeInfoFactory.Create(baseUri, originUri, new Headers(), node);
+            var routeInfo = routeInfoFactory.Create(baseUri, originUri, new Headers(), nodeInfo);
             return Task.FromResult(routeInfo)!;
         }
 
@@ -129,12 +115,12 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
         string rendererId,
         Uri originUri)
     {
-        var renderer = _siteConfigLoader.SiteConfig.GetRendererById(rendererId);
+        var renderer = siteConfigLoader.SiteConfig.GetRendererById(rendererId);
         var endpointRef = renderer?.ExecuteRules();
 
         if (endpointRef != null)
         {
-            var block = _siteConfigLoader.SiteConfig.GetBlockByUuid(endpointRef.BlockUuid);
+            var block = siteConfigLoader.SiteConfig.GetBlockByUuid(endpointRef.BlockUuid);
             var endpoint = block.Endpoints.SingleOrDefault(e => e.Id.EqualsCaseInsensitive(endpointRef.EndpointId));
             var blockVersionInfo = new BlockVersionInfo(
                 projectUuid,
@@ -142,11 +128,11 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
                 block.Uuid,
                 block.BaseUri!,
                 block.Branch,
-                _enableFullUriRouting,
+                enableFullUriRouting,
                 block.StaticPaths,
                 block.VersionNo);
 
-            var routeInfo = _routeInfoFactory.Create(
+            var routeInfo = routeInfoFactory.Create(
                 endpoint!.Uri,
                 originUri,
                 new Headers(),
@@ -165,7 +151,7 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
 
     public Task<BlockVersionInfo?> GetBlockVersionInfo(Guid blockVersionId)
     {
-        var block = _siteConfigLoader.SiteConfig.Blocks.FirstOrDefault(b => b.Uuid == blockVersionId);
+        var block = siteConfigLoader.SiteConfig.Blocks.FirstOrDefault(b => b.Uuid == blockVersionId);
         if (block != null)
         {
             var projectUuid = Guid.Empty; // NOT required for local development ATM.
@@ -175,7 +161,7 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
                 block.Uuid,
                 block.BaseUri!,
                 block.Branch,
-                _enableFullUriRouting,
+                enableFullUriRouting,
                 block.StaticPaths,
                 block.VersionNo);
             return Task.FromResult(versionInfo)!;
@@ -190,32 +176,32 @@ public class SiteConfigPublishingService : ILocalDevPublishingService
         Uri originUri,
         Headers headers,
         Guid projectUuid,
-        Node? node = null,
-        Guid? proxyId = null)
+        NodeInfo? nodeInfo = null,
+        ProxyInfo? proxyInfo = null)
     {
         throw new NotImplementedException();
     }
 
     public Block GetBlockById(string id)
     {
-        return _siteConfigLoader.SiteConfig.GetBlockById(id);
+        return siteConfigLoader.SiteConfig.GetBlockById(id);
     }
 
     public Guid? GetContentTypeUuid(string id)
     {
-        return _siteConfigLoader.SiteConfig.ContentTypeRendererMap.FirstOrDefault(m => m.ContentTypeId == id)
+        return siteConfigLoader.SiteConfig.ContentTypeRendererMap.FirstOrDefault(m => m.ContentTypeId == id)
             ?.ContentTypeUuid;
     }
 
     private void SetCacheKeys(Guid blockId, Guid blockVersionId, Guid rendererId, Guid? layoutRendererId)
     {
-        _cacheKeyService.Add(blockId.ToString());
-        _cacheKeyService.Add(blockVersionId.ToString());
-        _cacheKeyService.Add(rendererId.ToString());
+        cacheKeyService.Add(blockId.ToString());
+        cacheKeyService.Add(blockVersionId.ToString());
+        cacheKeyService.Add(rendererId.ToString());
 
         if (layoutRendererId.HasValue)
         {
-            _cacheKeyService.Add(layoutRendererId.Value.ToString());
+            cacheKeyService.Add(layoutRendererId.Value.ToString());
         }
     }
 }

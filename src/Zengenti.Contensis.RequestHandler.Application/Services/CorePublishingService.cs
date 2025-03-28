@@ -44,22 +44,21 @@ public class CorePublishingService(
 
     public async Task<RouteInfo?> GetRouteInfoForRequest(
         Guid projectUuid,
-        bool isPartialMatchPath,
         Uri originUri,
         Headers headers,
-        Node? node = null,
+        NodeInfo? nodeInfo = null,
         Guid? contentTypeId = null,
         string? rendererId = null,
-        Guid? proxyId = null,
+        ProxyInfo? proxyInfo = null,
         string? language = null)
     {
         var requestContext = new RequestContext(projectUuid)
         {
             RendererId = rendererId ?? "",
             ContentTypeId = contentTypeId,
-            ProxyId = proxyId,
+            ProxyId = proxyInfo?.ProxyId,
             Language = language ?? "",
-            IsPartialMatchPath = isPartialMatchPath,
+            IsPartialMatchPath = proxyInfo?.IsPartialMatchPath ?? false,
             BlockVersionConfig = context.BlockConfig,
             ProxyVersionConfig = context.ProxyConfig,
             RendererVersionConfig = context.RendererConfig,
@@ -88,8 +87,8 @@ public class CorePublishingService(
                 originUri,
                 headers,
                 projectUuid,
-                node,
-                proxyId);
+                nodeInfo,
+                proxyInfo);
 
             return routeInfo;
         }
@@ -119,7 +118,7 @@ public class CorePublishingService(
 
     public Task<RouteInfo?> GetRouteInfoForRequest(Guid projectUuid, Headers headers, string rendererId, Uri originUri)
     {
-        return GetRouteInfoForRequest(projectUuid, false, originUri, headers, rendererId: rendererId);
+        return GetRouteInfoForRequest(projectUuid, originUri, headers, rendererId: rendererId);
     }
 
     public RouteInfo BuildRouteInfoForRequest(
@@ -127,8 +126,8 @@ public class CorePublishingService(
         Uri originUri,
         Headers headers,
         Guid projectUuid,
-        Node? node = null,
-        Guid? proxyId = null)
+        NodeInfo? nodeInfo = null,
+        ProxyInfo? proxyInfo = null)
     {
         var uri = new Uri(endpointRequestInfo.Uri);
         RouteInfo routeInfo;
@@ -150,7 +149,7 @@ public class CorePublishingService(
                 uri,
                 originUri,
                 headers,
-                node,
+                nodeInfo,
                 blockVersionInfo,
                 endpointRequestInfo.EndpointId,
                 endpointRequestInfo.LayoutRendererId);
@@ -166,8 +165,8 @@ public class CorePublishingService(
                 new Uri(endpointRequestInfo.Uri),
                 originUri,
                 headers,
-                node,
-                proxyId: proxyId);
+                nodeInfo,
+                proxyInfo: proxyInfo);
         }
 
         cacheKeyService.AddRange(endpointRequestInfo.CacheKeys);

@@ -12,21 +12,19 @@ public class RouteInfoFactory(
     AppConfiguration appConfiguration)
     : IRouteInfoFactory
 {
-    // TODO: refactor to remove the node parameter
     public RouteInfo Create(
         Uri baseUri,
         Uri? originUri,
         Headers headers,
-        Node? node = null,
+        NodeInfo? nodeInfo = null,
         BlockVersionInfo? blockVersionInfo = null,
         string? endpointId = null,
         Guid? layoutRendererId = null,
-        Guid? proxyId = null)
+        ProxyInfo? proxyInfo = null)
     {
         var path = baseUri.AbsolutePath;
         var enableFullUriRouting = blockVersionInfo?.EnableFullUriRouting ?? false;
-        var parseContent = false;
-        var queryString = BuildQueryString(originUri, node?.Id, node?.EntryId);
+        var queryString = BuildQueryString(originUri, nodeInfo?.Id, nodeInfo?.EntryId);
 
         if (blockVersionInfo is not null)
         {
@@ -43,17 +41,16 @@ public class RouteInfoFactory(
             path = originUri.AbsolutePath;
         }
 
-        if (node?.ProxyRef != null)
+        if (proxyInfo != null)
         {
             path = originUri != null ? originUri.AbsolutePath : path;
-            parseContent = node.ProxyRef.ParseContent;
         }
 
         var routeType = blockVersionInfo != null
             ? RouteType.Block
-            : proxyId != null
+            : proxyInfo != null
                 ? RouteType.Proxy
-                : RouteType.Direct;
+                : RouteType.Url;
 
         var uri = BuildUri(baseUri, path, queryString);
 
@@ -61,17 +58,16 @@ public class RouteInfoFactory(
             routeType,
             uri,
             headers,
-            node?.Path ?? "",
+            nodeInfo?.Path ?? "",
             blockVersionInfo,
             endpointId,
             layoutRendererId,
-            parseContent,
-            routeType == RouteType.Proxy ? proxyId : null)
+            proxyInfo)
         {
             DebugData =
             {
                 AppConfiguration = appConfiguration,
-                Node = node
+                NodeInfo = nodeInfo
             }
         };
     }
@@ -97,7 +93,7 @@ public class RouteInfoFactory(
             var apiUri = new Uri(apiUrl);
             var uri = BuildUri(apiUri, path, queryString);
             headers[Constants.Headers.Host] = apiHost;
-            return new RouteInfo(RouteType.Direct, uri, headers, "")
+            return new RouteInfo(RouteType.Url, uri, headers, "")
             {
                 DebugData =
                 {

@@ -9,11 +9,11 @@ public interface IRouteInfoFactory
         Uri baseUri,
         Uri originUri,
         Headers headers,
-        Node? node = null,
+        NodeInfo? nodeInfo = null,
         BlockVersionInfo? blockVersionInfo = null,
         string? endpointId = null,
         Guid? layoutRendererId = null,
-        Guid? proxyId = null);
+        ProxyInfo? proxyInfo = null);
 
     RouteInfo CreateForNonNodePath(
         Uri originUri,

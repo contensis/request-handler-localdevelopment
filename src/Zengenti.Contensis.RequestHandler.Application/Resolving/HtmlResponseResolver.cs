@@ -226,7 +226,6 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
         {
             var layoutRouteInfo = await _publishingService.GetRouteInfoForRequest(
                 _requestContext.ProjectUuid,
-                false,
                 null,
                 new Headers(),
                 null,

@@ -11,13 +11,12 @@ public interface ICorePublishingService
 {
     Task<RouteInfo?> GetRouteInfoForRequest(
         Guid projectUuid,
-        bool isPartialMatchPath,
         Uri originUri,
         Headers headers,
-        Node? node = null,
+        NodeInfo? nodeInfo = null,
         Guid? contentTypeId = null,
         string? rendererId = null,
-        Guid? proxyId = null,
+        ProxyInfo? proxyInfo = null,
         string? language = null);
 
     Task<RouteInfo?> GetRouteInfoForRequest(Guid projectUuid, Headers headers, string rendererId, Uri originUri);
@@ -29,6 +28,6 @@ public interface ICorePublishingService
         Uri originUri,
         Headers headers,
         Guid projectUuid,
-        Node? node = null,
-        Guid? proxyId = null);
+        NodeInfo? nodeInfo = null,
+        ProxyInfo? proxyInfo = null);
 }

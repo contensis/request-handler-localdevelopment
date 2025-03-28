@@ -2,7 +2,6 @@
 using TestStack.BDDfy;
 using Zengenti.Contensis.RequestHandler.Application.Services;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
-using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
@@ -33,15 +32,11 @@ public class ProxyPath
                         Constants.Headers.Alias, "zenhub"
                     }
                 }),
-            new Node
-            {
-                Id = Guid.NewGuid(),
-                ProxyRef = new ProxyRef
-                {
-                    Id = Guid.NewGuid(),
-                    ParseContent = false
-                }
-            });
+            nodeInfo: new NodeInfo(
+                Guid.NewGuid(),
+                null,
+                ""),
+            proxyInfo: new ProxyInfo(Guid.NewGuid(), false, false));
     }
 
     public void ThenTheUriIsRewrittenCorrectly()

@@ -256,22 +256,26 @@ public class RequestHandlerMiddleware(
         EndpointResponse response = null!;
 
         var hasValidResponse = false;
-        // if it is a proxy route make an IIS fallback request first
-        if (routeInfo.RouteType == RouteType.Proxy)
+        // if we have a proxy route for a partial matched path make an IIS fallback request first
+        var isPartialMatchProxy = routeInfo is { RouteType: RouteType.Proxy, ProxyInfo.IsPartialMatchPath: true };
+        if (isPartialMatchProxy)
         {
-            var proxyFallbackRouteInfo = CreateIisFallbackRouteInfo(context, headers, routeInfo);
-            if (proxyFallbackRouteInfo.RouteType != RouteType.NotFound)
+            // The headers need to be copied as they will be modified
+            var proxyIisFalbackHeaders = new Headers(headers);
+            var proxyIisFallbackRouteInfo = CreateIisFallbackRouteInfo(context, proxyIisFalbackHeaders, routeInfo);
+            if (proxyIisFallbackRouteInfo.RouteType != RouteType.NotFound)
             {
                 response = await RequestService.Invoke(
                     context.Request.GetHttpMethod(),
                     context.Request.Body,
-                    headers,
-                    proxyFallbackRouteInfo,
+                    proxyIisFalbackHeaders,
+                    proxyIisFallbackRouteInfo,
                     0,
                     context.RequestAborted);
                 if (!response.IsErrorStatusCode())
                 {
-                    routeInfo = proxyFallbackRouteInfo;
+                    headers = proxyIisFalbackHeaders;
+                    routeInfo = proxyIisFallbackRouteInfo;
                     hasValidResponse = true;
                 }
             }
@@ -294,7 +298,7 @@ public class RequestHandlerMiddleware(
         fallbackTimer.Start();
         if (response.StatusCode == (int)HttpStatusCode.NotFound &&
             routeInfo.RouteType != RouteType.IisFallback &&
-            routeInfo.RouteType != RouteType.Proxy)
+            !isPartialMatchProxy)
         {
             // Block/proxy request returned 404 so try and fallback to the IIS site if specified
             var fallbackRouteInfo = CreateIisFallbackRouteInfo(context, headers, routeInfo);
@@ -605,11 +609,11 @@ public class RequestHandlerMiddleware(
 
         if (routeInfo.RouteType != RouteType.IisFallback)
         {
-            if (routeInfo is { ProxyId: not null, BlockVersionInfo: null })
+            if (routeInfo is { ProxyInfo: not null, BlockVersionInfo: null })
             {
                 // TODO: when we introduce cache settings on proxies this is where it needs to be implemented
                 // we need to check if it is an error or not
-                if (routeInfo.ProxyId.Equals(Guid.Parse("8f2cc5be-b5dd-4e4b-b6fa-92b7fc6440e0")))
+                if (routeInfo.ProxyInfo.ProxyId.Equals(Guid.Parse("8f2cc5be-b5dd-4e4b-b6fa-92b7fc6440e0")))
                 {
                     response.Headers[Constants.Headers.SurrogateControl] =
                     [

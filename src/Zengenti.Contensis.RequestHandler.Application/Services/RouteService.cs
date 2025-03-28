@@ -39,6 +39,7 @@ public class RouteService(
         nodeLookupTimer.Start();
         Node? node = null;
         var shouldGetNode = ShouldGetNode(originPath);
+        NodeInfo? nodeInfo = null;
         if (shouldGetNode)
         {
             node = await nodeService.GetByPath(originPath);
@@ -67,25 +68,29 @@ public class RouteService(
             var routeInfoRequestTimer = new Stopwatch();
             routeInfoRequestTimer.Start();
 
-            var isPartialMatchPath = node.Path.EqualsCaseInsensitive(originPath) == false;
-            var nodeProxyId = node.ProxyRef?.Id;
-            if (isPartialMatchPath && node.ProxyRef?.PartialMatch == false)
+            nodeInfo = new NodeInfo(node.Id.Value, node.EntryId, node.Path);
+            ProxyInfo? proxyInfo = null;
+            if (node.ProxyRef != null)
             {
-                nodeProxyId = null;
+                var isPartialMatchPath = !node.Path.EqualsCaseInsensitive(originPath);
+
+                if (!isPartialMatchPath || node.ProxyRef.PartialMatch)
+                {
+                    proxyInfo = new ProxyInfo(node.ProxyRef.Id, node.ProxyRef.ParseContent, isPartialMatchPath);
+                }
             }
 
             // We have a node so need to understand what to invoke (block or proxy)
             routeInfo = await publishingService.GetRouteInfoForRequest(
                 requestContext.ProjectUuid,
-                isPartialMatchPath: isPartialMatchPath,
                 originUri,
                 headers,
-                node,
+                nodeInfo,
                 node.ContentTypeId,
                 node.RendererRef?.Uuid == Guid.Empty
                     ? node.RendererRef?.Id
                     : node.RendererRef?.Uuid.ToString(),
-                nodeProxyId,
+                proxyInfo,
                 node.Language);
 
             routeInfoRequestTimer.Stop();
@@ -159,11 +164,9 @@ public class RouteService(
             }
         }
 
-        var nodePath = node != null ? node.Path : "";
-
         // return empty route
-        var notFoundRoute = routeInfoFactory.CreateNotFoundRoute(headers, nodePath);
-        notFoundRoute.DebugData.Node = node;
+        var notFoundRoute = routeInfoFactory.CreateNotFoundRoute(headers, nodeInfo?.Path ?? "");
+        notFoundRoute.DebugData.NodeInfo = nodeInfo;
         return notFoundRoute;
     }
 

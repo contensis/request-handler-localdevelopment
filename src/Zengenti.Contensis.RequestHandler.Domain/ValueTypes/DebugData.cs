@@ -1,5 +1,3 @@
-using Zengenti.Contensis.RequestHandler.Domain.Entities;
-
 namespace Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 public class DebugData(RouteInfo routeInfo)
@@ -8,7 +6,7 @@ public class DebugData(RouteInfo routeInfo)
     private DebugData? _initialDebugData;
 
     public AppConfiguration? AppConfiguration { get; set; }
-    public Node? Node { get; set; }
+    public NodeInfo? NodeInfo { get; set; }
 
     public string NodeCheckResult { get; set; } = "";
 
@@ -30,7 +28,7 @@ public class DebugData(RouteInfo routeInfo)
 
     public override string ToString()
     {
-        _debugData.Add("Node", Node);
+        _debugData.Add("NodeInfo", NodeInfo);
         if (!string.IsNullOrWhiteSpace(NodeCheckResult))
         {
             _debugData.Add("NodeCheckResult", NodeCheckResult);
