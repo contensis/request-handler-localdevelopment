@@ -275,6 +275,7 @@ public class RequestHandlerMiddleware(
                 if (response.IsErrorStatusCode())
                 {
                     routeInfo.DebugData.InitialDebugData = proxyIisFallbackRouteInfo.DebugData;
+                    routeInfo.DebugData.AppConfiguration = proxyIisFallbackRouteInfo.DebugData.AppConfiguration;
                 }
                 else
                 {
