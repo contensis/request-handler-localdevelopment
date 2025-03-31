@@ -272,8 +272,15 @@ public class RequestHandlerMiddleware(
                     proxyIisFallbackRouteInfo,
                     0,
                     context.RequestAborted);
-                if (!response.IsErrorStatusCode())
+                if (response.IsErrorStatusCode())
                 {
+                    routeInfo.DebugData.InitialDebugData = proxyIisFallbackRouteInfo.DebugData;
+                }
+                else
+                {
+                    proxyIisFallbackRouteInfo.DebugData.InitialDebugData = null;
+                    proxyIisFallbackRouteInfo.DebugData.AdditionalDebugData = routeInfo.DebugData;
+
                     headers = proxyIisFalbackHeaders;
                     routeInfo = proxyIisFallbackRouteInfo;
                     hasValidResponse = true;
@@ -356,6 +363,14 @@ public class RequestHandlerMiddleware(
                 response.Headers["request-handler-initial-debug-data"] = new List<string>
                 {
                     routeInfo.DebugData.InitialDebugData.ToString()
+                };
+            }
+
+            if (routeInfo.DebugData.AdditionalDebugData != null)
+            {
+                response.Headers["request-handler-additional-debug-data"] = new List<string>
+                {
+                    routeInfo.DebugData.AdditionalDebugData.ToString()
                 };
             }
         }

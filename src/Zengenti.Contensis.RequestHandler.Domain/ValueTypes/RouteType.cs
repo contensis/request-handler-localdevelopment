@@ -5,7 +5,6 @@ public enum RouteType
     NotFound,
     Block,
     Proxy,
-
     IisFallback,
     Url
 }

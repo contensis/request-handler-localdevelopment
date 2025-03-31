@@ -4,7 +4,7 @@ public class DebugData(RouteInfo routeInfo)
 {
     private readonly Dictionary<string, object?> _debugData = new(StringComparer.OrdinalIgnoreCase);
     private DebugData? _initialDebugData;
-
+    private DebugData? _additionalDebugData;
     public AppConfiguration? AppConfiguration { get; set; }
     public NodeInfo? NodeInfo { get; set; }
 
@@ -22,6 +22,19 @@ public class DebugData(RouteInfo routeInfo)
             if (_initialDebugData != null)
             {
                 _initialDebugData.AppConfiguration = null;
+            }
+        }
+    }
+
+    public DebugData? AdditionalDebugData
+    {
+        get => _additionalDebugData;
+        set
+        {
+            _additionalDebugData = value;
+            if (_additionalDebugData != null)
+            {
+                _additionalDebugData.AppConfiguration = null;
             }
         }
     }
