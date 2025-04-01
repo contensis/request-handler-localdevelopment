@@ -272,10 +272,12 @@ public class RequestHandlerMiddleware(
                     proxyIisFallbackRouteInfo,
                     0,
                     context.RequestAborted);
+
+                SetStatusCode404IfEmptyIisResponse(response);
                 if (response.IsErrorStatusCode())
                 {
-                    routeInfo.DebugData.InitialDebugData = proxyIisFallbackRouteInfo.DebugData;
                     routeInfo.DebugData.AppConfiguration = proxyIisFallbackRouteInfo.DebugData.AppConfiguration;
+                    routeInfo.DebugData.InitialDebugData = proxyIisFallbackRouteInfo.DebugData;
                 }
                 else
                 {
@@ -643,18 +645,7 @@ public class RequestHandlerMiddleware(
 
         if (routeInfo.RouteType == RouteType.IisFallback)
         {
-            // Unfortunately IIS returns an empty bodied 200 rather than a 404 when
-            // hitting the root or a directory of a site, where there is no default page or
-            // no extension in the path requested.
-            var responseStream = response.ToStream();
-            if (response.StatusCode == (int)HttpStatusCode.OK &&
-                response.HttpMethod != HttpMethod.Options &&
-                responseStream is { CanSeek: true, Length: 0 }
-            )
-            {
-                response.StatusCode = 404;
-                return;
-            }
+            if (SetStatusCode404IfEmptyIisResponse(response)) return;
 
             // if not a 404 error and is an error code of 400 or greater than 404 then we need to set the surrogate control to 5 seconds
             if (response.StatusCode is 400 or > 404)
@@ -680,6 +671,24 @@ public class RequestHandlerMiddleware(
                 "max-age=0"
             ];
         }
+    }
+
+    private static bool SetStatusCode404IfEmptyIisResponse(EndpointResponse response)
+    {
+        // Unfortunately IIS returns an empty bodied 200 rather than a 404 when
+        // hitting the root or a directory of a site, where there is no default page or
+        // no extension in the path requested.
+        var responseStream = response.ToStream();
+        if (response.StatusCode == (int)HttpStatusCode.OK &&
+            response.HttpMethod != HttpMethod.Options &&
+            responseStream is { CanSeek: true, Length: 0 }
+        )
+        {
+            response.StatusCode = 404;
+            return true;
+        }
+
+        return false;
     }
 
     private static void AddCacheHeadersFor404Errors(EndpointResponse response, HttpContext context)

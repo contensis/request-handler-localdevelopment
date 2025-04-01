@@ -41,30 +41,31 @@ public class DebugData(RouteInfo routeInfo)
 
     public override string ToString()
     {
-        _debugData.Add("NodeInfo", NodeInfo);
+        _debugData["NodeInfo"] = NodeInfo;
+
         if (!string.IsNullOrWhiteSpace(NodeCheckResult))
         {
-            _debugData.Add("NodeCheckResult", NodeCheckResult);
+            _debugData["NodeCheckResult"] = NodeCheckResult;
         }
 
-        _debugData.Add("RouteType", routeInfo.RouteType.ToString());
+        _debugData["RouteType"] = routeInfo.RouteType.ToString();
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-        _debugData.Add("Uri", routeInfo.Uri?.ToString() ?? "");
-        _debugData.Add("BlockVersionInfo", routeInfo.BlockVersionInfo);
+        _debugData["Uri"] = routeInfo.Uri?.ToString() ?? "";
+        _debugData["BlockVersionInfo"] = routeInfo.BlockVersionInfo;
 
         if (!string.IsNullOrWhiteSpace(EndpointError))
         {
-            _debugData.Add("EndpointError", EndpointError);
+            _debugData["EndpointError"] = EndpointError;
         }
 
         if (!string.IsNullOrWhiteSpace(EndpointErrorCurl))
         {
-            _debugData.Add("EndpointErrorCurl", EndpointErrorCurl);
+            _debugData["EndpointErrorCurl"] = EndpointErrorCurl;
         }
 
         if (AppConfiguration != null)
         {
-            _debugData.Add("AppConfiguration", AppConfiguration);
+            _debugData["AppConfiguration"] = AppConfiguration;
         }
 
         return _debugData.ToJson();

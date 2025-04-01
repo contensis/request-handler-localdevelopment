@@ -7,4 +7,5 @@ public record AppConfiguration(
     string[]? AliasesWithApiRoutes = null,
     string? ServicePod = null,
     string? DataCenter = null,
-    string? NodesDeliveryHost = null);
+    string? NodesDeliveryHost = null,
+    string? PublishingApiHost = null);
