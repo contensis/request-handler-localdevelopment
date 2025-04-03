@@ -53,6 +53,7 @@ public class CallContextService
         SetCallContextValueFromRequest(Constants.Headers.NodeVersionStatus, "published");
         SetCallContextValueFromRequest(Constants.Headers.IisHostname, "");
         SetCallContextValueFromRequest(Constants.Headers.LoadBalancerVip, "");
+        SetCallContextValueFromRequest(Constants.Headers.PublishingApiVersion, "");
 
         void SetCallContextValueFromRequest(string key, string? alternative)
         {
