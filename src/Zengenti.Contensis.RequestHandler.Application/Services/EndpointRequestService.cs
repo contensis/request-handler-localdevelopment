@@ -16,38 +16,11 @@ public class EndpointRequestService(
     IResponseResolverService responseResolverService,
     IRequestContext requestContext,
     ICacheKeyService cacheKeyService,
+    RequestHeaderMappingService requestHeaderMappingService,
     ILogger<EndpointRequestService> logger)
     : IEndpointRequestService
 {
-    private static readonly string[] DisallowedRequestHeaderMappings =
-    [
-        "Host", // Will be explicitly set
-        "Accept-Encoding", // Don't compress endpoint traffic as compression will be done in Varnish
-        "version", // Don't pass on a version header because we have to set a version header to blocks themselves
-        "x-requires-depends",
-        "x-ssl",
-        "x-internal-host",
-        "use-app-servers",
-        "x-varnish-authentication",
-        "x-authcache-get-key",
-        "x-authcache-get-key-stage",
-        "x-varnish",
-        "contensis-classic-version",
-        "x-site-type",
-        "x-block-config",
-        "x-proxy-config",
-        "x-renderer-config",
-        "x-iis-hostname",
-        "x-loadbalancer-vip",
-        "x-project-uuid",
-        "x-project-api-id",
-        "branch",
-        "version",
-        "traceparent",
-        "x-forwarded-proto"
-    ];
-
-    public static readonly string[] DisallowedRequestHeaders =
+    public static readonly string[] SensitiveHeadersToBeRemovedFromCurl =
     [
         "x-requires-depends",
         "x-ssl",
@@ -448,14 +421,9 @@ public class EndpointRequestService(
             return;
         }
 
-        foreach (var (key, value) in headers)
-        {
-            if (!DisallowedRequestHeaderMappings.ContainsCaseInsensitive(key))
-            {
-                requestMessage.Headers.TryAddWithoutValidation(key, value);
-            }
-        }
+        requestHeaderMappingService.MapHeaders(requestMessage, headers);
 
+        // TODO Characterise and move to RequestHeaderMappingService.MapHeaders()
         if (headers.ContainsKey("Content-Type") &&
             MediaTypeHeaderValue.TryParse(string.Join(",", headers["Content-Type"]), out var parsedValue))
         {
@@ -476,6 +444,7 @@ public class EndpointRequestService(
 
             requestMessage.Headers.Host = host ?? routeInfo.Uri.Host;
         }
+        // TODO End
     }
 
     private static Headers GetResponseHeaders(HttpResponseMessage responseMessage)
