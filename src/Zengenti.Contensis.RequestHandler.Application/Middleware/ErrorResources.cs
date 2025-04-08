@@ -42,7 +42,7 @@ public static class ErrorResources
         }
 
         var curlString = $"curl -k -I '{curlUri}'";
-        var disallowedHeaders = EndpointRequestService.DisallowedRequestHeaders;
+        var disallowedHeaders = EndpointRequestService.SensitiveHeadersToBeRemovedFromCurl;
         foreach (var header in routeInfo.Headers.Values)
         {
             if (disallowedHeaders.ContainsCaseInsensitive(header.Key) || !header.Value.Any())
