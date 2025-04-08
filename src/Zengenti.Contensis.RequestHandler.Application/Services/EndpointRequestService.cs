@@ -47,6 +47,22 @@ public class EndpointRequestService(
         "x-forwarded-proto"
     ];
 
+    private static readonly string[] ContentHeaders =
+    [
+        "Content-Type",
+        "Content-Length",
+        "Content-Disposition",
+        "Content-Encoding",
+        "Content-Language",
+        "Content-Location",
+        "Content-MD5",
+        "Content-Range",
+        "Transfer-Encoding",
+        "Trailer",
+        "Expires",
+        "Last-Modified"
+    ];
+
     public static readonly string[] DisallowedRequestHeaders =
     [
         "x-requires-depends",
@@ -450,9 +466,13 @@ public class EndpointRequestService(
 
         foreach (var (key, value) in headers)
         {
-            if (!DisallowedRequestHeaderMappings.ContainsCaseInsensitive(key))
+            if (IsRequestHeader(key))
             {
                 requestMessage.Headers.TryAddWithoutValidation(key, value);
+            }
+            else if(requestMessage.Content != null && IsContentHeader(key))
+            {
+                requestMessage.Content.Headers.TryAddWithoutValidation(key, value);
             }
         }
 
@@ -476,6 +496,18 @@ public class EndpointRequestService(
 
             requestMessage.Headers.Host = host ?? routeInfo.Uri.Host;
         }
+    }
+
+    private static bool IsRequestHeader(string key)
+    {
+        return !DisallowedRequestHeaderMappings.ContainsCaseInsensitive(key)
+            && !ContentHeaders.ContainsCaseInsensitive(key);
+    }
+
+    private bool IsContentHeader(string key)
+    {
+        return !DisallowedRequestHeaderMappings.ContainsCaseInsensitive(key)
+               && ContentHeaders.ContainsCaseInsensitive(key);
     }
 
     private static Headers GetResponseHeaders(HttpResponseMessage responseMessage)
