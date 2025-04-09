@@ -35,7 +35,8 @@ public class RequestHeaderMappingService
         "Allow",
         "Content-Encoding",
         "Content-Language",
-        "Content-Length",
+        // TODO: We cannot set this header as it generates an error when HttpCompletionOption.ResponseHeadersRead is used in HttpClient.SendAsync
+        // "Content-Length",
         "Content-Location",
         "Content-MD5",
         "Content-Range",
