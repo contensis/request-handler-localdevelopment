@@ -1,8 +1,10 @@
 ﻿using TestStack.BDDfy;
 
-namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Application.Services.RequestHeaderMappingServiceStories;
+namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Application.Services.
+    RequestHeaderMappingServiceStories;
 
-[Story(AsA = "As an EndpointRequestService instance",
+[Story(
+    AsA = "As an EndpointRequestService instance",
     IWant = "I want to have the allowed request headers mapped to the request I am creating",
     SoThat = "So that the request is in the correct state")]
 internal abstract class RequestHeaderMappingServiceStory
@@ -49,8 +51,8 @@ internal abstract class RequestHeaderMappingServiceStory
         "Sec-CH-UA-Mobile",
         "Sec-CH-UA-Platform"
     ];
-    
-    public static readonly string[] StandardEntityHeaders = 
+
+    public static readonly string[] StandardEntityHeaders =
     [
         "Allow",
         "Content-Encoding",

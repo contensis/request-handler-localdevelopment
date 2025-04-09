@@ -3,7 +3,8 @@ using FluentAssertions.Execution;
 using TestStack.BDDfy;
 using Zengenti.Contensis.RequestHandler.Application.Services;
 
-namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Application.Services.RequestHeaderMappingServiceStories;
+namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Application.Services.
+    RequestHeaderMappingServiceStories;
 
 internal class ValidHeadersMappingWithoutContent
 {
@@ -14,7 +15,7 @@ internal class ValidHeadersMappingWithoutContent
     {
         _requestMessage = new HttpRequestMessage();
     }
-    
+
     internal void AndGivenASetOfHeadersToMap()
     {
         _headersToMap = new HashSet<string>(RequestHeaderMappingServiceStory.StandardRequestHeaders)
@@ -22,7 +23,10 @@ internal class ValidHeadersMappingWithoutContent
             .Union(RequestHeaderMappingService.DisallowedRequestHeaderMappings)
             .ToDictionary(
                 key => key,
-                _ => new []{ "some header value" }.AsEnumerable());
+                _ => new[]
+                {
+                    "some header value"
+                }.AsEnumerable());
     }
 
     internal void WhenTheHeadersAreMappedToTheRequest()
@@ -54,7 +58,8 @@ internal class ValidHeadersMappingWithoutContent
             {
                 _requestMessage.Headers
                     .Any(x => x.Key.EqualsCaseInsensitive(allowedHeaderKey))
-                    .Should().BeTrue($"Header {allowedHeaderKey} was not mapped to headers");
+                    .Should()
+                    .BeTrue($"Header {allowedHeaderKey} was not mapped to headers");
             }
         }
     }

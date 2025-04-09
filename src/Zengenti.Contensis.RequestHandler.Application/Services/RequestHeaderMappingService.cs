@@ -43,19 +43,19 @@ public class RequestHeaderMappingService
         "Expires",
         "Last-Modified"
     ];
-    
+
     public void MapHeaders(HttpRequestMessage requestMessage, Dictionary<string, IEnumerable<string>> headers)
     {
         foreach (var (key, value) in headers)
         {
             var valueArray = value as string[] ?? value.ToArray();
-            
+
             if (IsAllowedRequestHeader(key))
             {
                 requestMessage.Headers.TryAddWithoutValidation(key, valueArray);
             }
-            
-            if(requestMessage.Content != null && IsEntityHeader(key))
+
+            if (requestMessage.Content != null && IsEntityHeader(key))
             {
                 requestMessage.Content.Headers.TryAddWithoutValidation(key, valueArray);
             }
@@ -69,7 +69,6 @@ public class RequestHeaderMappingService
 
     private bool IsEntityHeader(string key)
     {
-        return IsAllowedRequestHeader(key)
-               && AllowedEntityHeaders.ContainsCaseInsensitive(key);
+        return IsAllowedRequestHeader(key) && AllowedEntityHeaders.ContainsCaseInsensitive(key);
     }
 }
