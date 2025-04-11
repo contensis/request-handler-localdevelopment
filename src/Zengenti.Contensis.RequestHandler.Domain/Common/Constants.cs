@@ -127,5 +127,6 @@ public static class Constants
     public static class Exceptions
     {
         public const string DataKeyForOriginalMessage = "OriginalMessage";
+        public const string LogLevelKey = "LogLevel";
     }
 }

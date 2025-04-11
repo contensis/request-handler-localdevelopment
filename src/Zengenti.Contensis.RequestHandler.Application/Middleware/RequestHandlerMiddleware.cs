@@ -1,6 +1,7 @@
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Net;
+using System.Runtime.ExceptionServices;
 using System.Web;
 using Microsoft.AspNetCore.Http.Extensions;
 using Zengenti.Contensis.RequestHandler.Application.Resolving;
@@ -81,12 +82,26 @@ public class RequestHandlerMiddleware(
             {
                 if (e.Data.Contains(Constants.Exceptions.DataKeyForOriginalMessage))
                 {
-                    logger.LogError(
-                        e,
-                        "Unhandled error caught in middleware with exception message {Message} and request url {Url}. Initial message: {InitialMessage}",
-                        e.Message,
-                        context.Request.GetDisplayUrl(),
-                        e.Data[Constants.Exceptions.DataKeyForOriginalMessage]);
+                    if (e.Data.Contains(Constants.Exceptions.LogLevelKey) &&
+                        e.Data[Constants.Exceptions.LogLevelKey] is LogLevel logLevel)
+                    {
+                        logger.Log(
+                            logLevel,
+                            e,
+                            "Unhandled error caught in middleware with exception message {Message} and request url {Url}. Initial message: {InitialMessage}",
+                            e.Message,
+                            context.Request.GetDisplayUrl(),
+                            e.Data[Constants.Exceptions.DataKeyForOriginalMessage]);
+                    }
+                    else
+                    {
+                        logger.LogError(
+                            e,
+                            "Unhandled error caught in middleware with exception message {Message} and request url {Url}. Initial message: {InitialMessage}",
+                            e.Message,
+                            context.Request.GetDisplayUrl(),
+                            e.Data[Constants.Exceptions.DataKeyForOriginalMessage]);
+                    }
                 }
                 else
                 {
@@ -480,6 +495,7 @@ public class RequestHandlerMiddleware(
 
     private async Task HandleResponse(HttpContext context, EndpointResponse response)
     {
+        ExceptionDispatchInfo? exceptionDispatchInfo = null;
         try
         {
             context.Response.StatusCode = response.StatusCode;
@@ -501,24 +517,22 @@ public class RequestHandlerMiddleware(
         }
         catch (OperationCanceledException oce)
         {
-            logger.LogWarning(
-                oce,
-                "Response stream closed by client",
-                context.Request);
+            var message = "Response stream closed by client";
+            oce.Data.Add(Constants.Exceptions.DataKeyForOriginalMessage, message);
+            oce.Data.Add(Constants.Exceptions.LogLevelKey, LogLevel.Warning);
+            exceptionDispatchInfo = ExceptionDispatchInfo.Capture(oce);
         }
         catch (IOException ioe)
         {
-            logger.LogWarning(
-                ioe,
-                "Possible client disconnection",
-                context.Request);
+            var message = "Possible client disconnection";
+            ioe.Data.Add(Constants.Exceptions.DataKeyForOriginalMessage, message);
+            ioe.Data.Add(Constants.Exceptions.LogLevelKey, LogLevel.Warning);
+            exceptionDispatchInfo = ExceptionDispatchInfo.Capture(ioe);
         }
-        catch (Exception e)
+
+        if (exceptionDispatchInfo != null)
         {
-            logger.LogError(
-                e,
-                "An unexpected error occured",
-                context.Request);
+            exceptionDispatchInfo.Throw();
         }
     }
 
