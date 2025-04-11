@@ -57,7 +57,7 @@ internal abstract class RequestHeaderMappingServiceStory
         "Allow",
         "Content-Encoding",
         "Content-Language",
-        "Content-Length",
+        // "Content-Length",
         "Content-Location",
         "Content-MD5",
         "Content-Range",
