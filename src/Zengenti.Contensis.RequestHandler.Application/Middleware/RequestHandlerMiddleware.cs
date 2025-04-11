@@ -480,21 +480,45 @@ public class RequestHandlerMiddleware(
 
     private async Task HandleResponse(HttpContext context, EndpointResponse response)
     {
-        context.Response.StatusCode = response.StatusCode;
-
-        // Headers
-        SetResponseHeaders(context, response.Headers);
-
-        // The content may have changed due to resolving pagelets and re-writing static paths, so get the actual length.
-        var responseContent = response.ToStream(true);
-        if (responseContent is MemoryStream && context.Response.ContentLength != responseContent.Length)
+        try
         {
-            context.Response.ContentLength = responseContent.Length;
+            context.Response.StatusCode = response.StatusCode;
+
+            // Headers
+            SetResponseHeaders(context, response.Headers);
+
+            // The content may have changed due to resolving pagelets and re-writing static paths, so get the actual length.
+            var responseContent = response.ToStream(true);
+            if (responseContent is MemoryStream && context.Response.ContentLength != responseContent.Length)
+            {
+                context.Response.ContentLength = responseContent.Length;
+            }
+
+            if (responseContent != null)
+            {
+                await responseContent.CopyToAsync(context.Response.Body);
+            }
         }
-
-        if (responseContent != null)
+        catch (OperationCanceledException oce)
         {
-            await responseContent.CopyToAsync(context.Response.Body);
+            logger.LogWarning(
+                oce,
+                "Response stream closed by client",
+                context.Request);
+        }
+        catch (IOException ioe)
+        {
+            logger.LogWarning(
+                ioe,
+                "Possible client disconnection",
+                context.Request);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(
+                e,
+                "An unexpected error occured",
+                context.Request);
         }
     }
 
