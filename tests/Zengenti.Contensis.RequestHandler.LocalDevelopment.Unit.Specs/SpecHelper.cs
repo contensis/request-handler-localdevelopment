@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Zengenti.Contensis.RequestHandler.Application.Resolving;
@@ -7,6 +8,7 @@ using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Extensions;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
+using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 
@@ -17,7 +19,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
         internal static readonly SiteConfigLoader SiteConfigLoaderFromFile =
             new SiteConfigLoader("Config/site_config.yaml");
 
-        internal static readonly SiteConfigLoader SiteConfigLoaderFromJson = new SiteConfigLoader(
+        internal static readonly SiteConfigLoader SiteConfigLoaderFromJson = new(
             "test",
             "website",
             GetFile("Config/blocks.json"),
@@ -28,7 +30,24 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
             iisHostname: "www.mysite.com",
             podIngressIp: "10.0.0.1");
 
-        public static SiteConfigLoader SiteConfigLoader => SiteConfigLoaderFromJson;
+        public static SiteConfigLoader SiteConfigLoader
+        {
+            get
+            {
+                var proxiesAsJson = GetFile("Config/proxies.json");
+                if (!string.IsNullOrWhiteSpace(proxiesAsJson))
+                {
+                    SiteConfigLoaderFromJson.SiteConfig.Proxies = JsonSerializer.Deserialize<List<Proxy>>(
+                        proxiesAsJson,
+                        new JsonSerializerOptions
+                        {
+                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                        })!;
+                }
+
+                return SiteConfigLoaderFromJson;
+            }
+        }
 
         public static string GetFile(string path)
         {

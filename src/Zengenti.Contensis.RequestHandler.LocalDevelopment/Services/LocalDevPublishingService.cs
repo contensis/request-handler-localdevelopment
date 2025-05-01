@@ -124,8 +124,13 @@ public class LocalDevPublishingService(
             ?.ContentTypeUuid;
     }
 
-    public Block GetBlockById(string id)
+    public Block? GetBlockById(string id)
     {
-        return siteConfigLoader.SiteConfig.GetBlockById(id)!;
+        return siteConfigLoader.SiteConfig.GetBlockById(id);
+    }
+
+    public Proxy? GetProxyByUuid(Guid uuid)
+    {
+        return siteConfigLoader.SiteConfig.GetProxyByUuid(uuid);
     }
 }

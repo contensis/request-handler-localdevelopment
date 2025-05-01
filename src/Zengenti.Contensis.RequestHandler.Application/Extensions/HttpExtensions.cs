@@ -40,9 +40,8 @@ public static class HttpExtensions
             Constants.Headers.ContentType,
             out var contentTypes))
         {
-            if (ParseableContentTypes.Any(
-                pct =>
-                    contentTypes.Any(rct => rct.StartsWithCaseInsensitive(pct))))
+            if (ParseableContentTypes.Any(pct =>
+                contentTypes.Any(rct => rct.StartsWithCaseInsensitive(pct))))
             {
                 return true;
             }

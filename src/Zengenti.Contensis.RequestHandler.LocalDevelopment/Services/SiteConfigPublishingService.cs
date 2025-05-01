@@ -35,7 +35,7 @@ public class SiteConfigPublishingService(
         Proxy? proxy = null;
 
         // Mimic execution performed in Renderer service
-        if (proxyInfo?.IsPartialMatchPath == true)
+        if (proxyInfo?.IsPartialMatchPath == true && string.IsNullOrWhiteSpace(rendererId))
         {
             proxy = siteConfigLoader.SiteConfig.GetProxyByUuid(proxyInfo.ProxyId);
         }
@@ -67,9 +67,8 @@ public class SiteConfigPublishingService(
             {
                 var block = siteConfigLoader.SiteConfig.GetBlockByUuid(endpointRef.BlockUuid);
 
-                var endpoint = block?.Endpoints.SingleOrDefault(
-                    e =>
-                        e.Id.EqualsCaseInsensitive(endpointRef.EndpointId));
+                var endpoint = block?.Endpoints.SingleOrDefault(e =>
+                    e.Id.EqualsCaseInsensitive(endpointRef.EndpointId));
                 var blockVersionInfo = new BlockVersionInfo(
                     projectUuid,
                     block?.Id ?? "",
@@ -185,6 +184,11 @@ public class SiteConfigPublishingService(
     public Block GetBlockById(string id)
     {
         return siteConfigLoader.SiteConfig.GetBlockById(id);
+    }
+
+    public Proxy? GetProxyByUuid(Guid uuid)
+    {
+        return siteConfigLoader.SiteConfig.GetProxyByUuid(uuid);
     }
 
     public Guid? GetContentTypeUuid(string id)

@@ -70,26 +70,33 @@ public class RouteService(
 
             nodeInfo = new NodeInfo(node.Id.Value, node.EntryId, node.Path);
             ProxyInfo? proxyInfo = null;
+            string? rendererRefId = null;
+            var isPartialMatchPath = !node.Path.EqualsCaseInsensitive(originPath);
             if (node.ProxyRef != null)
             {
-                var isPartialMatchPath = !node.Path.EqualsCaseInsensitive(originPath);
-
                 if (!isPartialMatchPath || node.ProxyRef.PartialMatch)
                 {
                     proxyInfo = new ProxyInfo(node.ProxyRef.Id, node.ProxyRef.ParseContent, isPartialMatchPath);
                 }
             }
 
-            // We have a node so need to understand what to invoke (block or proxy)
+            if (node.RendererRef != null)
+            {
+                if (!isPartialMatchPath || node.RendererRef.IsPartialMatchRoot)
+                {
+                    rendererRefId = node.RendererRef.Uuid == Guid.Empty
+                        ? node.RendererRef.Id
+                        : node.RendererRef.Uuid.ToString();
+                }
+            }
+
             routeInfo = await publishingService.GetRouteInfoForRequest(
                 requestContext.ProjectUuid,
                 originUri,
                 headers,
                 nodeInfo,
                 node.ContentTypeId,
-                node.RendererRef?.Uuid == Guid.Empty
-                    ? node.RendererRef?.Id
-                    : node.RendererRef?.Uuid.ToString(),
+                rendererRefId,
                 proxyInfo,
                 node.Language);
 

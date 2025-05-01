@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using TestStack.BDDfy;
 using Zengenti.Contensis.RequestHandler.Application.Services;
@@ -10,7 +10,7 @@ using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Services.RouteServiceSpecs;
 
-public class NodeExistsAndRendererMatched
+public class ValidPathExistsWithPartialProxyAndPartialRenderer
 {
     private const string Host = "http://www.mysite.com";
     private const string Path = "/blogs/keeping-it-real";
@@ -33,10 +33,21 @@ public class NodeExistsAndRendererMatched
 
         _node = new Node
         {
-            ContentTypeId = _publishingService.GetContentTypeUuid("blog"),
             Path = Path,
             Id = Guid.NewGuid(),
-            EntryId = Guid.NewGuid()
+            ProxyRef =
+                new ProxyRef
+                {
+                    Id = Guid.NewGuid(),
+                    ParseContent = false,
+                    PartialMatch = true
+                },
+            RendererRef =
+                new RendererRef
+                {
+                    Id = "blogRecord",
+                    IsPartialMatchRoot = true
+                }
         };
 
         _nodeService = Substitute.For<INodeService>();
@@ -67,8 +78,7 @@ public class NodeExistsAndRendererMatched
         Assert.That(_result, Is.Not.Null);
         Assert.That(
             _result.Uri.ToString(),
-            Is.EqualTo(
-                $"http://website.com/website/Record-single-pagelet.html?nodeId={_node.Id}&entryId={_node.EntryId}"));
+            Is.EqualTo($"http://website.com/website/Record-single-pagelet.html?nodeId={_node.Id}"));
 
         var expectedRoutePrefix =
             $"{Constants.Paths.StaticPathUniquePrefix}{RouteInfo.GetUrlFriendlyHash(_projectUuid)}{Constants.Paths.StaticPathUniquePrefix}{_publishingService.GetBlockById("blogs")?.Uuid}";

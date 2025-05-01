@@ -7,4 +7,6 @@ public interface ILocalDevPublishingService : IPublishingService
 {
     Guid? GetContentTypeUuid(string id);
     Block? GetBlockById(string id);
+
+    Proxy? GetProxyByUuid(Guid uuid);
 }
