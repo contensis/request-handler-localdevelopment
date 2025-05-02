@@ -47,8 +47,8 @@ internal class ValidHeadersMappingWithoutContent
     internal void AndThenTheAllowedStandardHeadersAreMappedToTheRequest()
     {
         var allowedHeaderKeys = RequestHeaderMappingServiceStory.StandardRequestHeaders
-            .Where(
-                x => !RequestHeaderMappingService.DisallowedRequestHeaderMappings.Any(y => y.EqualsCaseInsensitive(x)))
+            .Where(x =>
+                !RequestHeaderMappingService.DisallowedRequestHeaderMappings.Any(y => y.EqualsCaseInsensitive(x)))
             .ToArray();
 
         using (new AssertionScope())

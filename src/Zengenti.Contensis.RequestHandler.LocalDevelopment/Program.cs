@@ -15,19 +15,17 @@ public class Program
 
     public static IHostBuilder CreateHostBuilder(string[] args, ProgramOptions opts) =>
         Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(
-                webBuilder =>
-                {
-                    webBuilder
-                        .UseStartup<Startup>()
-                        .UseUrls($"http://*:{opts.Port}")
-                        .UseKestrel(
-                            options =>
-                            {
-                                options.AddServerHeader = false;
-                                options.Limits.MaxRequestBodySize = 5368709120;
-                            });
-                });
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder
+                    .UseStartup<Startup>()
+                    .UseUrls($"http://*:{opts.Port}")
+                    .UseKestrel(options =>
+                    {
+                        options.AddServerHeader = false;
+                        options.Limits.MaxRequestBodySize = 5368709120;
+                    });
+            });
 
     private static void HandleParseError(IEnumerable<Error> errors)
     {

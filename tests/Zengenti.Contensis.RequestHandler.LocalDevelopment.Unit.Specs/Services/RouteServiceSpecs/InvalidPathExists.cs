@@ -8,7 +8,7 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Services.RouteServiceSpecs;
 
-public class NodeExistsAndRendererDoesNotMatch
+public class InvalidPathExists
 {
     private const string Host = "http://www.mysite.com";
     private const string Path = "/blogs/keeping-it-real";

@@ -279,10 +279,9 @@ public class EndpointRequestService(
         {
             var userAgentValue = userAgentValues.First();
             isBotRequest = userAgentValue.Contains("bot", StringComparison.InvariantCultureIgnoreCase) &&
-                           UserAgentBots.Any(
-                               bot => userAgentValue.Contains(
-                                   bot,
-                                   StringComparison.InvariantCultureIgnoreCase));
+                           UserAgentBots.Any(bot => userAgentValue.Contains(
+                               bot,
+                               StringComparison.InvariantCultureIgnoreCase));
         }
 
         if (!isBotRequest &&
@@ -291,10 +290,9 @@ public class EndpointRequestService(
         {
             var fromValue = fromValues.First();
             isBotRequest = fromValue.Contains("bot", StringComparison.InvariantCultureIgnoreCase) &&
-                           UserAgentBots.Any(
-                               bot => fromValue.Contains(
-                                   bot,
-                                   StringComparison.InvariantCultureIgnoreCase));
+                           UserAgentBots.Any(bot => fromValue.Contains(
+                               bot,
+                               StringComparison.InvariantCultureIgnoreCase));
         }
 
         return isBotRequest;

@@ -25,11 +25,10 @@ public class Startup
         services.AddLazyCache();
 
         services.AddHttpClient("no-auto-redirect")
-            .ConfigurePrimaryHttpMessageHandler(
-                () => new HttpClientHandler
-                {
-                    AllowAutoRedirect = false
-                });
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                AllowAutoRedirect = false
+            });
 
         // services.AddMediatR(typeof(ListBlocksThatAreAvailable.Handler).GetTypeInfo().Assembly);
         services

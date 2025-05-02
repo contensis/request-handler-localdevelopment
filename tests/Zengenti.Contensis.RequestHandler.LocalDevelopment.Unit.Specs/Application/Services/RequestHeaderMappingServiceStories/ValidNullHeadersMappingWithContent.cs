@@ -48,8 +48,8 @@ internal class ValidNullHeadersMappingWithContent
     internal void AndThenTheAllowedStandardHeadersAreMappedToTheRequest()
     {
         var allowedHeaderKeys = RequestHeaderMappingServiceStory.StandardRequestHeaders
-            .Where(
-                x => !RequestHeaderMappingService.DisallowedRequestHeaderMappings.Any(y => y.EqualsCaseInsensitive(x)))
+            .Where(x =>
+                !RequestHeaderMappingService.DisallowedRequestHeaderMappings.Any(y => y.EqualsCaseInsensitive(x)))
             .ToArray();
 
         using (new AssertionScope())
@@ -70,8 +70,8 @@ internal class ValidNullHeadersMappingWithContent
         _requestMessage.Content.Should().NotBeNull();
 
         var allowedHeaderKeys = RequestHeaderMappingServiceStory.StandardEntityHeaders
-            .Where(
-                x => !RequestHeaderMappingService.DisallowedRequestHeaderMappings.Any(y => y.EqualsCaseInsensitive(x)))
+            .Where(x =>
+                !RequestHeaderMappingService.DisallowedRequestHeaderMappings.Any(y => y.EqualsCaseInsensitive(x)))
             .ToArray();
 
         using (new AssertionScope())
