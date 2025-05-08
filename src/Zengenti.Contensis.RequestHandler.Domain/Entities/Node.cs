@@ -65,7 +65,23 @@ public class Node
 
     public RendererRef? RendererRef { get; set; }
 
+    /// <summary>
+    ///     Internal use for test support
+    /// </summary>
+    public RendererRef? Renderer
+    {
+        set => RendererRef = value;
+    }
+
     public ProxyRef? ProxyRef { get; set; }
+
+    /// <summary>
+    ///     /// Internal use for test support
+    /// </summary>
+    public ProxyRef? Proxy
+    {
+        set => ProxyRef = value;
+    }
 
     public string Language { get; set; }
 }
