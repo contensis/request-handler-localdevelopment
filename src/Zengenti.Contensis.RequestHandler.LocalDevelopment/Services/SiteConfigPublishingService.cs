@@ -88,7 +88,7 @@ public class SiteConfigPublishingService(
                     endpointRef.EndpointId,
                     renderer.LayoutRendererId);
 
-                SetCacheKeys(block.Uuid, block.Uuid, renderer.Uuid, renderer.LayoutRendererId);
+                SetCacheKeys(block.Uuid, block.Uuid, renderer.Uuid.Value, renderer.LayoutRendererId);
                 return Task.FromResult(routeInfo)!;
             }
         }
@@ -140,7 +140,7 @@ public class SiteConfigPublishingService(
                 endpointRef.EndpointId,
                 renderer?.LayoutRendererId);
 
-            SetCacheKeys(block.Uuid, block.Uuid, renderer.Uuid, null);
+            SetCacheKeys(block.Uuid, block.Uuid, renderer.Uuid.Value, null);
 
             return Task.FromResult(routeInfo)!;
         }

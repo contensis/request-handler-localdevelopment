@@ -170,7 +170,7 @@ public class SiteConfig
                     ContentTypeId = contentType,
                     ContentTypeUuid = Guid.NewGuid(),
                     RendererId = renderer.Id,
-                    RendererUuid = renderer.Uuid
+                    RendererUuid = renderer.Uuid.Value
                 };
 
                 siteConfig.ContentTypeRendererMap.Add(mapItem);

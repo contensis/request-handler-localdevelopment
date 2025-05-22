@@ -2,7 +2,14 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
 
 public class Renderer
 {
-    public Guid Uuid { get; set; } = Guid.NewGuid();
+    private readonly Guid _defaultUuid = Guid.NewGuid();
+    private Guid? _uuid;
+
+    public Guid? Uuid
+    {
+        get => _uuid ?? _defaultUuid;
+        set => _uuid = value ?? _defaultUuid;
+    }
 
     public string Id { get; set; } = null!;
 
