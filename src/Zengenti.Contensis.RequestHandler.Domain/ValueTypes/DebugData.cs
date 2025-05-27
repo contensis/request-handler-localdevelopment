@@ -50,7 +50,7 @@ public class DebugData(RouteInfo routeInfo)
 
         _debugData["RouteType"] = routeInfo.RouteType.ToString();
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-        _debugData["Uri"] = routeInfo.Uri?.ToString() ?? "";
+        _debugData["Uri"] = routeInfo.Uri?.AbsoluteUri ?? "";
         _debugData["BlockVersionInfo"] = routeInfo.BlockVersionInfo;
 
         if (!string.IsNullOrWhiteSpace(EndpointError))
