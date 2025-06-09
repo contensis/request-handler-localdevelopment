@@ -144,7 +144,7 @@ public class EndpointRequestService(
                     return endpointResponse;
                 }
 
-                var absoluteUri = routeInfo.Uri.AbsoluteUri;
+                var absoluteUri = routeInfo.Uri?.AbsoluteUri ?? "";
 
                 if (absoluteUri.EndsWithCaseInsensitive("/favicon.ico"))
                 {
@@ -440,7 +440,7 @@ public class EndpointRequestService(
         {
             var host = routeInfo.Headers.GetFirstValueIfExists(Constants.Headers.Host);
 
-            requestMessage.Headers.Host = host ?? routeInfo.Uri.Host;
+            requestMessage.Headers.Host = host ?? routeInfo.Uri!.Host;
         }
         // TODO End
     }

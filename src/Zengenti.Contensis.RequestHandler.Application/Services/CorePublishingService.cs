@@ -15,12 +15,9 @@ public class CorePublishingService(
     ICacheKeyService cacheKeyService,
     IServerTypeResolver serverTypeResolver,
     IPublishingApi publishingApi,
-    IRouteInfoFactory routeInfoFactory,
-    ILogger<CorePublishingService> logger)
+    IRouteInfoFactory routeInfoFactory)
     : ICorePublishingService
 {
-    private readonly ILogger<CorePublishingService> _logger = logger;
-
     public async Task<BlockVersionInfo?> GetBlockVersionInfo(Guid blockVersionId)
     {
         var blockVersionInfo = cache.GetBlockVersionInfo(blockVersionId);
@@ -72,7 +69,7 @@ public class CorePublishingService(
             messageSuffix += $" and path {originUri.AbsolutePath}.";
         }
 
-        ExceptionDispatchInfo? exceptionDispatchInfo = null;
+        ExceptionDispatchInfo? exceptionDispatchInfo;
         try
         {
             var clientResult = await publishingApi.GetEndpointForRequest(requestContext);
@@ -145,6 +142,11 @@ public class CorePublishingService(
                 endpointRequestInfo.StaticPaths,
                 endpointRequestInfo.BlockVersionNo);
 
+            blockVersionInfo.EnsureDefaultStaticPaths();
+
+            // Cache the blockVersionInfo to allow quick lookups for paths re-written within static files (e.g. js, css).
+            cache.SetBlockVersionInfo(blockVersionInfo);
+
             routeInfo = routeInfoFactory.Create(
                 uri,
                 originUri,
@@ -153,11 +155,6 @@ public class CorePublishingService(
                 blockVersionInfo,
                 endpointRequestInfo.EndpointId,
                 endpointRequestInfo.LayoutRendererId);
-
-            blockVersionInfo.EnsureDefaultStaticPaths();
-
-            // Cache the blockVersionInfo to allow quick lookups for paths re-written within static files (e.g. js, css).
-            cache.SetBlockVersionInfo(blockVersionInfo);
         }
         else
         {

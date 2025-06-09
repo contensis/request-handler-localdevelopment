@@ -1,4 +1,4 @@
-﻿using System.Web;
+using System.Web;
 using TestStack.BDDfy;
 using Zengenti.Contensis.RequestHandler.Application.Services;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
@@ -8,7 +8,7 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Services.RouteInfoFactorySpecs;
 
-public class FullUriRouting
+public class FullUriRoutingWithTrailingSlash
 {
     private readonly IRouteInfoFactory _sut =
         new RouteInfoFactory(
@@ -16,10 +16,12 @@ public class FullUriRouting
             new AppConfiguration());
 
     private RouteInfo _result;
-    private string _baseUriString;
+    private string _baseUrl;
     private readonly Guid _nodeId = Guid.NewGuid();
     private readonly Guid _entryId = Guid.NewGuid();
-    private readonly string _path = "/some-path";
+    private readonly string _path = "/some-path/";
+    private readonly string _queryString = "?page=2";
+    private readonly string _originalBaseUrl = "http://www.mysite.com";
 
     public void GivenABaseUriWithNoEndpointPath()
     {
@@ -28,8 +30,8 @@ public class FullUriRouting
     public void WhenCreateIsInvoked()
     {
         _result = _sut.Create(
-            new Uri(_baseUriString),
-            new Uri($"http://www.mysite.com{_path}?page=2"),
+            new Uri(_baseUrl),
+            new Uri($"{_originalBaseUrl}{_path}{_queryString}"),
             new Headers(
                 new Dictionary<string, string>
                 {
@@ -42,7 +44,7 @@ public class FullUriRouting
                 Guid.NewGuid(),
                 "",
                 Guid.NewGuid(),
-                new Uri(_baseUriString),
+                new Uri(_baseUrl),
                 "main",
                 true,
                 null,
@@ -52,8 +54,8 @@ public class FullUriRouting
     public void ThenTheUriIsRewrittenCorrectly()
     {
         Assert.That(_result, Is.Not.Null);
-        Assert.That(_result.Uri.SiteRoot().TrimEnd('/'), Is.EqualTo(new Uri(_baseUriString).SiteRoot().TrimEnd('/')));
-        Assert.That(_result.Uri.AbsolutePath, Is.EqualTo(_path));
+        Assert.That(_result.Uri.SiteRoot().TrimEnd('/'), Is.EqualTo(_originalBaseUrl));
+        Assert.That(_result.Uri.AbsoluteUri, Is.EqualTo($"{_originalBaseUrl}{_path.TrimEnd('/')}{_queryString}"));
     }
 
     public void AndThenTheHeadersAreMapped()
@@ -64,18 +66,15 @@ public class FullUriRouting
     public void AndThenTheQueryStringValuesAreCorrect()
     {
         var query = HttpUtility.ParseQueryString(_result.Uri.Query);
-        Assert.That(query.Count, Is.EqualTo(3));
-        Assert.That(query["nodeId"], Is.EqualTo(_nodeId.ToString()));
-        Assert.That(query["entryId"], Is.EqualTo(_entryId.ToString()));
         Assert.That(query["page"], Is.EqualTo("2"));
     }
 
     [TestCase("http://my-block.contensis.com")]
     [TestCase("https://my-block.contensis.com/")]
     [TestCase("http://my-block.contensis.com:5001")]
-    public void Run(string baseUriString)
+    public void Run(string baseUrl)
     {
-        _baseUriString = baseUriString;
+        _baseUrl = baseUrl;
         this.BDDfy();
     }
 }

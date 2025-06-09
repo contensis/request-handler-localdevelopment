@@ -26,4 +26,6 @@ public interface IRouteInfoFactory
         RouteInfo? originalRouteInfo);
 
     RouteInfo CreateNotFoundRoute(Headers headers, string nodePath = "");
+
+    RouteInfo CreateForRedirect(Uri originUri, Headers headers, bool removeTrailingSlash = false);
 }

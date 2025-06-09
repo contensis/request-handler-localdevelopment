@@ -68,7 +68,7 @@ public class RouteService(
             var routeInfoRequestTimer = new Stopwatch();
             routeInfoRequestTimer.Start();
 
-            nodeInfo = new NodeInfo(node.Id.Value, node.EntryId, node.Path);
+            nodeInfo = new NodeInfo(node.Id!.Value, node.EntryId, node.Path);
             ProxyInfo? proxyInfo = null;
             string? rendererRefId = null;
             var isPartialMatchPath = !node.Path.EqualsCaseInsensitive(originPath);
@@ -177,7 +177,7 @@ public class RouteService(
         return notFoundRoute;
     }
 
-    private async Task<RouteInfo?> GetRouteInfoForNonNodePath(Uri originUri, Headers headers, string originPath)
+    private async Task<RouteInfo> GetRouteInfoForNonNodePath(Uri originUri, Headers headers, string originPath)
     {
         long? staticBlockVersionInfoFetchMs = null;
         BlockVersionInfo? blockVersionInfo = null;
@@ -199,7 +199,7 @@ public class RouteService(
 
         if (staticBlockVersionInfoFetchMs.HasValue)
         {
-            returnInfo?.Metrics.Add("staticBlockVersionLookup", staticBlockVersionInfoFetchMs.Value);
+            returnInfo.Metrics.Add("staticBlockVersionLookup", staticBlockVersionInfoFetchMs.Value);
         }
 
         return returnInfo;

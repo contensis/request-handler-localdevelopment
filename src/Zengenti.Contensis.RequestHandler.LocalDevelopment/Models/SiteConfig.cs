@@ -30,11 +30,11 @@ public class SiteConfig
 
     public List<Node> Nodes { get; set; } = new();
 
-    public List<Renderer> Renderers { get; set; } = new();
+    public List<Renderer> Renderers { get; set; } = [];
 
-    public List<Proxy> Proxies { get; set; } = new();
+    public List<Proxy> Proxies { get; set; } = [];
 
-    public List<Block> Blocks { get; set; } = new();
+    public List<Block> Blocks { get; set; } = [];
 
     public Block? GetBlockById(string id)
     {
@@ -170,7 +170,7 @@ public class SiteConfig
                     ContentTypeId = contentType,
                     ContentTypeUuid = Guid.NewGuid(),
                     RendererId = renderer.Id,
-                    RendererUuid = renderer.Uuid.Value
+                    RendererUuid = renderer.Uuid!.Value
                 };
 
                 siteConfig.ContentTypeRendererMap.Add(mapItem);

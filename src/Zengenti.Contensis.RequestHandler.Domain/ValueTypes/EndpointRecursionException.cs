@@ -1,13 +1,8 @@
 ﻿namespace Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 [Serializable]
-public class EndpointRecursionException : Exception
+public class EndpointRecursionException(RouteInfo routeInfo, string? message = null, Exception? innerException = null)
+    : Exception(message, innerException)
 {
-    public EndpointRecursionException(RouteInfo routeInfo, string? message = null, Exception? innerException = null)
-        : base(message, innerException)
-    {
-        RouteInfo = routeInfo;
-    }
-
-    public RouteInfo RouteInfo { get; }
+    public RouteInfo RouteInfo { get; } = routeInfo;
 }
