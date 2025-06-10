@@ -247,6 +247,15 @@ public class RequestHandlerMiddleware(
         routeInfoTimer.Start();
 
         var routeInfo = await RouteService.GetRouteForRequest(context.Request, headers);
+
+        if (routeInfo.RouteType == RouteType.Redirect)
+        {
+            return CreateRedirectResponse(
+                routeInfo.Uri!.AbsoluteUri,
+                context.Request.GetHttpMethod(),
+                routeInfo.Headers);
+        }
+
         var initialRouteInfo = routeInfo;
 
         var mainRouteInfoMetrics = "";
@@ -444,8 +453,6 @@ public class RequestHandlerMiddleware(
             return null;
         }
 
-        var redirectResponse = new EndpointResponse("", context.Request.GetHttpMethod(), headers, 301);
-
         var newQueryString = HttpUtility.ParseQueryString(context.Request.QueryString.Value ?? "");
 
         var keysToRemove = new List<string>();
@@ -462,16 +469,13 @@ public class RequestHandlerMiddleware(
             newQueryString.Remove(keyToRemove);
         }
 
-        var updatedUri = context.Request.Path.Value!;
+        var updatedUrl = context.Request.Path.Value!;
         if (newQueryString.Count > 0)
         {
-            updatedUri += $"?{newQueryString}";
+            updatedUrl += $"?{newQueryString}";
         }
 
-        redirectResponse.Headers["location"] = new List<string>
-        {
-            updatedUri
-        };
+        var redirectResponse = CreateRedirectResponse(updatedUrl, context.Request.GetHttpMethod(), headers);
 
         if (blockConfigCookie.Length > 0)
         {
@@ -490,6 +494,21 @@ public class RequestHandlerMiddleware(
 
         // TODO: may want to set this to 0 later.
         // redirectResponse.Headers["Surrogate-Control"] = new List<string>() { "max-age=30" };
+        return redirectResponse;
+    }
+
+    private EndpointResponse CreateRedirectResponse(string url, HttpMethod httpMethod, Headers headers)
+    {
+        var redirectResponse = new EndpointResponse("", httpMethod, headers, 301)
+        {
+            Headers =
+            {
+                ["location"] = new List<string>
+                {
+                    url
+                }
+            }
+        };
         return redirectResponse;
     }
 
@@ -562,7 +581,7 @@ public class RequestHandlerMiddleware(
                         routeInfo,
                         initialRouteInfo.NodePath ?? "");
 
-                return await GetFriendlyErrorResponse(context, routeInfo.Uri.Query, response, responseHtml);
+                return await GetFriendlyErrorResponse(context, routeInfo.Uri?.Query ?? "", response, responseHtml);
             }
         }
 
@@ -600,7 +619,7 @@ public class RequestHandlerMiddleware(
                 }
             }
 
-            return await GetFriendlyErrorResponse(context, routeInfo.Uri.Query, response, responseHtml);
+            return await GetFriendlyErrorResponse(context, routeInfo.Uri?.Query ?? "", response, responseHtml);
         }
 
         return response;

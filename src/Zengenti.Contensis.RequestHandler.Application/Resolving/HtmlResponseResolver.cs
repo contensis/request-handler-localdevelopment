@@ -6,31 +6,19 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.Application.Resolving
 {
-    public class HtmlResponseResolver : IResponseResolver
+    public class HtmlResponseResolver(
+        IRequestContext requestContext,
+        IPublishingService publishingService,
+        IGlobalApi globalApi,
+        ILogger<HtmlResponseResolver> logger)
+        : IResponseResolver
     {
-        private readonly IPublishingService _publishingService;
-        private readonly IRequestContext _requestContext;
-        private readonly IResponseResolver _genericResponseResolver;
-        private readonly ILogger<HtmlResponseResolver> _logger;
-        private readonly IGlobalApi _globalApi;
+        private readonly IResponseResolver _genericResponseResolver = new GenericResponseResolver();
 
         public IEndpointRequestService? RequestService { get; set; }
 
         // Temporary way to disable pagelet resolution in production until it can be controlled from a Renderer 
         public static bool ParsePagelets { get; set; }
-
-        public HtmlResponseResolver(
-            IRequestContext requestContext,
-            IPublishingService publishingService,
-            IGlobalApi globalApi,
-            ILogger<HtmlResponseResolver> logger)
-        {
-            _requestContext = requestContext;
-            _publishingService = publishingService;
-            _globalApi = globalApi;
-            _logger = logger;
-            _genericResponseResolver = new GenericResponseResolver();
-        }
 
         public async Task<string> Resolve(string content, RouteInfo routeInfo, int currentDepth, CancellationToken ct)
         {
@@ -43,13 +31,13 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
                 !routeInfo.Headers.HidePreviewToolbar.EqualsCaseInsensitive("true"))
             {
                 var entryVersionStatus = routeInfo.Headers.EntryVersionStatus ?? "published";
-                var isContensisSingleSignOn = await _globalApi.IsContensisSingleSignOn();
+                var isContensisSingleSignOn = await globalApi.IsContensisSingleSignOn();
                 SetPreviewToolbar(
                     ref content,
-                    _requestContext.Alias,
-                    _requestContext.ProjectApiId,
+                    requestContext.Alias,
+                    requestContext.ProjectApiId,
                     entryVersionStatus,
-                    routeInfo.Uri.Query,
+                    routeInfo.Uri?.Query ?? "",
                     isContensisSingleSignOn);
             }
 
@@ -99,14 +87,13 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
             CancellationToken ct)
         {
             var parser = new HtmlParser(content);
-            var resolvedContent = new Lazy<HtmlContent>(() => new HtmlContent(content, _logger));
+            var resolvedContent = new Lazy<HtmlContent>(() => new HtmlContent(content, logger));
             var resolvingTasks = new List<Task>();
 
             while (parser.ParseNext(
-                new[]
-                {
+                [
                     Constants.Parsing.Pagelet
-                },
+                ],
                 out var tag))
             {
                 if (ct.IsCancellationRequested)
@@ -166,7 +153,7 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
             if (!string.IsNullOrWhiteSpace(rendererId))
             {
                 var endpointResponse = await InvokeEndpoint(rendererId, routeInfo.Headers, currentDepth, ct);
-                if (_requestContext.TraceEnabled)
+                if (requestContext.TraceEnabled)
                 {
                     replacement = endpointResponse.PageletPerformanceData + endpointResponse.StringContent;
                 }
@@ -185,12 +172,12 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
             int currentDepth,
             CancellationToken ct)
         {
-            var messageSuffix = $" for alias {_requestContext.Alias} and project {_requestContext.ProjectApiId}.";
+            var messageSuffix = $" for alias {requestContext.Alias} and project {requestContext.ProjectApiId}.";
             try
             {
                 var routeInfo =
-                    await _publishingService.GetRouteInfoForRequest(
-                        _requestContext.ProjectUuid,
+                    await publishingService.GetRouteInfoForRequest(
+                        requestContext.ProjectUuid,
                         headers,
                         rendererId,
                         null);
@@ -209,7 +196,7 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
             }
             catch (Exception ex)
             {
-                _logger.LogError(
+                logger.LogError(
                     ex,
                     "Failed to invoke endpoint for renderer {RendererId}{MessageSuffix}",
                     rendererId,
@@ -224,8 +211,8 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
             int currentDepth,
             CancellationToken ct)
         {
-            var layoutRouteInfo = await _publishingService.GetRouteInfoForRequest(
-                _requestContext.ProjectUuid,
+            var layoutRouteInfo = await publishingService.GetRouteInfoForRequest(
+                requestContext.ProjectUuid,
                 null,
                 new Headers(),
                 null,
@@ -253,10 +240,9 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
             var parser = new HtmlParser(layoutContentResponse.StringContent!);
 
             while (parser.ParseNext(
-                new[]
-                {
+                [
                     Constants.Parsing.LayoutTagName
-                },
+                ],
                 out var htmlTag))
             {
                 contentTag = htmlTag;

@@ -86,7 +86,7 @@ public class HttpPublishingApi : IPublishingApi
             _requestContext.ProjectUuid,
             blockId,
             versionId,
-            block.BaseUri,
+            block.BaseUri!,
             block.Branch,
             block.EnableFullUriRouting ?? false,
             block.StaticPaths,

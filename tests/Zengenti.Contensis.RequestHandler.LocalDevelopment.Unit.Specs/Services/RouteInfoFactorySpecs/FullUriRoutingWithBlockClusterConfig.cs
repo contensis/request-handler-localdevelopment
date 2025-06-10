@@ -21,6 +21,7 @@ public class FullUriRoutingWithBlockClusterConfig
 
     private readonly Guid _nodeId = Guid.NewGuid();
     private readonly Guid _entryId = Guid.NewGuid();
+    private readonly string _path = "/some-path";
 
     public void GivenABaseUriWithNoEndpointPath()
     {
@@ -30,7 +31,7 @@ public class FullUriRoutingWithBlockClusterConfig
     {
         _result = _sut.Create(
             new Uri(_baseUriString),
-            new Uri("http://www.mysite.com/some-path/?page=2"),
+            new Uri($"http://www.mysite.com{_path}?page=2"),
             new Headers(
                 new Dictionary<string, string>
                 {
@@ -57,7 +58,7 @@ public class FullUriRoutingWithBlockClusterConfig
     {
         Assert.That(_result, Is.Not.Null);
         Assert.That(_result.Uri.SiteRoot().TrimEnd('/'), Is.EqualTo(_expectedBaseUriString));
-        Assert.That(_result.Uri.AbsolutePath, Is.EqualTo("/some-path/"));
+        Assert.That(_result.Uri.AbsolutePath, Is.EqualTo(_path));
     }
 
     public void AndThenTheHeadersAreMapped()

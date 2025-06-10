@@ -8,16 +8,10 @@ using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment;
 
-public class Startup
+#pragma warning disable CS9113 // Parameter is unread.
+public class Startup(IConfiguration configuration)
+#pragma warning restore CS9113 // Parameter is unread.
 {
-    // ReSharper disable once NotAccessedField.Local
-    private IConfiguration _configuration;
-
-    public Startup(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
@@ -30,20 +24,15 @@ public class Startup
                 AllowAutoRedirect = false
             });
 
-        // services.AddMediatR(typeof(ListBlocksThatAreAvailable.Handler).GetTypeInfo().Assembly);
         services
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddSingleton<ICacheKeyService, NullCacheKeyService>()
-            //     .AddSingleton<IDiagnosticsCheckData>(_ => diagnosticsCheckData)
             .AddSingleton(
                 new AppConfiguration(
                     ProgramOptions.Current.PodClusterId,
                     ProgramOptions.Current.BlockClusterIngressIp,
                     ProgramOptions.Current.BlockAddressSuffix))
             .AddSingleton<IRouteInfoFactory, RouteInfoFactory>();
-        //     .AddScoped<IDiagnosticsCheckableAsync, RequestHandlerDiagnosticsCheckableAsync>()
-        //     .AddScoped<IDiagnosticsCheckService, DiagnosticsCheckService>();
-        //
 
         services.AddSingleton<ICorePublishingService, CorePublishingService>();
 
@@ -85,7 +74,7 @@ public class Startup
                 ProgramOptions.Current.Username,
                 ProgramOptions.Current.Password,
                 ProgramOptions.Current.IisHostname,
-                podIngressIpDictionary[ProgramOptions.Current.PodClusterId]);
+                podIngressIpDictionary[ProgramOptions.Current.PodClusterId!]);
         }
 
         services.AddSingleton<ISiteConfigLoader>(_ => siteConfigLoader);

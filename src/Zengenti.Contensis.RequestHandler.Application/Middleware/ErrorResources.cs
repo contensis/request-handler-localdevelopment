@@ -18,7 +18,7 @@ public static class ErrorResources
         {
             var textStreamReader = new StreamReader(resourceStream);
             var message = textStreamReader.ReadToEnd();
-            message = message.Replace("$urlRequested", routeInfo.Uri.PathAndQuery);
+            message = message.Replace("$urlRequested", routeInfo.Uri?.PathAndQuery ?? "");
             message = message.Replace("$blockId", routeInfo.BlockVersionInfo?.BlockId);
             message = message.Replace("$branch", routeInfo.BlockVersionInfo?.Branch);
             message = message.Replace("$blockVersionId", routeInfo.BlockVersionInfo?.BlockVersionId.ToString());
@@ -34,14 +34,21 @@ public static class ErrorResources
 
     internal static string CreateCurlCallString(RouteInfo routeInfo, string? host = "")
     {
-        var curlUri = new UriBuilder(routeInfo.Uri);
+        var curlUrl = "";
 
-        if (!string.IsNullOrWhiteSpace(host))
+        if (routeInfo.Uri != null)
         {
-            curlUri.Host = host;
+            var curlUri = new UriBuilder(routeInfo.Uri);
+
+            if (!string.IsNullOrWhiteSpace(host))
+            {
+                curlUri.Host = host;
+            }
+
+            curlUrl = curlUri.ToString();
         }
 
-        var curlString = $"curl -k -I '{curlUri}'";
+        var curlString = $"curl -k -I '{curlUrl}'";
         var disallowedHeaders = EndpointRequestService.SensitiveHeadersToBeRemovedFromCurl;
         foreach (var header in routeInfo.Headers.Values)
         {
@@ -67,8 +74,8 @@ public static class ErrorResources
         {
             var textStreamReader = new StreamReader(resourceStream);
             var message = textStreamReader.ReadToEnd();
-            message = message.Replace("$urlRequested", routeInfo.Uri.PathAndQuery);
-            message = message.Replace("$urlPathRequested", routeInfo.Uri.AbsolutePath);
+            message = message.Replace("$urlRequested", routeInfo.Uri?.PathAndQuery);
+            message = message.Replace("$urlPathRequested", routeInfo.Uri?.AbsolutePath);
             message = message.Replace("$nodePath", nodePath);
 
             return message;

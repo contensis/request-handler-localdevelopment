@@ -19,13 +19,13 @@ public static class HttpExtensions
     }
 
     private static readonly string[] ParseableContentTypes =
-    {
+    [
         Constants.ContentTypes.TextCss,
         Constants.ContentTypes.TextHtml,
         Constants.ContentTypes.ApplicationJson,
         Constants.ContentTypes.ApplicationJavaScript,
         Constants.ContentTypes.ApplicationManifestJson
-    };
+    ];
 
     public static bool IsResponseResolvable(this HttpResponseMessage? responseMessage)
     {
@@ -50,13 +50,19 @@ public static class HttpExtensions
         return false;
     }
 
-    public static Uri GetOriginUri(this HttpRequest request)
+    public static Uri GetOriginUri(this HttpRequest request, bool removeTrailingSlash = false)
     {
-        if (request.Host.HasValue)
+        var requestPath = request.Path;
+        if (removeTrailingSlash && requestPath.HasValue && requestPath.Value.EndsWith('/'))
         {
-            return new Uri($"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}");
+            requestPath = requestPath.Value.TrimEnd('/');
         }
 
-        return new Uri($"{request.Path}{request.QueryString}");
+        if (request.Host.HasValue)
+        {
+            return new Uri($"{request.Scheme}://{request.Host}{requestPath}{request.QueryString}");
+        }
+
+        return new Uri($"{requestPath}{request.QueryString}");
     }
 }

@@ -14,7 +14,7 @@ public class RouteInfo
 {
     public RouteInfo(
         RouteType routeType,
-        Uri uri,
+        Uri? uri,
         Headers headers,
         string nodePath,
         BlockVersionInfo? blockVersionInfo = null,
@@ -53,7 +53,7 @@ public class RouteInfo
     /// <summary>
     ///     The full calculated URI to invoke.
     /// </summary>
-    public Uri Uri { get; }
+    public Uri? Uri { get; }
 
     /// <summary>
     ///     The request headers.

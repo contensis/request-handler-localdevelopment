@@ -6,18 +6,14 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving;
 /// <summary>
 ///     Wraps a mutable instance of HTML content and controls updates to pagelet tags.
 /// </summary>
-public class HtmlContent
+public class HtmlContent(string html, ILogger logger)
 {
-    private readonly StringBuilder _content;
+    private readonly StringBuilder _content = new(html);
     private readonly SemaphoreSlim _lock = new SemaphoreSlim(1);
-    private readonly List<HtmlTag> _tags = new List<HtmlTag>();
-    private readonly ILogger _logger;
 
-    public HtmlContent(string html, ILogger logger)
-    {
-        _content = new StringBuilder(html);
-        _logger = logger;
-    }
+    private readonly List<HtmlTag> _tags =
+    [
+    ];
 
     public void AddTagOffset(HtmlTag tag)
     {
@@ -67,7 +63,7 @@ public class HtmlContent
         catch (Exception e)
         {
             // Potentially a miscalculated offset
-            _logger.LogWarning(
+            logger.LogWarning(
                 e,
                 "Error updating tag in HtmlContent - tag: {Tag}, content: {Content}",
                 tagId,
@@ -94,7 +90,7 @@ public class HtmlContent
         catch (Exception e)
         {
             // Potentially a miscalculated offset
-            _logger.LogWarning(
+            logger.LogWarning(
                 e,
                 "Error updating layout in HtmlContent - startPos: {StartPos}, endPos: {EndPos}",
                 contentTagStartPos,

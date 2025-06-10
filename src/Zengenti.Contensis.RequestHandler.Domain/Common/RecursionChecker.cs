@@ -10,7 +10,7 @@ public static class RecursionChecker
         {
             throw new EndpointRecursionException(
                 routeInfo,
-                $"Reached max recursion depth: {depth} for endpoint id: {routeInfo.EndpointId} and path: {routeInfo.Uri.PathAndQuery}");
+                $"Reached max recursion depth: {depth} for endpoint id: {routeInfo.EndpointId} and path: {routeInfo.Uri?.PathAndQuery}");
         }
     }
 }

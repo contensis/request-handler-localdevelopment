@@ -75,10 +75,9 @@ public sealed class Headers
         set =>
             SetValue(
                 name,
-                new[]
-                {
-                    value
-                }!);
+                [
+                    value ?? ""
+                ]!);
     }
 
     public bool HasKey(string key)
