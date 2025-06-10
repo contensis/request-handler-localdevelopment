@@ -28,7 +28,7 @@ public class RouteInfoFactory(
 
         if (blockVersionInfo is not null)
         {
-            if (originUri != null && originUri.AbsolutePath.EndsWith("/"))
+            if (originUri.EndsWithForwardSlash())
             {
                 return CreateForRedirect(originUri, headers, true);
             }
