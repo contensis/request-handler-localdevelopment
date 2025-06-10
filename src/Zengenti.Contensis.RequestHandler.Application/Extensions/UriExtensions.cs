@@ -4,6 +4,6 @@ public static class UriExtensions
 {
     public static bool EndsWithForwardSlash(this Uri? uri)
     {
-        return uri != null && uri.AbsolutePath.EndsWith('/');
+        return uri != null && uri.AbsolutePath != "/" && uri.AbsolutePath.EndsWith('/');
     }
 }

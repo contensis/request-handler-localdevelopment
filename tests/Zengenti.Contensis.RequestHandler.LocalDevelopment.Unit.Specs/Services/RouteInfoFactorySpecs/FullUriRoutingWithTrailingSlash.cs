@@ -1,4 +1,3 @@
-using System.Web;
 using TestStack.BDDfy;
 using Zengenti.Contensis.RequestHandler.Application.Services;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
@@ -54,8 +53,7 @@ public class FullUriRoutingWithTrailingSlash
     public void ThenTheUriIsRewrittenCorrectly()
     {
         Assert.That(_result, Is.Not.Null);
-        Assert.That(_result.Uri.SiteRoot().TrimEnd('/'), Is.EqualTo(_originalBaseUrl));
-        Assert.That(_result.Uri.AbsoluteUri, Is.EqualTo($"{_originalBaseUrl}{_path.TrimEnd('/')}{_queryString}"));
+        Assert.That(_result.Uri.ToString(), Is.EqualTo($"{_path.TrimEnd('/')}{_queryString}"));
     }
 
     public void AndThenTheHeadersAreMapped()
@@ -63,14 +61,6 @@ public class FullUriRoutingWithTrailingSlash
         Assert.That(_result.Headers.GetFirstValueIfExists(Constants.Headers.Alias) == "zenhub");
     }
 
-    public void AndThenTheQueryStringValuesAreCorrect()
-    {
-        var query = HttpUtility.ParseQueryString(_result.Uri.Query);
-        Assert.That(query["page"], Is.EqualTo("2"));
-    }
-
-    [Ignore(
-        "This test is for full URI routing with trailing slash, which is not supported in the current implementation.")]
     [TestCase("http://my-block.contensis.com")]
     [TestCase("https://my-block.contensis.com/")]
     [TestCase("http://my-block.contensis.com:5001")]

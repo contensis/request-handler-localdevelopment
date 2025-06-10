@@ -251,7 +251,7 @@ public class RequestHandlerMiddleware(
         if (routeInfo.RouteType == RouteType.Redirect)
         {
             return CreateRedirectResponse(
-                routeInfo.Uri!.AbsoluteUri,
+                routeInfo.Uri!.ToString(),
                 context.Request.GetHttpMethod(),
                 routeInfo.Headers);
         }

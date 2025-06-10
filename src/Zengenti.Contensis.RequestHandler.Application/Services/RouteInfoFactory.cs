@@ -30,7 +30,7 @@ public class RouteInfoFactory(
         {
             if (originUri.EndsWithForwardSlash())
             {
-                // return CreateForRedirect(originUri, headers, true);
+                return CreateForRedirect(originUri, headers, true);
             }
 
             ApplyBlockClusterRouteDetails(ref baseUri, headers);
@@ -160,9 +160,11 @@ public class RouteInfoFactory(
             redirectUri = uriBuilder.Uri;
         }
 
+        var relativeRedirectUri = new Uri(redirectUri.PathAndQuery, UriKind.Relative);
+
         return new RouteInfo(
             RouteType.Redirect,
-            redirectUri,
+            relativeRedirectUri,
             headers,
             "")
         {
