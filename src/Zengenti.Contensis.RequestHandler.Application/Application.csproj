@@ -29,7 +29,7 @@
         <InternalsVisibleTo Include="Zengenti.Contensis.RequestHandler.Host.Acceptance.Specs" />
     </ItemGroup>    
     <ItemGroup>
-      <PackageReference Include="Grpc.Core" Version="2.46.6" />
+      <PackageReference Include="Grpc.Core.Api" Version="2.71.0" />
     </ItemGroup>
 </Project>
 

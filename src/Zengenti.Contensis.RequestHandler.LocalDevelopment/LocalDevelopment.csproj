@@ -21,8 +21,8 @@
       <PackageReference Include="CommandLineParser" Version="2.9.1" />
       <PackageReference Include="LazyCache.AspNetCore" Version="2.4.0" />
       <PackageReference Include="YamlDotNet" Version="16.3.0" />
-      <PackageReference Include="Zengenti.Contensis.Delivery" Version="17.0.1" />
-      <PackageReference Include="Zengenti.Contensis.Management" Version="17.0.1" />
+      <PackageReference Include="Zengenti.Contensis.Delivery" Version="17.0.2" />
+      <PackageReference Include="Zengenti.Contensis.Management" Version="17.0.2" />
     </ItemGroup>
 
 </Project>

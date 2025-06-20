@@ -10,6 +10,8 @@ using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Renderers;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
+using HttpContext = Microsoft.AspNetCore.Http.HttpContext;
+using HttpRequest = Microsoft.AspNetCore.Http.HttpRequest;
 
 namespace Zengenti.Contensis.RequestHandler.Application.Middleware;
 
