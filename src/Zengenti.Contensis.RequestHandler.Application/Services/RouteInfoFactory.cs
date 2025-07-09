@@ -28,7 +28,7 @@ public class RouteInfoFactory(
 
         if (blockVersionInfo is not null)
         {
-            if (originUri.EndsWithForwardSlash())
+            if (originUri != null && originUri.EndsWithForwardSlash() && !originUri.IsContensisApiRequest())
             {
                 return CreateForRedirect(originUri, headers, true);
             }
@@ -82,16 +82,12 @@ public class RouteInfoFactory(
         Headers headers,
         BlockVersionInfo? blockVersionInfo = null)
     {
-        var path = originUri.AbsolutePath;
         var queryString = BuildQueryString(originUri, null, null);
 
         // Handle API requests
-        var isContensisApiRequest =
-            Constants.Paths.ApiPrefixes.Any(prefix => path.StartsWithCaseInsensitive(prefix)) &&
-            !path.StartsWithCaseInsensitive("/api/publishing/request-handler") &&
-            !path.StartsWithCaseInsensitive("/api/preview-toolbar/blocks") &&
-            appConfiguration.AliasesWithApiRoutes?.ContainsCaseInsensitive(requestContext.Alias) != true;
-        if (isContensisApiRequest)
+        var path = originUri.AbsolutePath;
+        if (originUri.IsContensisApiRequest() &&
+            appConfiguration.AliasesWithApiRoutes?.ContainsCaseInsensitive(requestContext.Alias) != true)
         {
             var apiHost = $"api-{requestContext.Alias}.cloud.contensis.com";
             var apiUrl = $"https://{apiHost}";
