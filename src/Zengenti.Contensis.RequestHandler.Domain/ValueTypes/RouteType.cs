@@ -6,6 +6,5 @@ public enum RouteType
     Block,
     Proxy,
     IisFallback,
-    Url,
-    Redirect
+    Url
 }

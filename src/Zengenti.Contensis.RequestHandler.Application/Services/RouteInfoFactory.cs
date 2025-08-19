@@ -28,11 +28,6 @@ public class RouteInfoFactory(
 
         if (blockVersionInfo is not null)
         {
-            if (originUri != null && originUri.EndsWithForwardSlash() && !originUri.IsContensisApiRequest())
-            {
-                return CreateForRedirect(originUri, headers, true);
-            }
-
             ApplyBlockClusterRouteDetails(ref baseUri, headers);
 
             if (!enableFullUriRouting && originUri != null)
@@ -136,33 +131,6 @@ public class RouteInfoFactory(
             null,
             headers,
             nodePath)
-        {
-            DebugData =
-            {
-                AppConfiguration = appConfiguration
-            }
-        };
-    }
-
-    public RouteInfo CreateForRedirect(Uri originUri, Headers headers, bool removeTrailingSlash = false)
-    {
-        var redirectUri = originUri;
-        if (removeTrailingSlash)
-        {
-            var uriBuilder = new UriBuilder(originUri)
-            {
-                Path = originUri.AbsolutePath.TrimEnd('/')
-            };
-            redirectUri = uriBuilder.Uri;
-        }
-
-        var relativeRedirectUri = new Uri(redirectUri.PathAndQuery, UriKind.Relative);
-
-        return new RouteInfo(
-            RouteType.Redirect,
-            relativeRedirectUri,
-            headers,
-            "")
         {
             DebugData =
             {

@@ -4,11 +4,6 @@ namespace Zengenti.Contensis.RequestHandler.Application;
 
 public static class UriExtensions
 {
-    public static bool EndsWithForwardSlash(this Uri uri)
-    {
-        return uri.AbsolutePath != "/" && uri.AbsolutePath.EndsWith('/');
-    }
-
     public static bool IsContensisApiRequest(this Uri uri)
     {
         var path = uri.AbsolutePath;
