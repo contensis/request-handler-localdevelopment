@@ -53,7 +53,9 @@ public class FullUriRoutingWithTrailingSlash
     public void ThenTheUriIsRewrittenCorrectly()
     {
         Assert.That(_result, Is.Not.Null);
-        Assert.That(_result.Uri.ToString(), Is.EqualTo($"{_path.TrimEnd('/')}{_queryString}"));
+        Assert.That(
+            _result.Uri.ToString(),
+            Is.EqualTo($"{_baseUrl.TrimEnd('/')}{_path}{_queryString}&nodeId={_nodeId}&entryId={_entryId}"));
     }
 
     public void AndThenTheHeadersAreMapped()

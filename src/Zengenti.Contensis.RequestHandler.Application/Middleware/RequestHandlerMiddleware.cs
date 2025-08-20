@@ -250,14 +250,6 @@ public class RequestHandlerMiddleware(
 
         var routeInfo = await RouteService.GetRouteForRequest(context.Request, headers);
 
-        if (routeInfo.RouteType == RouteType.Redirect)
-        {
-            return CreateRedirectResponse(
-                routeInfo.Uri!.ToString(),
-                context.Request.GetHttpMethod(),
-                routeInfo.Headers);
-        }
-
         var initialRouteInfo = routeInfo;
 
         var mainRouteInfoMetrics = "";

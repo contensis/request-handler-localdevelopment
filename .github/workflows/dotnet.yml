@@ -19,7 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
@@ -36,18 +36,18 @@ jobs:
       run: |
         dotnet publish -p:PublishProfile=Folder_osx-x64
     - name: Upload win-x64 artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Distributable for win-x64
-        path: ${{ github.workspace }}/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Debug/net6.0/win-x64/publish/
+        path: ${{ github.workspace }}/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Debug/net8.0/win-x64/publish/
     - name: Upload linux-x64 artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Distributable for linux-x64
-        path: ${{ github.workspace }}/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Debug/net6.0/linux-x64/publish/        
+        path: ${{ github.workspace }}/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Debug/net8.0/linux-x64/publish/        
     - name: Upload osx-x64 artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Distributable for osx-x64
-        path: ${{ github.workspace }}/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Debug/net6.0/osx-x64/publish/
+        path: ${{ github.workspace }}/src/Zengenti.Contensis.RequestHandler.LocalDevelopment/bin/Debug/net8.0/osx-x64/publish/
             
