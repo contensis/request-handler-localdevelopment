@@ -48,28 +48,28 @@ public static class Constants
         public const string PublishingApiVersion = "x-publishing-api-version";
 
         public static readonly string[] ConfigHeaders =
-        {
+        [
             BlockConfig,
             ProxyConfig,
             RendererConfig
-        };
+        ];
 
         public static readonly string[] ConfigHeadersWithDefaults =
-        {
+        [
             BlockConfigDefault,
             ProxyConfigDefault,
             RendererConfigDefault
-        };
+        ];
 
         public static readonly string[] ProxyHeaders =
-        {
+        [
             ProxyForwardedFor,
             ProxyForwardedProto,
             ProxyForwardedPort
-        };
+        ];
 
         public static readonly string[] RequiresHeaders =
-        {
+        [
             RequiresAlias,
             RequiresProjectApiId,
             RequiresNodeId,
@@ -77,7 +77,7 @@ public static class Constants
             RequiresEntryLanguage,
             RequiresBlockId,
             RequiresVersionNo
-        };
+        ];
     }
 
     public static class QueryStrings
@@ -87,11 +87,12 @@ public static class Constants
 
     public static class ContentTypes
     {
+        public const string ApplicationJavaScript = "application/javascript";
+        public const string ApplicationJson = "application/json";
+        public const string ApplicationManifestJson = "application/manifest+json";
         public const string TextCss = "text/css";
         public const string TextHtml = "text/html";
-        public const string ApplicationJson = "application/json";
-        public const string ApplicationJavaScript = "application/javascript";
-        public const string ApplicationManifestJson = "application/manifest+json";
+        public const string TextJavaScript = "text/javascript";
     }
 
     public static class Paths
@@ -99,15 +100,15 @@ public static class Constants
         public const string StaticPathUniquePrefix = "_";
 
         public static readonly string[] ApiPrefixes =
-        {
+        [
             "/api/"
-        };
+        ];
 
         public static readonly string[] PassThroughPrefixes =
-        {
+        [
             "/REST/UI/FormsModule/TestAccessibility",
             "/REST/Contensis/content/GetFormSettings"
-        };
+        ];
     }
 
     public static class CacheKeys

@@ -20,11 +20,12 @@ public static class HttpExtensions
 
     private static readonly string[] ParseableContentTypes =
     [
+        Constants.ContentTypes.ApplicationJavaScript,
+        Constants.ContentTypes.ApplicationJson,
+        Constants.ContentTypes.ApplicationManifestJson,
+        Constants.ContentTypes.TextJavaScript,
         Constants.ContentTypes.TextCss,
         Constants.ContentTypes.TextHtml,
-        Constants.ContentTypes.ApplicationJson,
-        Constants.ContentTypes.ApplicationJavaScript,
-        Constants.ContentTypes.ApplicationManifestJson
     ];
 
     public static bool IsResponseResolvable(this HttpResponseMessage? responseMessage)
