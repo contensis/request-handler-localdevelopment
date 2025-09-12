@@ -13,7 +13,7 @@ COPY ["tests/Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs/", "s
 
 RUN dotnet restore \
         --runtime linux-x64 \
-        --source https://nuget.zengenti.com/nuget \
+        --source https://nuget.zengenti.io/nuget \
         --source https://api.nuget.org/v3/index.json \
         "src/Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs/LocalDevelopment.Unit.Specs.csproj"
 FROM build AS publish
