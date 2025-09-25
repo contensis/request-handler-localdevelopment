@@ -250,9 +250,19 @@ public class RouteService(
         if (node.Id != null)
         {
             CallContext.Current[Constants.Headers.NodeId] = node.Id.ToString();
+            if (headers.Debug || headers.HasKey(Constants.Headers.RequiresNodeId))
+            {
+                CallContext.Current[Constants.Headers.RequiresNodeId] = node.Id.ToString();
+            }
+
             if (node.EntryId != null)
             {
                 CallContext.Current[Constants.Headers.EntryId] = node.EntryId.ToString();
+
+                if (headers.Debug || headers.HasKey(Constants.Headers.RequiresEntryId))
+                {
+                    CallContext.Current[Constants.Headers.RequiresEntryId] = node.EntryId.ToString();
+                }
             }
         }
 

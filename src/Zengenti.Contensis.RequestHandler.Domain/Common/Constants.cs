@@ -35,6 +35,8 @@ public static class Constants
 
         public const string RequiresAlias = "x-requires-alias";
         public const string RequiresProjectApiId = "x-requires-project-api-id";
+        public const string RequiresNodeId = "x-requires-node-id";
+        public const string RequiresEntryId = "x-requires-entry-id";
         public const string RequiresEntryLanguage = "x-requires-entry-language";
         public const string RequiresBlockId = "x-requires-block-id";
         public const string RequiresVersionNo = "x-requires-version-no";
@@ -72,6 +74,8 @@ public static class Constants
         [
             RequiresAlias,
             RequiresProjectApiId,
+            RequiresNodeId,
+            RequiresEntryId,
             RequiresEntryLanguage,
             RequiresBlockId,
             RequiresVersionNo
