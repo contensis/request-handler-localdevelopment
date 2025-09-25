@@ -1,4 +1,6 @@
-﻿namespace Zengenti.Contensis.RequestHandler.Application.Services;
+﻿using Zengenti.Contensis.RequestHandler.Domain.Common;
+
+namespace Zengenti.Contensis.RequestHandler.Application.Services;
 
 public class RequestHeaderMappingService
 {
@@ -59,6 +61,19 @@ public class RequestHeaderMappingService
             if (requestMessage.Content != null && IsEntityHeader(key))
             {
                 requestMessage.Content.Headers.TryAddWithoutValidation(key, valueArray);
+            }
+        }
+
+        if (CallContext.Current.Values.ContainsKey(Constants.Headers.NodeId))
+        {
+            requestMessage.Headers.TryAddWithoutValidation(
+                Constants.Headers.NodeId,
+                CallContext.Current[Constants.Headers.NodeId]);
+            if (CallContext.Current.Values.ContainsKey(Constants.Headers.EntryId))
+            {
+                requestMessage.Headers.TryAddWithoutValidation(
+                    Constants.Headers.EntryId,
+                    CallContext.Current[Constants.Headers.EntryId]);
             }
         }
     }
