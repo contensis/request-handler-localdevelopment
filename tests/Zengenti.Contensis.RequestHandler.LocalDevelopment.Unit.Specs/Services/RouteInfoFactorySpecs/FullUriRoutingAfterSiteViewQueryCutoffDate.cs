@@ -10,11 +10,14 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Services
 
 public class FullUriRoutingAfterSiteViewQueryCutoffDate
 {
+    // Date used to test logic before the site view query cutoff.
+    private static readonly DateTime SiteViewQueryCutoffDate = new DateTime(1990, 1, 1);
+
     private readonly IRouteInfoFactory _sut =
         new RouteInfoFactory(
             SpecHelper.CreateRequestContext(),
             new AppConfiguration(),
-            new DateTime(1990, 1, 1));
+            SiteViewQueryCutoffDate);
 
     private RouteInfo _result;
     private string _baseUriString;
