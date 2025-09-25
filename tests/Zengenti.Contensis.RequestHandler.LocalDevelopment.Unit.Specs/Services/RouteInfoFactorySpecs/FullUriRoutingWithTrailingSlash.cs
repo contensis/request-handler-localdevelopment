@@ -46,6 +46,7 @@ public class FullUriRoutingWithTrailingSlash
                 new Uri(_baseUrl),
                 "main",
                 true,
+                new DateTime(2025, 1, 1),
                 null,
                 1));
     }

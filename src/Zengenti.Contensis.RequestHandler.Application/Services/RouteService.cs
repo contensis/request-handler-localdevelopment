@@ -247,14 +247,13 @@ public class RouteService(
 
     private void CheckAndSetNodeHeaders(Headers headers, Node node)
     {
-        if ((headers.Debug || headers.HasKey(Constants.Headers.RequiresNodeId)) && node.Id != null)
+        if (node.Id != null)
         {
-            CallContext.Current[Constants.Headers.RequiresNodeId] = node.Id.ToString();
-        }
-
-        if ((headers.Debug || headers.HasKey(Constants.Headers.RequiresEntryId)) && node.EntryId != null)
-        {
-            CallContext.Current[Constants.Headers.RequiresEntryId] = node.EntryId.ToString();
+            CallContext.Current[Constants.Headers.NodeId] = node.Id.ToString();
+            if (node.EntryId != null)
+            {
+                CallContext.Current[Constants.Headers.EntryId] = node.EntryId.ToString();
+            }
         }
 
         if (headers.Debug || headers.HasKey(Constants.Headers.RequiresEntryLanguage))

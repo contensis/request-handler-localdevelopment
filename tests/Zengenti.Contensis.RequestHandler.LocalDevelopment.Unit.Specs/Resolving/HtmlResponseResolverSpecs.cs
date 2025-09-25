@@ -35,6 +35,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                         new Uri("http://website.com"),
                         "master",
                         false,
+                        new DateTime(2025, 1, 1),
                         null,
                         1);
 
@@ -113,6 +114,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Resolvin
                         new Uri("http://website.com"),
                         "master",
                         false,
+                        new DateTime(2025, 1, 1),
                         null,
                         1));
 

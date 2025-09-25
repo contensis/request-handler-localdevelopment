@@ -139,6 +139,7 @@ public class CorePublishingService(
                 new Uri(uri.GetLeftPart(UriPartial.Authority)),
                 endpointRequestInfo.Branch,
                 endpointRequestInfo.EnableFullUriRouting,
+                endpointRequestInfo.Pushed.Value,
                 endpointRequestInfo.StaticPaths,
                 endpointRequestInfo.BlockVersionNo);
 

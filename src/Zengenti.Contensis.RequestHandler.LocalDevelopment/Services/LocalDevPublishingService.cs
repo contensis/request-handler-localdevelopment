@@ -73,6 +73,7 @@ public class LocalDevPublishingService(
             new Uri(endpointForRequest.Uri),
             endpointForRequest.Branch,
             enableFullUriRouting,
+            endpointForRequest.Pushed.Value,
             endpointForRequest.StaticPaths,
             endpointForRequest.BlockVersionNo);
 

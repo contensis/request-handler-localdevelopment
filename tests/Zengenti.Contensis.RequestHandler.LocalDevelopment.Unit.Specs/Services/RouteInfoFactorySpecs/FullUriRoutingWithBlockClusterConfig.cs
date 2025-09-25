@@ -50,6 +50,7 @@ public class FullUriRoutingWithBlockClusterConfig
                 new Uri(_baseUriString),
                 "main",
                 true,
+                new DateTime(2025, 1, 1),
                 null,
                 1));
     }
