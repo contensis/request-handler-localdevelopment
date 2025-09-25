@@ -30,7 +30,6 @@ public class RouteInfoFactory(
 
         var nodeInfoId = nodeInfo?.Id;
         var nodeInfoEntryId = nodeInfo?.EntryId;
-        ;
 
         if (blockVersionInfo?.Pushed > (siteViewQueryCutoffDate ?? DefaultSiteViewQueryCutoffDate))
         {
