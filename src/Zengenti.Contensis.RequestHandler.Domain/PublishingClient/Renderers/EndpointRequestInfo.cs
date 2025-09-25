@@ -12,6 +12,7 @@ public class EndpointRequestInfo(
     string branch,
     int? blockVersionNo,
     bool enableFullUriRouting,
+    DateTime? pushed,
     List<string> cacheKeys)
 {
     public string BlockId { get; } = blockId;
@@ -25,5 +26,7 @@ public class EndpointRequestInfo(
     public string Branch { get; } = branch;
     public int? BlockVersionNo { get; } = blockVersionNo;
     public bool EnableFullUriRouting { get; } = enableFullUriRouting;
+
+    public DateTime? Pushed { get; set; } = pushed;
     public List<string> CacheKeys { get; } = cacheKeys;
 }

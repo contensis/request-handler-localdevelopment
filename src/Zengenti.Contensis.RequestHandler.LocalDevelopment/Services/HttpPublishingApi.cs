@@ -89,6 +89,7 @@ public class HttpPublishingApi : IPublishingApi
             block.BaseUri!,
             block.Branch,
             block.EnableFullUriRouting ?? false,
+            block.Pushed.Value,
             block.StaticPaths,
             block.VersionNo);
         return blockVersionInfo;
@@ -122,6 +123,7 @@ public class HttpPublishingApi : IPublishingApi
             endpointRequestInfo["branch"].ToString(),
             (int)endpointRequestInfo["blockVersionNo"],
             enableFullUriRouting,
+            DateTime.Parse(endpointRequestInfo["pushed"].ToString()),
             null);
     }
 

@@ -34,7 +34,16 @@ public class StaticResourcePath
                         Constants.Headers.Alias, "zenhub"
                     }
                 }),
-            new BlockVersionInfo(projectUuid, "", blockGuid, new Uri(_baseUriString), "main", false, null, 1));
+            new BlockVersionInfo(
+                projectUuid,
+                "",
+                blockGuid,
+                new Uri(_baseUriString),
+                "main",
+                false,
+                new DateTime(2025, 1, 1),
+                null,
+                1));
     }
 
     public void ThenTheUriIsRewrittenCorrectly()

@@ -9,9 +9,12 @@ namespace Zengenti.Contensis.RequestHandler.Application.Services;
 
 public class RouteInfoFactory(
     IRequestContext requestContext,
-    AppConfiguration appConfiguration)
+    AppConfiguration appConfiguration,
+    DateTime? siteViewQueryCutoffDate = null)
     : IRouteInfoFactory
 {
+    private readonly DateTime DefaultSiteViewQueryCutoffDate = new(2025, 09, 25, 23, 59, 59);
+
     public RouteInfo Create(
         Uri baseUri,
         Uri? originUri,
@@ -24,7 +27,17 @@ public class RouteInfoFactory(
     {
         var path = baseUri.AbsolutePath;
         var enableFullUriRouting = blockVersionInfo?.EnableFullUriRouting ?? false;
-        var queryString = BuildQueryString(originUri, nodeInfo?.Id, nodeInfo?.EntryId);
+
+        var nodeInfoId = nodeInfo?.Id;
+        var nodeInfoEntryId = nodeInfo?.EntryId;
+
+        if (blockVersionInfo?.Pushed > (siteViewQueryCutoffDate ?? DefaultSiteViewQueryCutoffDate))
+        {
+            nodeInfoId = null;
+            nodeInfoEntryId = null;
+        }
+
+        var queryString = BuildQueryString(originUri, nodeInfoId, nodeInfoEntryId);
 
         if (blockVersionInfo is not null)
         {

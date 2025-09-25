@@ -858,6 +858,15 @@ public class RequestHandlerMiddleware(
             context.Response.Headers[key] = value.ToArray();
         }
 
+        if (CallContext.Current.Values.ContainsKey(Constants.Headers.NodeId))
+        {
+            context.Response.Headers[Constants.Headers.NodeId] = CallContext.Current[Constants.Headers.NodeId];
+            if (CallContext.Current.Values.ContainsKey(Constants.Headers.EntryId))
+            {
+                context.Response.Headers[Constants.Headers.EntryId] = CallContext.Current[Constants.Headers.EntryId];
+            }
+        }
+
         // Set surrogate key response
         EnsureSurrogateKey(context, Constants.Headers.SurrogateKey, cacheKeyService.GetSurrogateKey());
         EnsureRequiresHeaders(context);

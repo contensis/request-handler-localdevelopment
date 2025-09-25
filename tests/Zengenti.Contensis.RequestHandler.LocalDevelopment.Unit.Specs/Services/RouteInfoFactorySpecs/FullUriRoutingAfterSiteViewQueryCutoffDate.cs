@@ -1,4 +1,4 @@
-﻿using System.Web;
+using System.Web;
 using TestStack.BDDfy;
 using Zengenti.Contensis.RequestHandler.Application.Services;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
@@ -8,12 +8,16 @@ using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs.Services.RouteInfoFactorySpecs;
 
-public class FullUriRouting
+public class FullUriRoutingAfterSiteViewQueryCutoffDate
 {
+    // Date used to test logic before the site view query cutoff.
+    private static readonly DateTime SiteViewQueryCutoffDate = new DateTime(1990, 1, 1);
+
     private readonly IRouteInfoFactory _sut =
         new RouteInfoFactory(
             SpecHelper.CreateRequestContext(),
-            new AppConfiguration());
+            new AppConfiguration(),
+            SiteViewQueryCutoffDate);
 
     private RouteInfo _result;
     private string _baseUriString;
@@ -65,9 +69,9 @@ public class FullUriRouting
     public void AndThenTheQueryStringValuesAreCorrect()
     {
         var query = HttpUtility.ParseQueryString(_result.Uri.Query);
-        Assert.That(query.Count, Is.EqualTo(3));
-        Assert.That(query["nodeId"], Is.EqualTo(_nodeId.ToString()));
-        Assert.That(query["entryId"], Is.EqualTo(_entryId.ToString()));
+        Assert.That(query.Count, Is.EqualTo(1));
+        Assert.That(query["nodeId"], Is.Null);
+        Assert.That(query["entryId"], Is.Null);
         Assert.That(query["page"], Is.EqualTo("2"));
     }
 

@@ -17,4 +17,6 @@ public class Block
     public int VersionNo { get; set; }
 
     public string Branch { get; set; } = "";
+
+    public DateTime? Pushed { get; set; }
 }

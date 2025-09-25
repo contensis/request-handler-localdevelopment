@@ -132,6 +132,7 @@ namespace Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs
                 new Uri("http://website.com"),
                 "master",
                 false,
+                new DateTime(2025, 1, 1),
                 staticPaths,
                 1);
             blockVersionInfo.EnsureDefaultStaticPaths();
