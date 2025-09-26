@@ -13,7 +13,7 @@ public class RouteInfoFactory(
     DateTime? siteViewQueryCutoffDate = null)
     : IRouteInfoFactory
 {
-    private readonly DateTime DefaultSiteViewQueryCutoffDate = new(2025, 09, 24, 23, 59, 59);
+    private readonly DateTime DefaultSiteViewQueryCutoffDate = new(2025, 09, 25, 23, 59, 59);
 
     public RouteInfo Create(
         Uri baseUri,
