@@ -8,6 +8,7 @@ public static class Constants
         public const string Alias = "x-alias";
         public const string ProjectApiId = "x-project-api-id";
         public const string ProjectUuid = "x-project-uuid";
+        public const string ContensisVersion = "contensis-classic-version";
         public const string TraceEnabled = "x-trace-enabled";
         public const string SurrogateControl = "surrogate-control";
         public const string SurrogateKey = "surrogate-key";

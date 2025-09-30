@@ -31,6 +31,7 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
                 !routeInfo.Headers.HidePreviewToolbar.EqualsCaseInsensitive("true"))
             {
                 var entryVersionStatus = routeInfo.Headers.EntryVersionStatus ?? "published";
+                var contensisVersion = routeInfo.Headers.GetFirstValueIfExists(Constants.Headers.ContensisVersion);
                 var isContensisSingleSignOn = await globalApi.IsContensisSingleSignOn();
                 SetPreviewToolbar(
                     ref content,
@@ -38,6 +39,7 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
                     requestContext.ProjectApiId,
                     entryVersionStatus,
                     routeInfo.Uri?.Query ?? "",
+                    contensisVersion ?? "",
                     isContensisSingleSignOn);
             }
 
@@ -52,6 +54,7 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
             string projectApiId,
             string entryVersionStatus,
             string query,
+            string contensisVersionNumber,
             bool isContensisSingleSignOn)
         {
             var queryDictionary = HttpUtility.ParseQueryString(query);
@@ -68,7 +71,7 @@ namespace Zengenti.Contensis.RequestHandler.Application.Resolving
 
             var isContensisSsoScriptValue = isContensisSingleSignOn.ToString().ToLowerInvariant();
             var scriptTag =
-                $"<script type=\"text/javascript\">window.ContensisProjectApiId=\"{projectApiId}\";window.ContensisAlias=\"{alias}\";window.ContensisSso=\"{isContensisSsoScriptValue}\";window.ContensisEntryVersionStatus=\"{entryVersionStatus}\";window.ContensisEntryId=\"{entryId}\";window.ContensisEntryLanguage=\"{entryLanguageId}\"</script>";
+                $"<script type=\"text/javascript\">window.ContensisProjectApiId=\"{projectApiId}\";window.ContensisAlias=\"{alias}\";window.ContensisSso=\"{isContensisSsoScriptValue}\";window.ContensisEntryVersionStatus=\"{entryVersionStatus}\";window.ContensisEntryId=\"{entryId}\";window.ContensisEntryLanguage=\"{entryLanguageId}\";window.ContensisVersionNumber=\"{contensisVersionNumber}\"</script>";
             scriptTag +=
                 $"<script type=\"module\" src=\"/contensis-preview-toolbar/esm/index.js?d={roundedDate.Ticks.ToString()}\"></script></body>";
             content = content.Replace("</body>", scriptTag);

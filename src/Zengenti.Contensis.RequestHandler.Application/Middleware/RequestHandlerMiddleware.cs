@@ -635,6 +635,14 @@ public class RequestHandlerMiddleware(
                 Constants.Headers.EntryVersionStatus,
                 out var entryVersionStatus))
         {
+            var contensisVersion = "";
+            if (context.Request.Headers.TryGetValue(
+                Constants.Headers.ContensisVersion,
+                out var contensisVersionFromRequest))
+            {
+                contensisVersion = contensisVersionFromRequest[0]!;
+            }
+
             var isContensisSingleSignOn = await globalApi.IsContensisSingleSignOn();
             HtmlResponseResolver.SetPreviewToolbar(
                 ref responseHtml,
@@ -642,6 +650,7 @@ public class RequestHandlerMiddleware(
                 projectApiId[0]!,
                 entryVersionStatus[0]!,
                 query,
+                contensisVersion,
                 isContensisSingleSignOn);
         }
 
