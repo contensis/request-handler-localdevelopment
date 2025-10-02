@@ -13,7 +13,7 @@ public class RouteInfoFactory(
     DateTime? siteViewQueryCutoffDate = null)
     : IRouteInfoFactory
 {
-    private readonly DateTime DefaultSiteViewQueryCutoffDate = new(2025, 11, 3, 9, 0, 0);
+    private readonly DateTime _defaultSiteViewQueryCutoffDate = new(2025, 11, 3, 9, 0, 0);
 
     public RouteInfo Create(
         Uri baseUri,
@@ -31,7 +31,7 @@ public class RouteInfoFactory(
         var nodeInfoId = nodeInfo?.Id;
         var nodeInfoEntryId = nodeInfo?.EntryId;
 
-        if (blockVersionInfo?.Pushed > (siteViewQueryCutoffDate ?? DefaultSiteViewQueryCutoffDate))
+        if (blockVersionInfo?.Pushed > (siteViewQueryCutoffDate ?? _defaultSiteViewQueryCutoffDate))
         {
             nodeInfoId = null;
             nodeInfoEntryId = null;
