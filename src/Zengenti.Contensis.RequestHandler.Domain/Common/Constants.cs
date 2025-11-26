@@ -12,7 +12,7 @@ public static class Constants
         public const string TraceEnabled = "x-trace-enabled";
         public const string SurrogateControl = "surrogate-control";
         public const string SurrogateKey = "surrogate-key";
-        public const string DebugSurrogateKey = "debug-surrogate-key";
+        public const string RequestHandlerSurrogateKey = "request-handler-surrogate-key";
         public const string Debug = "debug";
         public const string AltDebug = "x-debug";
         public const string ContentType = "Content-Type";
