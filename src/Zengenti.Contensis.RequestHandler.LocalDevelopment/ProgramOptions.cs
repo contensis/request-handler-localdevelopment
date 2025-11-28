@@ -14,7 +14,7 @@ public class ProgramOptions
     [Option('p', longName: "port", HelpText = "The port number that will be used by the application.", Default = 5000)]
     public int? Port { get; init; }
 
-    [Option('c', longName: "configFile", HelpText = "The path to the site config file.")]
+    [Option('c', longName: "config-file", HelpText = "The path to the site config file.")]
     public string? ConfigFile { get; init; }
 
     [Option("alias", HelpText = "The alias for the site config.")]
