@@ -157,6 +157,7 @@ public class RouteInfoFactory(
         var baseUri = new Uri($"https://{requestContext.LoadBalancerVip}");
         var uri = BuildUri(baseUri, originUri.AbsolutePath, new QueryString(originUri.Query));
         headers[Constants.Headers.Host] = requestContext.IisHostname;
+        headers[Constants.Headers.IsIisFallback] = "true";
 
         return new RouteInfo(RouteType.IisFallback, uri, headers, "")
         {

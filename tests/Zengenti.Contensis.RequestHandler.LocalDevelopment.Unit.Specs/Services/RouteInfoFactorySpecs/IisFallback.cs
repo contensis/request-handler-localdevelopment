@@ -23,7 +23,7 @@ public class IisFallback
     public void WhenCreateIsInvoked()
     {
         _result = _sut.CreateForIisFallback(
-            new Uri("http://www.mysite.com/news/today-is-the-day?page=2"),
+            new Uri("https://www.mysite.com/news/today-is-the-day?page=2"),
             new Headers(
                 new Dictionary<string, string>
                 {
@@ -38,12 +38,12 @@ public class IisFallback
     {
         Assert.That(_result, Is.Not.Null);
         Assert.That(_result.Uri.SiteRoot().TrimEnd('/'), Is.EqualTo("https://10.0.0.1"));
-        Assert.That(_result.Uri.AbsolutePath, Is.EqualTo("/news/today-is-the-day"));
+        Assert.That(_result.Uri!.AbsolutePath, Is.EqualTo("/news/today-is-the-day"));
     }
 
     public void AndThenTheHeadersAreMapped()
     {
-        Assert.That(_result.Headers.Values.Count, Is.EqualTo(2));
+        Assert.That(_result.Headers.Values.Count, Is.EqualTo(3));
         Assert.That(_result.Headers.GetFirstValueIfExists(Constants.Headers.Alias) == "zenhub");
     }
 
@@ -54,7 +54,7 @@ public class IisFallback
 
     public void AndThenTheQueryStringValuesAreCorrect()
     {
-        var query = HttpUtility.ParseQueryString(_result.Uri.Query);
+        var query = HttpUtility.ParseQueryString(_result.Uri!.Query);
 
         Assert.That(query.Count, Is.EqualTo(1));
         Assert.That(query["page"], Is.EqualTo("2"));
