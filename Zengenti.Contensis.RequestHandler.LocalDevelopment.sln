@@ -18,6 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1149A3C5
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalDevelopment.Unit.Specs", "tests\Zengenti.Contensis.RequestHandler.LocalDevelopment.Unit.Specs\LocalDevelopment.Unit.Specs.csproj", "{D40A102D-18AD-4628-93F0-A4C44DD3E241}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{A6999464-753C-4496-944D-93C9BAB13FA0}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile.localdevelopment.unit.specs = Dockerfile.localdevelopment.unit.specs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
