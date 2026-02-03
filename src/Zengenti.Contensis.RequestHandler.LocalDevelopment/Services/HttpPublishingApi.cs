@@ -128,7 +128,7 @@ public class HttpPublishingApi : IPublishingApi
         return new EndpointRequestInfo(
             GetRequiredString(endpointRequestInfo, "blockId"),
             GetRequiredGuid(endpointRequestInfo, "blockVersionId"),
-            JObjectHelpers.GetString(endpointRequestInfo, "endpointID") ?? string.Empty,
+            JObjectHelpers.GetString(endpointRequestInfo, "endpointId") ?? string.Empty,
             layoutRendererId,
             GetRequiredString(endpointRequestInfo, "uri"),
             GetStringList(endpointRequestInfo, "staticPaths") ?? [],
