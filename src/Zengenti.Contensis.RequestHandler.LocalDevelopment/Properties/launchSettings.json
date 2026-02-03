@@ -27,6 +27,15 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "LocalDevelopment_JSON_user_TEST": {
+      "commandName": "Project",
+      "commandLineArgs": "--port=5100 --alias university --project-api-id website --iis-hostname iis-preview-university.cloud.contensis.com --pod-cluster-id hq --blocks-json \"[{\\\"id\\\":\\\"uni-demo-website\\\",\\\"baseUri\\\":\\\"http://localhost:3000\\\",\\\"staticPaths\\\":[\\\"/*.js\\\"],\\\"endpoints\\\":[],\\\"versionNo\\\":12,\\\"branch\\\":\\\"main\\\"},{\\\"id\\\":\\\"uni-demo-storybook\\\",\\\"baseUri\\\":\\\"https://preview-website-university.cloud.contensis.com?block-uni-demo-storybook-versionno=9\\\",\\\"staticPaths\\\":[],\\\"endpoints\\\":[],\\\"versionNo\\\":9,\\\"branch\\\":\\\"main\\\"}]\" --renderers-json \"[{\\\"id\\\":\\\"uni-demo-storybook\\\",\\\"name\\\":\\\"uni-demo-storybook\\\",\\\"assignedContentTypes\\\":[],\\\"rules\\\":[{\\\"return\\\":{\\\"blockId\\\":\\\"uni-demo-storybook\\\",\\\"endpointId\\\":null}}]},{\\\"id\\\":\\\"uni-demo-website\\\",\\\"name\\\":\\\"uni-demo-website\\\",\\\"assignedContentTypes\\\":[\\\"*\\\"],\\\"rules\\\":[{\\\"return\\\":{\\\"blockId\\\":\\\"uni-demo-website\\\",\\\"endpointId\\\":null}}]}]\" --username zengenti --password FRETTED-unveiling-PASTOR24",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5100",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
   }
 }

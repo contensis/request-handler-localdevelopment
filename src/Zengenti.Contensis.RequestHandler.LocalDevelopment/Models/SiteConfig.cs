@@ -128,16 +128,13 @@ public class SiteConfig
             PodIngressIp = podIngressIp
         };
 
-        var jsonSerializerOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
-        siteConfig.Blocks = JsonSerializer.Deserialize<List<Block>>(blocksAsJson, jsonSerializerOptions)!;
+        siteConfig.Blocks = JsonSerializer.Deserialize(blocksAsJson, AppJsonSerializerContext.Default.ListBlock)!;
 
         if (!string.IsNullOrWhiteSpace(renderersAsJson))
         {
-            siteConfig.Renderers = JsonSerializer.Deserialize<List<Renderer>>(renderersAsJson, jsonSerializerOptions)!;
+            siteConfig.Renderers = JsonSerializer.Deserialize(
+                renderersAsJson,
+                AppJsonSerializerContext.Default.ListRenderer)!;
         }
 
         ResolveReferences(siteConfig);

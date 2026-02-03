@@ -1,3 +1,5 @@
 # Contensis Request Handler Local Development
 
 This application uses .NET Core 10.0, and the [SDK can be downloaded here](https://dotnet.microsoft.com/download/dotnet-core/10.0)
+
+See the release notes here: https://github.com/contensis/contensis-request-handler-local-development/releases

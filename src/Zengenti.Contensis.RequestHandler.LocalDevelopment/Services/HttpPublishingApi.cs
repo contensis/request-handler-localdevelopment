@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Blocks;
@@ -64,7 +64,7 @@ public class HttpPublishingApi : IPublishingApi
 
     public async Task<BlockVersionInfo?> GetBlockVersionInfo(Guid versionId)
     {
-        var blockVersion = (await _internalRestClient.GetAsync<dynamic>(
+        var blockVersion = (await _internalRestClient.GetAsync<JObject>(
                 $"api/management/projects/{_requestContext.ProjectApiId}/blocks/versions/{versionId}"))
             .ResponseObject;
 
@@ -74,7 +74,13 @@ public class HttpPublishingApi : IPublishingApi
             return null;
         }
 
-        var blockId = (string)blockVersion.id;
+        var blockId = GetString(blockVersion, "id");
+        if (string.IsNullOrWhiteSpace(blockId))
+        {
+            _logger.LogWarning("Block version response missing id for uuid {Uuid}", versionId);
+            return null;
+        }
+
         var block = _siteConfig.GetBlockById(blockId);
         if (block == null)
         {
@@ -89,7 +95,7 @@ public class HttpPublishingApi : IPublishingApi
             block.BaseUri!,
             block.Branch,
             block.EnableFullUriRouting ?? false,
-            block.Pushed.Value,
+            block.Pushed ?? Block.DefaultPushedDate,
             block.StaticPaths,
             block.VersionNo);
         return blockVersionInfo;
@@ -98,13 +104,20 @@ public class HttpPublishingApi : IPublishingApi
     public async Task<EndpointRequestInfo?> GetEndpointForRequest(RequestContext requestContext)
     {
         var httpEndpointRequestContext = new HttpEndpointRequestContext(requestContext);
-        var endpointRequestInfo = (await _internalRestClient.PostAsJsonAsync<dynamic>(
+        var endpointRequestInfo = (await _internalRestClient.PostAsJsonAsync<JObject>(
                 $"api/management/projects/{_requestContext.ProjectApiId}/renderers/endpointrequestinfo",
                 httpEndpointRequestContext))
             .ResponseObject;
-        var layoutRendererIdValue = endpointRequestInfo["layoutRendererId"]?.ToString();
+
+        if (endpointRequestInfo == null)
+        {
+            _logger.LogWarning("Endpoint request info not returned for {ProjectApiId}", _requestContext.ProjectApiId);
+            return null;
+        }
+
+        var layoutRendererIdValue = GetString(endpointRequestInfo, "layoutRendererId");
         Guid? layoutRendererId = null;
-        if (!String.IsNullOrWhiteSpace(layoutRendererIdValue))
+        if (!string.IsNullOrWhiteSpace(layoutRendererIdValue))
         {
             layoutRendererId = Guid.Parse(layoutRendererIdValue);
         }
@@ -112,19 +125,19 @@ public class HttpPublishingApi : IPublishingApi
         // TODO: check if we need to populate enableFullUriRouting
         var enableFullUriRouting = false;
         return new EndpointRequestInfo(
-            endpointRequestInfo["blockId"].ToString(),
-            Guid.Parse(endpointRequestInfo["blockVersionId"].ToString()),
-            endpointRequestInfo["endpointID"]?.ToString(),
+            GetRequiredString(endpointRequestInfo, "blockId"),
+            GetRequiredGuid(endpointRequestInfo, "blockVersionId"),
+            GetString(endpointRequestInfo, "endpointID") ?? string.Empty,
             layoutRendererId,
-            endpointRequestInfo["uri"].ToString(),
-            ((JToken)endpointRequestInfo["staticPaths"])?.ToObject<string[]>()?.ToList(),
-            Guid.Parse(endpointRequestInfo["rendererId"].ToString()),
-            null,
-            endpointRequestInfo["branch"].ToString(),
-            (int)endpointRequestInfo["blockVersionNo"],
+            GetRequiredString(endpointRequestInfo, "uri"),
+            GetStringList(endpointRequestInfo, "staticPaths") ?? [],
+            GetRequiredGuid(endpointRequestInfo, "rendererId"),
+            [],
+            GetRequiredString(endpointRequestInfo, "branch"),
+            GetRequiredInt(endpointRequestInfo, "blockVersionNo"),
             enableFullUriRouting,
-            DateTime.Parse(endpointRequestInfo["pushed"].ToString()),
-            null);
+            GetRequiredDateTime(endpointRequestInfo, "pushed"),
+            []);
     }
 
     public Task<IList<BlockWithVersions>> ListBlocksThatAreAvailable(
@@ -135,5 +148,71 @@ public class HttpPublishingApi : IPublishingApi
         string serverType)
     {
         throw new NotImplementedException();
+    }
+
+    private static string? GetString(JObject obj, string propertyName)
+    {
+        if (!obj.TryGetValue(propertyName, out var node) || node.Type == JTokenType.Null)
+        {
+            return null;
+        }
+
+        return node.Type == JTokenType.String ? node.Value<string>() : node.ToString();
+    }
+
+    private static string GetRequiredString(JObject obj, string propertyName)
+    {
+        var value = GetString(obj, propertyName);
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidOperationException($"Missing or empty '{propertyName}' in response payload.");
+        }
+
+        return value;
+    }
+
+    private static Guid GetRequiredGuid(JObject obj, string propertyName)
+    {
+        var value = GetRequiredString(obj, propertyName);
+        return Guid.Parse(value);
+    }
+
+    private static int GetRequiredInt(JObject obj, string propertyName)
+    {
+        if (obj.TryGetValue(propertyName, out var node) && node.Type != JTokenType.Null)
+        {
+            if (node.Type == JTokenType.Integer)
+            {
+                return node.Value<int>();
+            }
+
+            var text = node.ToString();
+            if (int.TryParse(text, out var number))
+            {
+                return number;
+            }
+        }
+
+        throw new InvalidOperationException($"Missing or invalid '{propertyName}' in response payload.");
+    }
+
+    private static DateTime GetRequiredDateTime(JObject obj, string propertyName)
+    {
+        var value = GetRequiredString(obj, propertyName);
+        return DateTime.Parse(value);
+    }
+
+    private static List<string>? GetStringList(JObject obj, string propertyName)
+    {
+        if (!obj.TryGetValue(propertyName, out var node) || node is not JArray array)
+        {
+            return null;
+        }
+
+        return array
+            .Select(item => item.Type == JTokenType.String ? item.Value<string?>() : item.ToString())
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value!)
+            .ToList();
     }
 }

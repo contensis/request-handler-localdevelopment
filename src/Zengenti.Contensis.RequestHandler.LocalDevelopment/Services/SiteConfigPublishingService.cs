@@ -76,7 +76,7 @@ public class SiteConfigPublishingService(
                     block?.BaseUri!,
                     block?.Branch ?? "",
                     enableFullUriRouting,
-                    block.Pushed.Value,
+                    block.Pushed ?? Block.DefaultPushedDate,
                     block?.StaticPaths,
                     block?.VersionNo);
 
@@ -129,7 +129,7 @@ public class SiteConfigPublishingService(
                 block.BaseUri!,
                 block.Branch,
                 enableFullUriRouting,
-                block.Pushed.Value,
+                block.Pushed ?? Block.DefaultPushedDate,
                 block.StaticPaths,
                 block.VersionNo);
 
@@ -163,7 +163,7 @@ public class SiteConfigPublishingService(
                 block.BaseUri!,
                 block.Branch,
                 enableFullUriRouting,
-                block.Pushed.Value,
+                block.Pushed ?? Block.DefaultPushedDate,
                 block.StaticPaths,
                 block.VersionNo);
             return Task.FromResult(versionInfo)!;

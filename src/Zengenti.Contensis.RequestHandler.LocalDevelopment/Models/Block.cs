@@ -2,6 +2,8 @@
 
 public class Block
 {
+    public static readonly DateTime DefaultPushedDate = new DateTime(2020, 1, 1);
+    
     public Guid Uuid { get; set; } = Guid.NewGuid();
 
     public string? Id { get; set; }

@@ -1,4 +1,5 @@
-﻿using Zengenti.Contensis.RequestHandler.Domain.Common;
+using Newtonsoft.Json.Linq;
+using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
@@ -66,8 +67,7 @@ public class LocalNodeService : INodeService
             _internalRestClient.AddHeader(Constants.Headers.IsLocalRequestHandler, "true");
             var requestUrl =
                 $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectApiId}/nodes/{path.Trim('/')}";
-            var restManagementNode = (await _internalRestClient.GetAsync<dynamic>(requestUrl))
-                .ResponseObject;
+            var restManagementNode = (await _internalRestClient.GetAsync<JObject>(requestUrl)).ResponseObject;
 
             if (restManagementNode == null)
             {
@@ -76,28 +76,30 @@ public class LocalNodeService : INodeService
             }
 
             Guid? rendererUuid = null;
-            string rendererId = "";
+            var rendererId = "";
             var isPartialMatchRoot = false;
-            if (restManagementNode["renderer"] != null)
+            var rendererNode = GetObject(restManagementNode, "renderer");
+            if (rendererNode != null)
             {
-                var nodeRenderer = restManagementNode["renderer"];
-                rendererUuid = Guid.Parse(nodeRenderer["id"].ToString());
-                isPartialMatchRoot = bool.Parse(nodeRenderer["isPartialMatchRoot"].ToString());
+                rendererUuid = GetGuid(rendererNode, "id");
+                isPartialMatchRoot = GetBool(rendererNode, "isPartialMatchRoot") ?? false;
             }
 
             if (rendererUuid != null)
             {
-                var renderer = (await _internalRestClient.GetAsync<dynamic>(
+                var renderer = (await _internalRestClient.GetAsync<JObject>(
                         $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectApiId}/renderers/{rendererUuid}"))
                     .ResponseObject;
-                rendererId = renderer["id"].ToString();
+                rendererId = renderer != null ? GetString(renderer, "id") ?? "" : "";
             }
 
+            var pathNode = GetObject(restManagementNode, "path");
             var node = new Node
             {
-                Id = restManagementNode["id"],
-                Path = restManagementNode["path"]["en-GB"],
-                EntryId = restManagementNode["entryId"],
+                Id = GetGuid(restManagementNode, "id"),
+                Path = (pathNode != null ? GetString(pathNode, "en-GB") : null) ?? string.Empty,
+                EntryId = GetGuid(restManagementNode, "entryId"),
+                ContentTypeId = GetGuid(restManagementNode, "contentTypeId")
             };
 
             if (!string.IsNullOrWhiteSpace(rendererId) && rendererUuid != null)
@@ -117,5 +119,42 @@ public class LocalNodeService : INodeService
             _logger.LogError(e, "Error getting a management node or renderer for path {Path}", path);
             return null;
         }
+    }
+
+    private static JObject? GetObject(JObject obj, string propertyName)
+    {
+        return obj.TryGetValue(propertyName, out var node) ? node as JObject : null;
+    }
+
+    private static string? GetString(JObject obj, string propertyName)
+    {
+        if (!obj.TryGetValue(propertyName, out var node) || node.Type == JTokenType.Null)
+        {
+            return null;
+        }
+
+        return node.Type == JTokenType.String ? node.Value<string>() : node.ToString();
+    }
+
+    private static bool? GetBool(JObject obj, string propertyName)
+    {
+        if (!obj.TryGetValue(propertyName, out var node) || node.Type == JTokenType.Null)
+        {
+            return null;
+        }
+
+        if (node.Type == JTokenType.Boolean)
+        {
+            return node.Value<bool>();
+        }
+
+        var text = node.ToString();
+        return bool.TryParse(text, out var result) ? result : null;
+    }
+
+    private static Guid? GetGuid(JObject obj, string propertyName)
+    {
+        var value = GetString(obj, propertyName);
+        return Guid.TryParse(value, out var parsed) ? parsed : null;
     }
 }

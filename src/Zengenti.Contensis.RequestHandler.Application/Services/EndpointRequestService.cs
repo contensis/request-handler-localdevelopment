@@ -179,9 +179,11 @@ public class EndpointRequestService(
 
                 var state = new
                 {
-                    requestContext = JsonSerializer.Serialize(requestContext),
-                    routeInfo = JsonSerializer.Serialize(routeInfo),
-                    responseHeaders = JsonSerializer.Serialize(endpointResponse.Headers),
+                    requestContext = $"Alias={requestContext.Alias}, ProjectApiId={requestContext.ProjectApiId}",
+                    routeInfo = JsonSerializer.Serialize(routeInfo, AppJsonSerializerContext.Default.RouteInfo),
+                    responseHeaders = JsonSerializer.Serialize(
+                        endpointResponse.Headers,
+                        AppJsonSerializerContext.Default.DictionaryStringIEnumerableString),
                     responseContent
                 };
 
@@ -227,8 +229,8 @@ public class EndpointRequestService(
             using (logger.BeginScope(
                 new
                 {
-                    requestContext = JsonSerializer.Serialize(requestContext),
-                    routeInfo = JsonSerializer.Serialize(routeInfo),
+                    requestContext = $"Alias={requestContext.Alias}, ProjectApiId={requestContext.ProjectApiId}",
+                    routeInfo = JsonSerializer.Serialize(routeInfo, AppJsonSerializerContext.Default.RouteInfo),
                     cancelledRequest = cancellationToken.IsCancellationRequested.ToString()
                 }))
             {
