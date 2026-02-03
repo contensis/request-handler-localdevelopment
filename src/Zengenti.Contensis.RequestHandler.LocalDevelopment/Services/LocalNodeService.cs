@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
+using Zengenti.Contensis.RequestHandler.LocalDevelopment.Helpers;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 using Zengenti.Rest.RestClient;
@@ -78,11 +79,11 @@ public class LocalNodeService : INodeService
             Guid? rendererUuid = null;
             var rendererId = "";
             var isPartialMatchRoot = false;
-            var rendererNode = GetObject(restManagementNode, "renderer");
+            var rendererNode = JObjectHelpers.GetObject(restManagementNode, "renderer");
             if (rendererNode != null)
             {
-                rendererUuid = GetGuid(rendererNode, "id");
-                isPartialMatchRoot = GetBool(rendererNode, "isPartialMatchRoot") ?? false;
+                rendererUuid = JObjectHelpers.GetGuid(rendererNode, "id");
+                isPartialMatchRoot = JObjectHelpers.GetBool(rendererNode, "isPartialMatchRoot") ?? false;
             }
 
             if (rendererUuid != null)
@@ -90,16 +91,16 @@ public class LocalNodeService : INodeService
                 var renderer = (await _internalRestClient.GetAsync<JObject>(
                         $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectApiId}/renderers/{rendererUuid}"))
                     .ResponseObject;
-                rendererId = renderer != null ? GetString(renderer, "id") ?? "" : "";
+                rendererId = renderer != null ? JObjectHelpers.GetString(renderer, "id") ?? "" : "";
             }
 
-            var pathNode = GetObject(restManagementNode, "path");
+            var pathNode = JObjectHelpers.GetObject(restManagementNode, "path");
             var node = new Node
             {
-                Id = GetGuid(restManagementNode, "id"),
-                Path = (pathNode != null ? GetString(pathNode, "en-GB") : null) ?? string.Empty,
-                EntryId = GetGuid(restManagementNode, "entryId"),
-                ContentTypeId = GetGuid(restManagementNode, "contentTypeId")
+                Id = JObjectHelpers.GetGuid(restManagementNode, "id"),
+                Path = (pathNode != null ? JObjectHelpers.GetString(pathNode, "en-GB") : null) ?? string.Empty,
+                EntryId = JObjectHelpers.GetGuid(restManagementNode, "entryId"),
+                ContentTypeId = JObjectHelpers.GetGuid(restManagementNode, "contentTypeId")
             };
 
             if (!string.IsNullOrWhiteSpace(rendererId) && rendererUuid != null)
@@ -119,42 +120,5 @@ public class LocalNodeService : INodeService
             _logger.LogError(e, "Error getting a management node or renderer for path {Path}", path);
             return null;
         }
-    }
-
-    private static JObject? GetObject(JObject obj, string propertyName)
-    {
-        return obj.TryGetValue(propertyName, out var node) ? node as JObject : null;
-    }
-
-    private static string? GetString(JObject obj, string propertyName)
-    {
-        if (!obj.TryGetValue(propertyName, out var node) || node.Type == JTokenType.Null)
-        {
-            return null;
-        }
-
-        return node.Type == JTokenType.String ? node.Value<string>() : node.ToString();
-    }
-
-    private static bool? GetBool(JObject obj, string propertyName)
-    {
-        if (!obj.TryGetValue(propertyName, out var node) || node.Type == JTokenType.Null)
-        {
-            return null;
-        }
-
-        if (node.Type == JTokenType.Boolean)
-        {
-            return node.Value<bool>();
-        }
-
-        var text = node.ToString();
-        return bool.TryParse(text, out var result) ? result : null;
-    }
-
-    private static Guid? GetGuid(JObject obj, string propertyName)
-    {
-        var value = GetString(obj, propertyName);
-        return Guid.TryParse(value, out var parsed) ? parsed : null;
     }
 }
