@@ -30,13 +30,13 @@ internal class ContensisClassicSecurityTokenProvider(SecurityTokenParams securit
 
         try
         {
-            var result = AsyncHelper.RunSync(() => GetSecurityToken(httpClient, payload));
+            var token = AsyncHelper.RunSync(() => GetSecurityToken(httpClient, payload));
 
             return new SecurityTokenResult
             {
                 IsAdmin = true,
                 IsValid = true,
-                SecurityToken = result
+                SecurityToken = token
             };
         }
         catch (Exception e)
