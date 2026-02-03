@@ -4,6 +4,7 @@ using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Blocks;
 using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Renderers;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
+using Zengenti.Contensis.RequestHandler.LocalDevelopment.Helpers;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 using Zengenti.Rest.RestClient;
@@ -74,7 +75,7 @@ public class HttpPublishingApi : IPublishingApi
             return null;
         }
 
-        var blockId = GetString(blockVersion, "id");
+        var blockId = JObjectHelpers.GetString(blockVersion, "id");
         if (string.IsNullOrWhiteSpace(blockId))
         {
             _logger.LogWarning("Block version response missing id for uuid {Uuid}", versionId);
@@ -115,7 +116,7 @@ public class HttpPublishingApi : IPublishingApi
             return null;
         }
 
-        var layoutRendererIdValue = GetString(endpointRequestInfo, "layoutRendererId");
+        var layoutRendererIdValue = JObjectHelpers.GetString(endpointRequestInfo, "layoutRendererId");
         Guid? layoutRendererId = null;
         if (!string.IsNullOrWhiteSpace(layoutRendererIdValue))
         {
@@ -127,7 +128,7 @@ public class HttpPublishingApi : IPublishingApi
         return new EndpointRequestInfo(
             GetRequiredString(endpointRequestInfo, "blockId"),
             GetRequiredGuid(endpointRequestInfo, "blockVersionId"),
-            GetString(endpointRequestInfo, "endpointID") ?? string.Empty,
+            JObjectHelpers.GetString(endpointRequestInfo, "endpointID") ?? string.Empty,
             layoutRendererId,
             GetRequiredString(endpointRequestInfo, "uri"),
             GetStringList(endpointRequestInfo, "staticPaths") ?? [],
@@ -150,19 +151,9 @@ public class HttpPublishingApi : IPublishingApi
         throw new NotImplementedException();
     }
 
-    private static string? GetString(JObject obj, string propertyName)
-    {
-        if (!obj.TryGetValue(propertyName, out var node) || node.Type == JTokenType.Null)
-        {
-            return null;
-        }
-
-        return node.Type == JTokenType.String ? node.Value<string>() : node.ToString();
-    }
-
     private static string GetRequiredString(JObject obj, string propertyName)
     {
-        var value = GetString(obj, propertyName);
+        var value = JObjectHelpers.GetString(obj, propertyName);
         if (string.IsNullOrWhiteSpace(value))
         {
             throw new InvalidOperationException($"Missing or empty '{propertyName}' in response payload.");
