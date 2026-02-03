@@ -1,6 +1,8 @@
-﻿using Zengenti.Contensis.RequestHandler.Domain.Common;
+using Newtonsoft.Json.Linq;
+using Zengenti.Contensis.RequestHandler.Domain.Common;
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
+using Zengenti.Contensis.RequestHandler.LocalDevelopment.Helpers;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Models;
 using Zengenti.Contensis.RequestHandler.LocalDevelopment.Services.Interfaces;
 using Zengenti.Rest.RestClient;
@@ -66,8 +68,7 @@ public class LocalNodeService : INodeService
             _internalRestClient.AddHeader(Constants.Headers.IsLocalRequestHandler, "true");
             var requestUrl =
                 $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectApiId}/nodes/{path.Trim('/')}";
-            var restManagementNode = (await _internalRestClient.GetAsync<dynamic>(requestUrl))
-                .ResponseObject;
+            var restManagementNode = (await _internalRestClient.GetAsync<JObject>(requestUrl)).ResponseObject;
 
             if (restManagementNode == null)
             {
@@ -76,28 +77,30 @@ public class LocalNodeService : INodeService
             }
 
             Guid? rendererUuid = null;
-            string rendererId = "";
+            var rendererId = "";
             var isPartialMatchRoot = false;
-            if (restManagementNode["renderer"] != null)
+            var rendererNode = JObjectHelpers.GetObject(restManagementNode, "renderer");
+            if (rendererNode != null)
             {
-                var nodeRenderer = restManagementNode["renderer"];
-                rendererUuid = Guid.Parse(nodeRenderer["id"].ToString());
-                isPartialMatchRoot = bool.Parse(nodeRenderer["isPartialMatchRoot"].ToString());
+                rendererUuid = JObjectHelpers.GetGuid(rendererNode, "id");
+                isPartialMatchRoot = JObjectHelpers.GetBool(rendererNode, "isPartialMatchRoot") ?? false;
             }
 
             if (rendererUuid != null)
             {
-                var renderer = (await _internalRestClient.GetAsync<dynamic>(
+                var renderer = (await _internalRestClient.GetAsync<JObject>(
                         $"api/management/projects/{_siteConfigLoader.SiteConfig.ProjectApiId}/renderers/{rendererUuid}"))
                     .ResponseObject;
-                rendererId = renderer["id"].ToString();
+                rendererId = renderer != null ? JObjectHelpers.GetString(renderer, "id") ?? "" : "";
             }
 
+            var pathNode = JObjectHelpers.GetObject(restManagementNode, "path");
             var node = new Node
             {
-                Id = restManagementNode["id"],
-                Path = restManagementNode["path"]["en-GB"],
-                EntryId = restManagementNode["entryId"],
+                Id = JObjectHelpers.GetGuid(restManagementNode, "id"),
+                Path = (pathNode != null ? JObjectHelpers.GetString(pathNode, "en-GB") : null) ?? string.Empty,
+                EntryId = JObjectHelpers.GetGuid(restManagementNode, "entryId"),
+                ContentTypeId = JObjectHelpers.GetGuid(restManagementNode, "contentTypeId")
             };
 
             if (!string.IsNullOrWhiteSpace(rendererId) && rendererUuid != null)

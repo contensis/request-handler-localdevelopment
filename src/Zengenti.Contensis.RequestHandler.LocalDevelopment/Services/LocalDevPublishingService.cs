@@ -1,4 +1,5 @@
 using Zengenti.Contensis.RequestHandler.Domain.Entities;
+using Zengenti.Contensis.RequestHandler.Domain.Extensions;
 using Zengenti.Contensis.RequestHandler.Domain.Interfaces;
 using Zengenti.Contensis.RequestHandler.Domain.PublishingClient.Renderers;
 using Zengenti.Contensis.RequestHandler.Domain.ValueTypes;
@@ -73,10 +74,11 @@ public class LocalDevPublishingService(
             new Uri(endpointForRequest.Uri),
             endpointForRequest.Branch,
             enableFullUriRouting,
-            endpointForRequest.Pushed.Value,
+            endpointForRequest.Pushed ?? Block.DefaultPushedDate,
             endpointForRequest.StaticPaths,
             endpointForRequest.BlockVersionNo);
 
+        blockVersionInfo.EnsureDefaultStaticPaths();
         var routeInfo = routeInfoFactory.Create(
             overridenBlock.BaseUri!,
             originUri,

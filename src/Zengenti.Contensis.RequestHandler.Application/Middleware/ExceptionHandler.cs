@@ -23,10 +23,7 @@ public static class ExceptionHandler
 
         var exceptionsAsJson = JsonSerializer.Serialize(
             innerExceptionDataObjects,
-            new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
+            AppJsonSerializerContext.Default.ListObject);
 
         await context.Response.WriteAsync(exceptionsAsJson);
         return true;

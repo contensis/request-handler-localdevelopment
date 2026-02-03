@@ -1,9 +1,11 @@
-﻿using CommandLine;
+﻿using System.Diagnostics.CodeAnalysis;
+using CommandLine;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment;
 
 public class Program
 {
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ProgramOptions))]
     private static void Main(string[] args)
     {
         var parser = new Parser(with => { with.IgnoreUnknownArguments = true; });
