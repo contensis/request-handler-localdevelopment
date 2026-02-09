@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using CommandLine;
+using Microsoft.Extensions.Logging;
 
 namespace Zengenti.Contensis.RequestHandler.LocalDevelopment;
 
@@ -17,6 +18,15 @@ public class Program
 
     public static IHostBuilder CreateHostBuilder(string[] args, ProgramOptions opts) =>
         Host.CreateDefaultBuilder(args)
+            .ConfigureLogging(logging =>
+            {
+                LogLevel level = LogLevel.Warning;
+                if (!string.IsNullOrWhiteSpace(opts.LogLevel) && Enum.TryParse<LogLevel>(opts.LogLevel, true, out var parsedLevel))
+                {
+                    level = parsedLevel;
+                }
+                logging.SetMinimumLevel(level);
+            })
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder

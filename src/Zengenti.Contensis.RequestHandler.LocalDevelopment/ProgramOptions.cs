@@ -61,5 +61,8 @@ public class ProgramOptions
     [Option("block-cluster-ingress-ip", HelpText = "The ingress IP for the block cluster", Default = null)]
     public string? BlockClusterIngressIp { get; set; }
 
+    [Option("log-level", HelpText = "The log level for the application.", Default = "Warning")]
+    public string? LogLevel { get; set; }
+    
     public string BlockAddressSuffix => "blocks.contensis.com";
 }
